@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opModes;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.RobotLog;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.robot.TilerunnerMecanumBot;
@@ -60,8 +61,9 @@ public class MecanumTeleop extends InitLinearOpMode
             double fb_y = ishaper.shape(raw_fb_y, 0.1);
             double turn = ishaper.shape(raw_turn, 0.1);
 
-            if      (incr && dSpd + dStp <= 1.0) dSpd += dStp;
-            else if (decr && dSpd - dStp >= 0.0) dSpd -= dStp;
+            if      (incr) dSpd += dStp;
+            else if (decr) dSpd -= dStp;
+            dSpd = Range.clip(dSpd, 0.0, 1.0);
 
             if (lft || rgt || fwd || bak)
             {
@@ -111,8 +113,8 @@ public class MecanumTeleop extends InitLinearOpMode
                     raw_lr_x, raw_fb_y, raw_turn);
             dashboard.displayPrintf(l++, "SHP LR_X %4.2f FB_Y %4.2f TRN %4.2f",
                     lr_x, fb_y, turn);
-            dashboard.displayPrintf(l++, "SPD %4.2f DIR %4.2f FALGN %s USEVEL %s",
-                    speed, direction, fieldAlign, useSetVel);
+            dashboard.displayPrintf(l++, "SPD %4.2f DIR %4.2f DSPD: %3.1f FALGN %s USEVEL %s",
+                    speed, direction, dSpd, fieldAlign, useSetVel);
             dashboard.displayPrintf(l++, "LFC %d RFC %d LRC %d RRC %d",
                     robot.lfMotor.getCurrentPosition(),
                     robot.rfMotor.getCurrentPosition(),
