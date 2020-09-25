@@ -1,0 +1,9 @@
+dependencies {
+    api project(':opencv')    
+    implementation 'org.firstinspires.ftc:RobotCore:5.5'
+    implementation 'org.firstinspires.ftc:Hardware:5.5'
+    implementation 'org.firstinspires.ftc:FtcCommon:5.5'
+    implementation (name:'WirelessP2p-release', ext:'aar')
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation (group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1')
+}
