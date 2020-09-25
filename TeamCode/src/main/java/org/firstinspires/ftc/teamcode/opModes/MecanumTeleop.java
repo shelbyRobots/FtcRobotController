@@ -1,11 +1,9 @@
 package org.firstinspires.ftc.teamcode.opModes;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.RobotLog;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.robot.ShelbyBot;
 import org.firstinspires.ftc.teamcode.robot.TilerunnerMecanumBot;
 import org.firstinspires.ftc.teamcode.util.Input_Shaper;
 import org.firstinspires.ftc.teamcode.util.ManagedGamepad;
@@ -52,21 +50,15 @@ public class MecanumTeleop extends InitLinearOpMode
             boolean bak  = gpad1.pressed(ManagedGamepad.Button.D_DOWN);
             boolean incr = gpad1.just_pressed(ManagedGamepad.Button.R_BUMP);
             boolean decr = gpad1.just_pressed(ManagedGamepad.Button.L_BUMP);
-            boolean toggleVel = gpad1.just_pressed(ManagedGamepad.Button.Y);
+            boolean tglV = gpad1.just_pressed(ManagedGamepad.Button.Y);
             //boolean step_driveType = gpad1.just_pressed(ManagedGamepad.Button.A);
 
             //if (step_driveType) fieldAlign = !fieldAlign;
-            if (toggleVel) useSetVel = !useSetVel;
+            if (tglV) useSetVel = !useSetVel;
 
             double lr_x = ishaper.shape(raw_lr_x, 0.1);
             double fb_y = ishaper.shape(raw_fb_y, 0.1);
             double turn = ishaper.shape(raw_turn, 0.1);
-
-            int l = 1;
-            dashboard.displayPrintf(l++, "RAW LR_X %4.2f FB_Y %4.2f TRN %4.2f",
-                    raw_lr_x, raw_fb_y, raw_turn);
-            dashboard.displayPrintf(l++, "SHP LR_X %4.2f FB_Y %4.2f TRN %4.2f",
-                    lr_x, fb_y, turn);
 
             if      (incr && dSpd + dStp <= 1.0) dSpd += dStp;
             else if (decr && dSpd - dStp >= 0.0) dSpd -= dStp;
@@ -114,6 +106,11 @@ public class MecanumTeleop extends InitLinearOpMode
                 robot.rrMotor.setPower(rr);
             }
 
+            int l = 1;
+            dashboard.displayPrintf(l++, "RAW LR_X %4.2f FB_Y %4.2f TRN %4.2f",
+                    raw_lr_x, raw_fb_y, raw_turn);
+            dashboard.displayPrintf(l++, "SHP LR_X %4.2f FB_Y %4.2f TRN %4.2f",
+                    lr_x, fb_y, turn);
             dashboard.displayPrintf(l++, "SPD %4.2f DIR %4.2f FALGN %s USEVEL %s",
                     speed, direction, fieldAlign, useSetVel);
             dashboard.displayPrintf(l++, "LFC %d RFC %d LRC %d RRC %d",

@@ -123,7 +123,7 @@ public class ShelbyBot
     public static DcMotor.Direction  LEFT_DIR = DcMotor.Direction.FORWARD;
     public static DcMotor.Direction RIGHT_DIR = DcMotor.Direction.REVERSE;
 
-    protected Map<String, DcMotor> motors = new HashMap<>();
+    public Map<String, DcMotor> motors = new HashMap<>();
 
     public boolean gyroReady = false;
     Map<String, Boolean> capMap = new HashMap<>();

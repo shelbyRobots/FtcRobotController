@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opModes;
 import android.graphics.Bitmap;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.vuforia.CameraDevice;
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -101,9 +103,14 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
                 dashboard.displayPrintf(0, "HDG %4.2f FHDG %4.2f", shdg, fhdg);
                 dashboard.displayPrintf(10, "GyroReady %s RGyroReady %s",
                         gyroReady, robot.gyroReady);
-                if (robot.leftMotor != null && robot.rightMotor != null)
-                    dashboard.displayPrintf(11, "LENC %d RENC %d",
-                            robot.leftMotor.getCurrentPosition(), robot.rightMotor.getCurrentPosition());
+
+                StringBuilder motStr = new StringBuilder("ENCs:");
+                for (Map.Entry<String, DcMotor> e : robot.motors.entrySet())
+                {
+                    motStr.append(" " + e.getKey() + ":");
+                    motStr.append(e.getValue().getCurrentPosition());
+                }
+                dashboard.displayText(11, motStr.toString());
 
                 if (robot.colorSensor != null)
                 {
@@ -259,7 +266,6 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         RobotLog.ii(TAG, "DELAY    %4.2f", delay);
         RobotLog.ii(TAG, "BOT      %s", robotName);
 
-        //TODO: CHANGE to UgRoute
         Route pts = new UgRoute(startPos, alliance, robotName);
 
         pathSegs.addAll(Arrays.asList(pts.getSegments()));
@@ -677,9 +683,6 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         if(!opModeIsActive() || isStopRequested()) return;
 
         drvTrn.setInitValues();
-        RobotLog.ii(TAG, "Setting drive tuner to %4.2f", seg.getDrvTuner());
-        drvTrn.logData(true, seg.getName() + " move");
-        drvTrn.setDrvTuner(seg.getDrvTuner());
 
         drvTrn.setBusyAnd(true);
         String  snm = seg.getName();
@@ -698,6 +701,8 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
                 "DRIVE", snm, spt, ept, fhd, speed, dir);
 
         Drivetrain.Direction ddir = Drivetrain.Direction.FORWARD;
+        drvTrn.logData(true, seg.getName() + " move");
+        drvTrn.setDrvTuner(fudge);
 
         timer.reset();
 
