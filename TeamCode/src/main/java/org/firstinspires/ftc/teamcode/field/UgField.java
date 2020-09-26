@@ -7,7 +7,7 @@ public class UgField extends Field
 {
     public UgField()
     {
-        super("UgField");
+        super("UltimateGoal");
         setHasVuMarks(false);
     }
 
@@ -117,52 +117,28 @@ public class UgField extends Field
 
     void setImageNames()
     {
-       trackableNames.add("Stone Target");
-       trackableNames.add("Blue Rear Bridge");
-       trackableNames.add("Red Rear Bridge");
-       trackableNames.add("Red Front Bridge");
-       trackableNames.add("Blue Front Bridge");
-       trackableNames.add("Red Perimeter 1");
-       trackableNames.add("Red Perimeter 2");
-       trackableNames.add("Front Perimeter 1");
-       trackableNames.add("Front Perimeter 2");
-       trackableNames.add("Blue Perimeter 1");
-       trackableNames.add("Blue Perimeter 2");
-       trackableNames.add("Rear Perimeter 1");
-       trackableNames.add("Rear Perimeter 2");
+       trackableNames.add("BlueTowerGoal");
+       trackableNames.add("RedTowerGoal");
+       trackableNames.add("RedAlliance");
+       trackableNames.add("BlueAlliance");
+       trackableNames.add("FrontWall");
     }
 
     void setImageLocations()
     {
         float[][] TRACKABLE_POS = {
 
-                scaleArr(new float[]{0.0f, 0.0f, STONEZ}),
-                scaleArr(new float[]{ bridgeX,  bridgeY, bridgeZ}),
-                scaleArr(new float[]{ bridgeX, -bridgeY, bridgeZ}),
-                scaleArr(new float[]{-bridgeX, -bridgeY, bridgeZ}),
-                scaleArr(new float[]{-bridgeX,  bridgeY, bridgeZ}),
-                scaleArr(new float[]{ quadField, -halfField, mmTargetHeight}),
-                scaleArr(new float[]{-quadField, -halfField, mmTargetHeight}),
-                scaleArr(new float[]{-halfField, -quadField, mmTargetHeight}),
-                scaleArr(new float[]{-halfField,  quadField, mmTargetHeight}),
-                scaleArr(new float[]{-quadField,  halfField, mmTargetHeight}),
-                scaleArr(new float[]{ quadField,  halfField, mmTargetHeight}),
-                scaleArr(new float[]{ halfField,  quadField, mmTargetHeight}),
-                scaleArr(new float[]{ halfField, -quadField, mmTargetHeight})
+                scaleArr(new float[]{halfField, 36.0f, IMAGE_Z}),
+                scaleArr(new float[]{halfField, -36.0f, IMAGE_Z}),
+                scaleArr(new float[]{ 0.0f, -halfField, IMAGE_Z}),
+                scaleArr(new float[]{0.0f, halfField, IMAGE_Z}),
+                scaleArr(new float[]{-halfField, 0.0f, IMAGE_Z})
         };
 
-        locationsOnField.add(genMatrix(TRACKABLE_POS[0], new float[]{90.0f, 0.0f, -90.0f}));
-        locationsOnField.add(genMatrix(TRACKABLE_POS[1], new float[]{0.0f,  bridgeRotY, bridgeRotZ}));
-        locationsOnField.add(genMatrix(TRACKABLE_POS[2], new float[]{0.0f, -bridgeRotY, bridgeRotZ}));
-        locationsOnField.add(genMatrix(TRACKABLE_POS[3], new float[]{0.0f, -bridgeRotY, 0.0f}));
-        locationsOnField.add(genMatrix(TRACKABLE_POS[4], new float[]{0.0f,  bridgeRotY, 0.0f}));
-        locationsOnField.add(genMatrix(TRACKABLE_POS[5], new float[]{90.0f, 0.0f, 180.0f}));
-        locationsOnField.add(genMatrix(TRACKABLE_POS[6], new float[]{90.0f, 0.0f, 180.0f}));
-        locationsOnField.add(genMatrix(TRACKABLE_POS[7], new float[]{90.0f, 0.0f , 90.0f}));
-        locationsOnField.add(genMatrix(TRACKABLE_POS[8], new float[]{90.0f, 0.0f , 90.0f}));
-        locationsOnField.add(genMatrix(TRACKABLE_POS[9], new float[]{90.0f, 0.0f, 0.0f}));
-        locationsOnField.add(genMatrix(TRACKABLE_POS[10], new float[]{90.0f, 0.0f, 0.0f}));
-        locationsOnField.add(genMatrix(TRACKABLE_POS[11], new float[]{90.0f, 0.0f , -90.0f}));
-        locationsOnField.add(genMatrix(TRACKABLE_POS[12], new float[]{90.0f, 0.0f , -90.0f}));
+        locationsOnField.add(genMatrix(TRACKABLE_POS[0], new float[]{90.0f, 0.0f,  -90.0f}));
+        locationsOnField.add(genMatrix(TRACKABLE_POS[1], new float[]{90.0f, 0.0f,  -90.0f}));
+        locationsOnField.add(genMatrix(TRACKABLE_POS[2], new float[]{90.0f, 0.0f , 180.0f}));
+        locationsOnField.add(genMatrix(TRACKABLE_POS[3], new float[]{90.0f, 0.0f ,   0.0f}));
+        locationsOnField.add(genMatrix(TRACKABLE_POS[4], new float[]{90.0f, 0.0f,   90.0f}));
     }
 }

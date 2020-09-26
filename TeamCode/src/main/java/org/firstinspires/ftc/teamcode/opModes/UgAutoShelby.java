@@ -107,7 +107,9 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
                 StringBuilder motStr = new StringBuilder("ENCs:");
                 for (Map.Entry<String, DcMotor> e : robot.motors.entrySet())
                 {
-                    motStr.append(" " + e.getKey() + ":");
+                    motStr.append(" ");
+                    motStr.append(e.getKey());
+                    motStr.append(":");
                     motStr.append(e.getValue().getCurrentPosition());
                 }
                 dashboard.displayText(11, motStr.toString());
@@ -172,18 +174,8 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
         dashboard.displayPrintf(0, "INITIALIZING");
 
-        String teleopName = "TeleopDriver";
-
-        if(robotName.equals("MEC"))
-        {
-            robot = new TilerunnerMecanumBot();
-            teleopName = "Mecanum";
-        }
-        else
-        {
-            //robot = new SkyBot(robotName);
-            //skyBot = (SkyBot)robot;
-        }
+        final String teleopName = "Mecanum";
+        robot = new TilerunnerMecanumBot();
 
         dashboard.displayPrintf(1, "Prefs Done");
 
@@ -534,7 +526,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
     private void doScan(int segIdx)
     {
-        RobotLog.dd(TAG, "doScan");
+        RobotLog.dd(TAG, "doScan" + " segIdx:" + segIdx);
 
         if(useLight)
             CameraDevice.getInstance().setFlashTorchMode(true) ;
@@ -546,20 +538,8 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         if(useLight)
             CameraDevice.getInstance().setFlashTorchMode(false);
 
-        //setStonePoint(segIdx);
-
-        //TODO: set wobbly point based on scan result
-
-//        MoveArmTask tsk = new MoveArmTask();
-//        tsk.setElevPos(skyBot.LIFT_STOW_CNTS);
-//        tsk.setXtndPos(skyBot.ARM_EXT_SNUG_POS);
-//        tsk.setArotPos(getArmGrabRot());
-//        tsk.setElevDly(0.01);
-//        tsk.setXtndDly(0.01);
-//        tsk.setArotDly(0.01);
-//        tsk.setAutoCross(false);
-//        RobotLog.dd(TAG, "doScan submitting non-delay task");
-//        es.submit(tsk);
+        //TODO: set wobbly point based on scan result - change to Wobble
+        setStonePoint(segIdx);
     }
 
     private void doGrab(int segIdx)
@@ -571,6 +551,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
     {
         RobotLog.dd(TAG, "Getting stonePt for %s %s %s seg=%d",
                 alliance, startPos, stonePos, segIdx);
+        //TODO: set wobbly point based on scan result - change to Wobble
 //        Segment sMin = pathSegs.get(segIdx+1);
 //        Segment sRev = pathSegs.get(segIdx+2);
 //        sMin.setEndPt(tgtPt1);
@@ -677,6 +658,8 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
     {
         RobotLog.dd(TAG, "Parking bot");
     }
+
+    //TODO: Add doShoot
 
     private void doMove(Segment seg)
     {
@@ -824,8 +807,9 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
             det.setBitmap(rgbImage);
             det.logDebug();
             det.logTelemetry();
-            if(det instanceof StoneDetector)
-                stonePos = ((StoneDetector) det).getStonePos();
+            //TODO: FIX
+//            if(det instanceof StoneDetector)
+//                stonePos = ((StoneDetector) det).getStonePos();
 
             if(stonePos == StoneDetector.Position.NONE)
                 sleep(10);
