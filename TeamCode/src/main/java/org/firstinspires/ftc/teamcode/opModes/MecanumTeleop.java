@@ -69,20 +69,46 @@ public class MecanumTeleop extends InitLinearOpMode
             {
                 lr_x = lft ? -dSpd : rgt ?  dSpd : 0.0;
                 fb_y = bak ? -dSpd : fwd ?  dSpd : 0.0;
+                if((lft || rgt)  && (fwd || bak))
+                {
+                    lr_x /= spdScl;
+                    fb_y /= spdScl;
+                }
             }
 
-            double speed = Math.min(1.0, Math.sqrt(lr_x * lr_x + fb_y * fb_y));
-            final double direction = Math.atan2(lr_x, fb_y) +
-               (fieldAlign ? Math.toRadians(90.0 - robot.getGyroFhdg()) : 0.0);
+            //Both trig and non-trig versions add turn to left and subtract from right
+            double lf =  turn;
+            double rf = -turn;
+            double lr =  turn;
+            double rr = -turn;
+            double speed = 0.0;
+            double direction = 0.0;
 
-            double spdSin = speed * Math.sin(direction + Math.PI / 4.0);
-            double spdCos = speed * Math.cos(direction + Math.PI / 4.0);
+            if(trig)
+            {
+                //Start of trig based version - allows fieldAlign
+                speed = spdScl * Math.sqrt(lr_x * lr_x + fb_y * fb_y);
+                direction = Math.atan2(lr_x, fb_y) + rlrAng +
+                        (fieldAlign ? Math.toRadians(90.0 - robot.getGyroFhdg()) : 0.0);
 
-            double lf = spdSin + turn;
-            double rf = spdCos - turn;
-            double lr = spdCos + turn;
-            double rr = spdSin - turn;
+                double spdSin = speed * Math.sin(direction);
+                double spdCos = speed * Math.cos(direction);
 
+                lf += spdSin;
+                rf += spdCos;
+                lr += spdCos;
+                rr += spdSin;
+                //End of trig version
+            }
+            else
+            {
+                //Start of non-trig version (w/o fieldAlign):
+                lf += fb_y + lr_x;
+                rf += fb_y - lr_x;
+                rr += fb_y + lr_x;
+                lr += fb_y - lr_x;
+                //End of non-trig version
+            }
             double max = Math.max(Math.max(Math.abs(lf), Math.abs(rf)),
                                   Math.max(Math.abs(lr), Math.abs(rr)));
 
@@ -130,6 +156,9 @@ public class MecanumTeleop extends InitLinearOpMode
     static final double diam   = 4.0;  //Inches
     static final double maxIPS = 30.0;
     static final double maxDPS = 360.0 * maxIPS/(diam*Math.PI);
+    static final double rlrAng = Math.PI/4.0;
+    static final double spdScl = Math.sqrt(2.0);
+    static final boolean trig = true;
     Input_Shaper ishaper = new Input_Shaper();
     @SuppressWarnings("FieldCanBeLocal")
     private boolean fieldAlign = false;

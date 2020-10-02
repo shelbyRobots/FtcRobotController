@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.field.UgField;
 import org.firstinspires.ftc.teamcode.field.UgRoute;
 import org.firstinspires.ftc.teamcode.image.Detector;
 import org.firstinspires.ftc.teamcode.image.ImageTracker;
-import org.firstinspires.ftc.teamcode.image.StoneDetector;
+import org.firstinspires.ftc.teamcode.image.RingDetector;
 import org.firstinspires.ftc.teamcode.robot.Drivetrain;
 import org.firstinspires.ftc.teamcode.robot.ShelbyBot;
 import org.firstinspires.ftc.teamcode.robot.TilerunnerGtoBot;
@@ -103,7 +103,6 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
                 dashboard.displayPrintf(0, "HDG %4.2f FHDG %4.2f", shdg, fhdg);
                 dashboard.displayPrintf(10, "GyroReady %s RGyroReady %s",
                         gyroReady, robot.gyroReady);
-
                 StringBuilder motStr = new StringBuilder("ENCs:");
                 for (Map.Entry<String, DcMotor> e : robot.motors.entrySet())
                 {
@@ -113,7 +112,6 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
                     motStr.append(e.getValue().getCurrentPosition());
                 }
                 dashboard.displayText(11, motStr.toString());
-
                 if (robot.colorSensor != null)
                 {
                     int r = robot.colorSensor.red();
@@ -142,8 +140,6 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         }
         if(det != null) det.cleanupCamera();
     }
-
-    private int grabNum = 0;
 
     private void setup()
     {
@@ -243,7 +239,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
         dashboard.displayPrintf(1, "DrvTrn Inited");
 
-        det = new StoneDetector(robotName);
+        det = new RingDetector(robotName);
         RobotLog.dd(TAG, "Setting up vuforia");
         tracker = new ImageTracker(new UgField());
 
@@ -531,122 +527,43 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         if(useLight)
             CameraDevice.getInstance().setFlashTorchMode(true) ;
 
-        //TODO: Ring scan
-        //stonePos =  getStonePos();
-        //RobotLog.dd(TAG, "doScan stonePos = %s", stonePos);
+        ringPos =  getRingPos();
+        RobotLog.dd(TAG, "doScan RingPos = %s", ringPos);
 
         if(useLight)
             CameraDevice.getInstance().setFlashTorchMode(false);
 
-        //TODO: set wobbly point based on scan result - change to Wobble
-        setStonePoint(segIdx);
+        setRingPoint(segIdx);
     }
 
     private void doGrab(int segIdx)
     {
-
+        RobotLog.dd(TAG, "doGrab seg %d at %f", segIdx, startTimer.seconds());
     }
 
-    private void setStonePoint(int segIdx)
+    private void setRingPoint(int segIdx)
     {
-        RobotLog.dd(TAG, "Getting stonePt for %s %s %s seg=%d",
-                alliance, startPos, stonePos, segIdx);
-        //TODO: set wobbly point based on scan result - change to Wobble
+        RobotLog.dd(TAG, "Getting ringPt for %s %s %s seg=%d",
+                alliance, startPos, ringPos, segIdx);
 //        Segment sMin = pathSegs.get(segIdx+1);
 //        Segment sRev = pathSegs.get(segIdx+2);
 //        sMin.setEndPt(tgtPt1);
 //        sRev.setStrtPt(tgtPt1);
     }
 
-    class MoveArmTask implements Runnable
-    {
-//        private double elevPos; // = skyBot._liftyBoi.getCurrentPosition();
-//        private double xtndPos; // = skyBot.armExtend.getCurrentPosition();
-//        private double arotPos; // = skyBot.armRotate.getCurrentPosition();
-//        private double elevDly = 0;
-//        private double xtndDly = 0;
-//        private double arotDly = 0;
-//        private boolean autoCross = false;
-//        private double autoX = 0.0;
-//
-//        void setElevPos(double pos) {this.elevPos = pos;}
-//        void setXtndPos(double pos) {this.xtndPos = pos;}
-//        void setArotPos(double pos) {this.arotPos = pos;}
-//        void setElevDly(double dly) {this.elevDly = dly;}
-//        void setXtndDly(double dly) {this.xtndDly = dly;}
-//        void setArotDly(double dly) {this.arotDly = dly;}
-//        void setAutoCross(boolean autoCross) {this.autoCross = autoCross;}
-//        void setAutoX  (double x)   {this.autoX = x;}
-//        volatile boolean getOut = false;
-//
-        public void run()
-        {
-//            double startX = drvTrn.getEstPos().getX();
-//            double curX = startX;
-//
-//            RobotLog.dd(TAG, "MoveArmTask autoCross=" + autoCross + " startx=" + startX);
-//
-//            if(autoCross)
-//            {
-//                RobotLog.dd(TAG, "Delaying threaded arm move. startx=" + startX);
-//                while(opModeIsActive() && !isStopRequested() &&
-//                      !getOut &&
-//                      (startX < 0.0 && curX < autoX) || (startX > 0.0 && curX > autoX))
-//                {
-//                    RobotLog.dd(TAG, "Delaying threaded arm move. curx=" + curX);
-//                    try
-//                    {
-//                        Thread.sleep(20);
-//                    }
-//                    catch (InterruptedException ie)
-//                    {
-//                        getOut = true;
-//                    }
-//                    curX = drvTrn.getEstPos().getX();
-//                }
-//            }
-//
-//            if(!getOut)
-//            {
-//                RobotLog.dd(TAG, "Starting Threaded Arm Move");
-//                //if(grabNum == 2) skyBot.threadedParkLong();
-//                //skyBot.moveArmToLoc(elevPos, arotPos, xtndPos, elevDly, arotDly, xtndDly);
-//                RobotLog.dd(TAG, "Completed Threaded Arm Move");
-//            }
-        }
-    }
-
     private void doAlign(int segIdx)
     {
-        RobotLog.dd(TAG, "doGrab lift to MOVE, rot to FWD, extend to STAGE at " +
-                startTimer.seconds());
-
-        Segment nxtSeg = pathSegs.get(segIdx + 1);
-        Segment.Action nxtAct = nxtSeg.getAction();
-//        if (nxtAct == Segment.Action.DROP) {
-//            MoveArmTask crossTsk = new MoveArmTask();
-//            crossTsk.setElevPos(skyBot.LIFT_STOW_CNTS);
-//            crossTsk.setXtndPos(skyBot.ARM_EXT_STAGE_POS);
-//            crossTsk.setArotPos(getArmDropRot());
-//            crossTsk.setAutoCross(true);
-//            crossTsk.setAutoX(6.0);
-//            RobotLog.dd(TAG, "doGrab submitting position delay task");
-//            es.submit(crossTsk);
-//        }
+        RobotLog.dd(TAG, "doAlign seg %d at %f", segIdx, startTimer.seconds());
     }
 
     private void doDrop(int segIdx)
     {
-        RobotLog.dd(TAG, "Dropping stone %d on seg %d at %f", grabNum, segIdx, startTimer.seconds());
-        //rotate arm, lower?, release gripper, return arm
+        RobotLog.dd(TAG, "Dropping wobblyBOI on seg %d at %f", segIdx, startTimer.seconds());
     }
 
     private void doPlatch()
     {
-        sleep(1000);
         RobotLog.dd(TAG, "Platching platform");
-
-        sleep(1000);
     }
 
     private void doUnPlatch()
@@ -772,27 +689,27 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
                 fHdg, timer.time(), cHdg);
     }
 
-    //TODO:  Make ring detector
-    private StoneDetector.Position getStonePos()
+
+    private RingDetector.Position getRingPos()
     {
-        if(!opModeIsActive() || stonePos != StoneDetector.Position.NONE)
-            return stonePos;
+        if(!opModeIsActive() || ringPos != RingDetector.Position.NONE)
+            return ringPos;
 
         tracker.setActive(true);
-        stonePos = StoneDetector.Position.NONE;
+        ringPos = RingDetector.Position.NONE;
         RobotLog.dd(TAG, "Set qsize to get frames");
         tracker.setFrameQueueSize(1);
         RobotLog.dd(TAG, "Start LD sensing");
         det.startSensing();
 
-        StoneDetector.Position stonePos = StoneDetector.Position.NONE;
+        RingDetector.Position ringPos = RingDetector.Position.NONE;
 
-        double stoneTimeout = 0.5;
+        double ringTimeout = 0.5;
 
         ElapsedTime mtimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         while(opModeIsActive()                                   &&
-              stonePos == StoneDetector.Position.NONE &&
-              mtimer.seconds() < stoneTimeout)
+              ringPos == RingDetector.Position.NONE &&
+              mtimer.seconds() < ringTimeout)
         {
             tracker.updateImages();
             Bitmap rgbImage = tracker.getLastImage();
@@ -800,18 +717,17 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
             boolean tempTest = false;
             if(rgbImage == null)
             {
-                RobotLog.dd(TAG, "getStonePos - image from tracker is null");
+                RobotLog.dd(TAG, "getringPos - image from tracker is null");
                 //noinspection ConstantConditions
                 if(!tempTest) continue;
             }
             det.setBitmap(rgbImage);
             det.logDebug();
             det.logTelemetry();
-            //TODO: FIX
-//            if(det instanceof StoneDetector)
-//                stonePos = ((StoneDetector) det).getStonePos();
+            if(det instanceof RingDetector)
+                ringPos = ((RingDetector) det).getRingPos();
 
-            if(stonePos == StoneDetector.Position.NONE)
+            if(ringPos == RingDetector.Position.NONE)
                 sleep(10);
         }
 
@@ -819,14 +735,14 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         tracker.setFrameQueueSize(0);
         tracker.setActive(false);
 
-        dashboard.displayPrintf(1, "POS: " + stonePos);
+        dashboard.displayPrintf(1, "POS: " + ringPos);
 
-        if (stonePos == StoneDetector.Position.NONE)
+        if (ringPos == RingDetector.Position.NONE)
         {
-            RobotLog.dd(TAG, "No skystone found - defaulting to center");
-            stonePos = StoneDetector.Position.CENTER;
+            RobotLog.dd(TAG, "No ring answer found - defaulting to A");
+            ringPos = RingDetector.Position.LEFT;
         }
-        return stonePos;
+        return ringPos;
     }
 
     @Override
@@ -943,7 +859,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
     private Detector det;
     private static ImageTracker tracker;
-    private StoneDetector.Position stonePos = StoneDetector.Position.NONE;
+    private RingDetector.Position ringPos = RingDetector.Position.NONE;
 
     private static Point2d curPos;
     private double initHdg = 0.0;
