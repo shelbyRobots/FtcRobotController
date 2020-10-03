@@ -33,6 +33,7 @@ public class UgRoute extends Route
         Segment.Action push    = Segment.Action.PUSH;
         Segment.Action rtct    = Segment.Action.RETRACT;
         Segment.Action grab    = Segment.Action.GRAB;
+        Segment.Action shot    = Segment.Action.SHOOT;
         Segment.TargetType encType = Segment.TargetType.ENCODER;
         Segment.TargetType colType = Segment.TargetType.COLOR;
         if(startPos == StartPos.START_1)  //Right Start

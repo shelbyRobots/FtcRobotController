@@ -476,6 +476,13 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
                     doPark();
                     break;
                 }
+
+                case SHOOT:
+                {
+                    RobotLog.ii(TAG, "Action SHOOT");
+                    doShoot();
+                    break;
+                }
             }
         }
 
@@ -576,7 +583,10 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         RobotLog.dd(TAG, "Parking bot");
     }
 
-    //TODO: Add doShoot
+    private void doShoot()
+    {
+        RobotLog.dd(TAG, "Shooting");
+    }
 
     private void doMove(Segment seg)
     {
