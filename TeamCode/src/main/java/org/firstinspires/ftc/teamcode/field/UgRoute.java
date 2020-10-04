@@ -36,7 +36,7 @@ public class UgRoute extends Route
         Segment.Action shot    = Segment.Action.SHOOT;
         Segment.TargetType encType = Segment.TargetType.ENCODER;
         Segment.TargetType colType = Segment.TargetType.COLOR;
-        if(startPos == StartPos.START_1)  //Right Start
+        if(startPos == StartPos.START_1)  //Wall Start
         {
             points.add(UgField.RRS1);
             addPoint(points, fwd, 0.60, 1.00, encType, scan, UgField.RRSP);
@@ -44,7 +44,7 @@ public class UgRoute extends Route
             addPoint(points, fwd, 0.50, 1.00, encType, drop, UgField.RRWA);
             addPoint(points, rev, 0.50, 1.00, encType, drop, UgField.RRPA);
         }
-        else if(startPos == StartPos.START_2)  //Left Start
+        else if(startPos == StartPos.START_2)  //Center Start
         {
             points.add(UgField.RLS1);
             addPoint(points, fwd, 0.75, 1.00, encType, scan, UgField.RLSP);
@@ -52,53 +52,6 @@ public class UgRoute extends Route
             addPoint(points, fwd, 0.50, 1.00, encType, drop, UgField.RLWA);
             addPoint(points, rev, 0.50, 1.00, encType, park, UgField.RLPA);
         }
-//        else if(startPos == StartPos.START_3)  //PLATFORM MOVED w/o turn
-//        {
-//            points.add(SkyField.RLS1);
-//            addPoint(points, fwd, 0.60, 1.00, encType, scan, SkyField.RIS1);
-//            addPoint(points, fwd, 0.60, 1.00, encType, none, SkyField.RTP1);
-//            addPoint(points, rev, 0.50, 1.00, encType, grab, SkyField.RGPA);
-//            addPoint(points, fwd, 0.80, 1.00, encType, algn, SkyField.RAPA);
-//            addPoint(points, fwd, 0.80, 1.00, encType, drop, SkyField.RDPC);
-//            addPoint(points, rev, 0.80, 1.00, encType, grab, SkyField.RGPB);
-//            addPoint(points, fwd, 0.80, 1.00, encType, algn, SkyField.RAPB);
-//            addPoint(points, fwd, 0.80, 1.00, encType, drop, SkyField.RDPC);
-//            addPoint(points, rev, 0.80, 1.00, encType, park, SkyField.RPP1);
-//        }
-//        else if(startPos == StartPos.START_4) //PLATFORM MOVED AND TURNED
-//        {
-//            points.add(SkyField.RLS1);
-//            addPoint(points, fwd, 0.60, 1.00, encType, scan, SkyField.RIS1);
-//            addPoint(points, fwd, 0.60, 1.00, encType, none, SkyField.RTP1);
-//            addPoint(points, rev, 0.50, 1.00, encType, grab, SkyField.RGPA);
-//            addPoint(points, fwd, 0.80, 1.00, encType, algn, SkyField.RAPA);
-//            addPoint(points, fwd, 0.80, 1.00, encType, drop, SkyField.RDPD);
-//            addPoint(points, rev, 0.80, 1.00, encType, grab, SkyField.RGPB);
-//            addPoint(points, fwd, 0.80, 1.00, encType, algn, SkyField.RAPB);
-//            addPoint(points, fwd, 0.80, 1.00, encType, drop, SkyField.RDPD);
-//            addPoint(points, rev, 0.80, 1.00, encType, park, SkyField.RPP1);
-//        }
-//
-//        else if(startPos == StartPos.START_5)  //JUST DROP IN ZONE
-//        {
-//            points.add(SkyField.RLS1);
-//            addPoint(points, fwd, 0.60, 1.00, encType, scan, SkyField.RIS1);
-//            addPoint(points, fwd, 0.60, 1.00, encType, none, SkyField.RTP1);
-//            addPoint(points, rev, 0.50, 1.00, encType, grab, SkyField.RGPA);
-//            addPoint(points, fwd, 0.80, 1.00, encType, algn, SkyField.RAPA);
-//            addPoint(points, fwd, 0.80, 1.00, encType, drop, SkyField.RDPE);
-//            addPoint(points, rev, 0.80, 1.00, encType, grab, SkyField.RGPB);
-//            addPoint(points, fwd, 0.80, 1.00, encType, algn, SkyField.RAPB);
-//            addPoint(points, fwd, 0.80, 1.00, encType, drop, SkyField.RDPE);
-//            addPoint(points, rev, 0.80, 1.00, encType, park, SkyField.RPP1);
-//        }
-//
-//        else if(startPos == StartPos.START_6)  //JUST DROP IN ZONE
-//        {
-//            points.add(SkyField.RPPS);
-//            addPoint(points, fwd, 0.60, 1.00, encType, park, SkyField.RPP6);
-//        }
-
 
         return points;
     }
@@ -117,14 +70,11 @@ public class UgRoute extends Route
         this.goForTwo = goForTwo;
     }
 
-    protected Point2d convertRtoB(Point2d rpt)
+    static public Point2d convertRtoB(Point2d rpt)
     {
         double bx =  rpt.getX();
         double by = -rpt.getY();
-//        if(rpt.getName().equals("RTP1") ||
-//           rpt.getName().equals("RGPA") ||
-//           rpt.getName().equals("RGPB"))
-//            by+=1;
+
         String nm = "B" + rpt.getName().substring(1);
 
         RobotLog.dd(TAG, "convertRtoB %s to %s", rpt.getName(), nm);

@@ -37,8 +37,6 @@ import ftclib.FtcChoiceMenu;
 import ftclib.FtcMenu;
 import ftclib.FtcValueMenu;
 
-import static org.firstinspires.ftc.teamcode.field.Route.ParkPos.DEFEND_PARK;
-
 //import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
@@ -552,10 +550,37 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
     {
         RobotLog.dd(TAG, "Getting ringPt for %s %s %s seg=%d",
                 alliance, startPos, ringPos, segIdx);
-//        Segment sMin = pathSegs.get(segIdx+1);
-//        Segment sRev = pathSegs.get(segIdx+2);
-//        sMin.setEndPt(tgtPt1);
-//        sRev.setStrtPt(tgtPt1);
+
+        int allnc = alliance == Field.Alliance.RED     ? 0 : 1;
+        int start = startPos == Route.StartPos.START_1 ? 0 : 1;
+        int rPos  = ringPos  == RingDetector.Position.NONE   ? 0 :
+                    ringPos  == RingDetector.Position.LEFT   ? 0 :
+                    ringPos  == RingDetector.Position.CENTER ? 1 : 2;
+
+        //3dim array [allnc][start][rPos]
+        Point2d[][][] wPts =
+           {{{UgField.RRWA, UgField.RRWB, UgField.RRWC},
+             {UgField.RLWA, UgField.RLWB, UgField.RLWC}},
+            {{UgRoute.convertRtoB(UgField.RRWA), UgRoute.convertRtoB(UgField.RRWB), UgRoute.convertRtoB(UgField.RRWC)},
+             {UgRoute.convertRtoB(UgField.RLWA), UgRoute.convertRtoB(UgField.RLWB), UgRoute.convertRtoB(UgField.RLWC)}}};
+
+        Point2d wPt = wPts[allnc][start][rPos];
+
+        RobotLog.dd(TAG, "Setting wobbly drop to %s", wPt.getName());
+
+        for (Segment s : pathSegs) {
+            String sPt = s.getStrtPt().getName();
+            if (sPt.equals("RRWA") || sPt.equals("RLWA") ||sPt.equals("BRWA") || sPt.equals("BLWA"))
+            {
+                s.setStrtPt(wPt);
+            }
+
+            String ePt = s.getTgtPt().getName();
+            if (ePt.equals("RRWA") || ePt.equals("RLWA") || ePt.equals("BRWA") || ePt.equals("BLWA"))
+            {
+                s.setEndPt(wPt);
+            }
+        }
     }
 
     private void doAlign(int segIdx)
@@ -813,7 +838,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         allianceMenu.addChoice("BLUE", Field.Alliance.BLUE, false, parkMenu);
 
         parkMenu.addChoice("CENTER_PARK", Route.ParkPos.CENTER_PARK, true, robotNameMenu);
-        parkMenu.addChoice("DEFEND_PARK", DEFEND_PARK, false, robotNameMenu);
+        parkMenu.addChoice("DEFEND_PARK", Route.ParkPos.DEFEND_PARK, false, robotNameMenu);
 
         robotNameMenu.addChoice("GTO1", "GTO1", true, delayMenu);
         robotNameMenu.addChoice("GTO2", "GTO2", false, delayMenu);
