@@ -17,7 +17,7 @@ public class ManagedGamepad
     private EnumMap<Button, Boolean> just_released = new EnumMap<>(Button.class);
     private EnumMap<AnalogInput, Double>  scale    = new EnumMap<>(AnalogInput.class);
 
-    private CommonUtil com;
+    private CommonUtil cmu;
     private HalDashboard dashboard;
 
     private final Gamepad gamepad;
@@ -25,8 +25,8 @@ public class ManagedGamepad
     public ManagedGamepad(Gamepad gamepad)
     {
         this.gamepad = gamepad;
-        com = CommonUtil.getInstance();
-        dashboard = com.getDashboard();
+        cmu = CommonUtil.getInstance();
+        dashboard = cmu.getDashboard();
         init();
     }
 
@@ -50,8 +50,14 @@ public class ManagedGamepad
         for(int i = 0; i < Button.values().length ; i++)
         {
             Button b = Button.values()[i];
-            just_pressed.put(b,   current.get(b) && !previous.get(b));
-            just_released.put(b, !current.get(b) &&  previous.get(b));
+            Boolean curB = current.get(b);
+            Boolean prvB = previous.get(b);
+            boolean cur = false;
+            boolean prv = false;
+            if (curB != null) cur = curB;
+            if (prvB != null) prv = prvB;
+            just_pressed.put(b,   cur && !prv);
+            just_released.put(b, !cur &&  prv);
             previous.put(b, current.get(b));
         }
     }
@@ -116,12 +122,12 @@ public class ManagedGamepad
 
     public void log(int idx)
     {
-        String pressed = "1_";
+        StringBuilder pressed = new StringBuilder("1_");
         for(Button b : Button.values())
         {
             if (pressed(b))
             {
-                pressed += b;
+                pressed.append(b);
             }
         }
         dashboard.displayPrintf(idx, "%s", pressed);

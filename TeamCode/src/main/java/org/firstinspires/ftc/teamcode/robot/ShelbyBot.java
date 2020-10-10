@@ -71,7 +71,7 @@ public class ShelbyBot
     public ColorSensor colorSensor = null;
     public DeviceInterfaceModule        dim         = null;
 
-    protected CommonUtil com = CommonUtil.getInstance();
+    protected CommonUtil cmu = CommonUtil.getInstance();
 
     public BNO055IMU imu = null;
 

@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.vuforia.CameraDevice;
+import com.vuforia.Vec2F;
+import com.vuforia.Vec4F;
 
 import org.firstinspires.ftc.teamcode.field.Field;
 import org.firstinspires.ftc.teamcode.field.PositionOption;
@@ -124,6 +126,32 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
             sleep(initSleep);
         }
+
+        com.vuforia.CameraCalibration camCal = com.vuforia.CameraDevice.getInstance().getCameraCalibration();
+        Vec4F distParam = camCal.getDistortionParameters();
+        Vec2F camFov    = camCal.getFieldOfViewRads();
+        Vec2F camFlen   = camCal.getFocalLength();
+        Vec2F camPpt    = camCal.getPrincipalPoint();
+        Vec2F camSize   = camCal.getSize();
+
+        RobotLog.dd(TAG, "DistortionParams %f %f %f %f",
+                distParam.getData()[0],
+                distParam.getData()[1],
+                distParam.getData()[2],
+                distParam.getData()[3]);
+        RobotLog.dd(TAG, "CamFOV %f %f", camFov.getData()[0], camFov.getData()[1]);
+        RobotLog.dd(TAG, "CamFlen %f %f", camFlen.getData()[0], camFlen.getData()[1]);
+        RobotLog.dd(TAG, "CamPpt %f %f", camPpt.getData()[0], camPpt.getData()[1]);
+        RobotLog.dd(TAG, "CamSize %f %f", camSize.getData()[0], camSize.getData()[1]);
+
+        telemetry.addData("A", "DistortionParams %f %f %f %f",
+                distParam.getData()[0], distParam.getData()[1],
+                distParam.getData()[2], distParam.getData()[3]);
+        telemetry.addData("B", "CamFOV %f %f", camFov.getData()[0], camFov.getData()[1]);
+        telemetry.addData("C", "CamFlen %f %f", camFlen.getData()[0], camFlen.getData()[1]);
+        telemetry.addData("D", "CamPpt %f %f", camPpt.getData()[0], camPpt.getData()[1]);
+        telemetry.addData("E","CamSize %f %f", camSize.getData()[0], camSize.getData()[1]);
+
         startMode();
         stopMode();
     }
@@ -615,7 +643,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
     private void doMove(Segment seg)
     {
-        if(!opModeIsActive() || isStopRequested()) return;
+        if(!opModeIsActive() || isStopRequested() || robot.motors.size() < 1) return;
 
         drvTrn.setInitValues();
 
@@ -676,7 +704,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
     private void doEncoderTurn(double fHdg, @SuppressWarnings("SameParameterValue") int thresh, String prefix)
     {
-        if(!opModeIsActive() || isStopRequested()) return;
+        if(!opModeIsActive() || isStopRequested() || robot.motors.size() < 1) return;
         drvTrn.setBusyAnd(true);
         drvTrn.setInitValues();
         drvTrn.logData(true, prefix);
@@ -705,7 +733,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
     private void doGyroTurn(double fHdg, String prefix)
     {
         if(!gyroReady) return;
-        if(!opModeIsActive() || isStopRequested()) return;
+        if(!opModeIsActive() || isStopRequested() || robot.motors.size() < 1) return;
 
         drvTrn.setInitValues();
         drvTrn.logData(true, prefix);
@@ -921,7 +949,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
     private int colSegNum = 0;
 
     @SuppressWarnings("FieldCanBeLocal")
-    private boolean useLight = false;
+    private boolean useLight = true;
 
     private final ExecutorService es = Executors.newSingleThreadExecutor();
 

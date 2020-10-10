@@ -11,7 +11,7 @@ import hallib.HalDashboard;
 
 public abstract class InitLinearOpMode extends LinearOpMode
 {
-    protected CommonUtil com = CommonUtil.getInstance();
+    protected CommonUtil cmu = CommonUtil.getInstance();
     protected static DataLogger dl;
     protected static boolean logData = false;
     protected HalDashboard dashboard;
@@ -34,9 +34,9 @@ public abstract class InitLinearOpMode extends LinearOpMode
                             boolean usemanFedOcv,
                             boolean cfgLayout)
     {
-        com.init(op, useVuf, useOcv, usemanFedOcv, cfgLayout);
-        dl = com.getDataLogger();
-        dashboard = com.getDashboard();
+        cmu.init(op, useVuf, useOcv, usemanFedOcv, cfgLayout);
+        dl = cmu.getDataLogger();
+        dashboard = cmu.getDashboard();
         gpad1 = new ManagedGamepad(gamepad1);
         gpad2 = new ManagedGamepad(gamepad2);
 

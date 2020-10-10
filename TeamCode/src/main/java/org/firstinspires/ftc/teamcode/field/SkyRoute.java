@@ -123,7 +123,7 @@ public class SkyRoute extends Route
         this.goForTwo = goForTwo;
     }
 
-    protected Point2d convertRtoB(Point2d rpt)
+    static public Point2d convertRtoB(Point2d rpt)
     {
         double bx =  rpt.getX();
         double by = -rpt.getY();

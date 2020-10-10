@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.util.RobotLog;
 @SuppressWarnings("unused")
 public class PreferenceMgr
 {
-   private CommonUtil com;
+   private CommonUtil cmu;
    private SharedPreferences sharedPreferences;
 
    private String clubName       = "shelby";
@@ -81,12 +81,12 @@ public class PreferenceMgr
 
    public PreferenceMgr()
    {
-      com = CommonUtil.getInstance();
+      cmu = CommonUtil.getInstance();
    }
 
    public void readPrefs()
    {
-      sharedPreferences = PreferenceManager.getDefaultSharedPreferences(com.getContext());
+      sharedPreferences = PreferenceManager.getDefaultSharedPreferences(cmu.getContext());
 
       botName       = sharedPreferences.getString(clubName + ".botName", botName);
       if(botName == null) botName = "GTO1";

@@ -17,6 +17,8 @@ import org.opencv.imgproc.Imgproc;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.opencv.core.Core.FILLED;
+
 /**
 * GripPipelineLonger class.
 *
@@ -35,6 +37,7 @@ public class RingPipeline
 	private Mat cvErodeOutput = new Mat();
 	private Mat cvDilateOutput = new Mat();
 	private Mat hsvThresholdOutput = new Mat();
+	private Mat contoursOutput = new Mat();
 	private ArrayList<MatOfPoint> findContoursOutput = new ArrayList<>();
 	private ArrayList<MatOfPoint> convexHullsOutput = new ArrayList<>();
 	private ArrayList<MatOfPoint> filterContoursOutput = new ArrayList<>();
@@ -48,6 +51,9 @@ public class RingPipeline
 	private double GTO1_TOP = 0.35; //Changed to 0.48, was: 0.54
 	@SuppressWarnings("FieldCanBeLocal")
 	private double GTO1_BOT = 0.75;
+
+	private boolean drawContours = false;
+	public void setDrawContours(boolean drawContours) { this.drawContours = drawContours; }
 
 	void sizeSource(Mat source0)
 	{
@@ -87,9 +93,9 @@ public class RingPipeline
 
         // Step HSV_Threshold0:
         Mat hsvThresholdInput = goldSource;
-        double[] hsvThresholdHue = {8, 35};
-        double[] hsvThresholdSaturation = {150, 255};
-        double[] hsvThresholdValue = {105.0, 255.0};
+        double[] hsvThresholdHue = {10, 25};
+        double[] hsvThresholdSaturation = {160, 255};
+        double[] hsvThresholdValue = {160.0, 255.0};
         hsvThreshold(hsvThresholdInput, hsvThresholdHue, hsvThresholdSaturation, hsvThresholdValue, hsvThresholdOutput);
 
 //		// Step CV_erode0:
@@ -111,14 +117,17 @@ public class RingPipeline
 		cvDilate(cvDilateSrc, cvDilateKernel, cvDilateAnchor, cvDilateIterations, cvDilateBordertype, cvDilateBordervalue, cvDilateOutput);
 
 		// Step Find_Contours0:
-        Mat findContoursInput = cvDilateSrc;
+        Mat findContoursInput = cvDilateOutput;
 		boolean findContoursExternalOnly = false;
 		//noinspection ConstantConditions
 		findContours(findContoursInput, findContoursExternalOnly, findContoursOutput);
+		RobotLog.dd(TAG, "Found %d unfiltered contours", findContoursOutput.size());
 
 		// Step Convex_Hulls0:
 		ArrayList<MatOfPoint> convexHullsContours = findContoursOutput;
 		convexHulls(convexHullsContours, convexHullsOutput);
+		RobotLog.dd(TAG, "Found %d convex contours", findContoursOutput.size());
+
 
 		// Step Filter_Contours0:
 		ArrayList<MatOfPoint> filterContoursContours = convexHullsOutput;
@@ -364,6 +373,12 @@ public class RingPipeline
 			final double ratio = bb.width / (double)bb.height;
 			if (ratio < minRatio || ratio > maxRatio) continue;
 			output.add(contour);
+		}
+
+		if (drawContours)
+		{
+			Scalar color = new Scalar( 0, 0, 255 );
+			Imgproc.drawContours(hsvThresholdOutput, output, -1, color, FILLED, Imgproc.LINE_8);
 		}
 	}
 

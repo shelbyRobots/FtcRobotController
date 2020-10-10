@@ -37,7 +37,7 @@ class ShelbyImuBot extends ShelbyBot
 
         try
         {
-            imu = (BNO055IMU) com.getHardwareMap().get("imu");
+            imu = (BNO055IMU) cmu.getHardwareMap().get("imu");
             if(initDirSensor) imu.initialize(parameters);
 
             if(useImuThread)

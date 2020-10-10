@@ -66,9 +66,9 @@ public class OpenCvInitializer implements CameraBridgeViewBase.CvCameraViewListe
         {
             private CameraBridgeViewBase jcv = null;
             private CameraBridgeViewBase getJcv() { return jcv; }
-            private CommonUtil com = CommonUtil.getInstance();
-            private Activity act = com.getActivity();
-            private int camMonViewId = com.getCameraMonitorViewId();
+            private CommonUtil cmu = CommonUtil.getInstance();
+            private Activity act = cmu.getActivity();
+            private int camMonViewId = cmu.getCameraMonitorViewId();
 
             public void run() {
                 RobotLog.dd(TAG, "Setting up JavaCameraView in thread");

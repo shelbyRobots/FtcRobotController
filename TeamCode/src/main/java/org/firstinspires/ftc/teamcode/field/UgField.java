@@ -28,32 +28,35 @@ public class UgField extends Field
 
     //Red Route > Left
     //Red (Left/Right) Start Points
-    public static final Point2d RRS1 = new Point2d("RRS1", -61.5,  -48);
+    public static final Point2d RRS1 = new Point2d("RRS1", -61.5,  -47);
     public static final Point2d RLS1 = new Point2d("RLS1", -61.5,  -24);
 
     //Red (Left/Right) Scan Pt's (Image Scan Pt)
-    public static final Point2d RLSP = new Point2d("RLSP", -55.0,  -24);
-    public static final Point2d RRSP = new Point2d("RRSP", -55.0,  -48);
+    public static final Point2d RRSP = new Point2d("RRSP", -61.45,  -47);
+    public static final Point2d RLSP = new Point2d("RLSP", -61.45,  -24);
+
+    //Red (Left/Right) Turn Pt's (Image Scan Pt)
+    public static final Point2d RRTP = new Point2d("RRTP", -55.0,  -47);
+    public static final Point2d RLTP = new Point2d("RLTP", -55.0,  -24);
 
     //Red (Left/Right) Dodge Points
+    public static final Point2d RRDP = new Point2d("RRDP", -12.0, -57);
     public static final Point2d RLDP = new Point2d("RLDP", -12.0, -19);
-    public static final Point2d RRDP = new Point2d("RRDP", -12.0, -53);
-
-
+    
     //Red Right Wobble (A/B/C)
-    public static final Point2d RRWA = new Point2d("RRWA", 0.0,-53);
-    public static final Point2d RRWB = new Point2d("RRWB",  24.0,-36);
-    public static final Point2d RRWC = new Point2d("RRWC",  48.0,-53);
+    public static final Point2d RRWA = new Point2d("RRWA", 0.0,-57);
+    public static final Point2d RRWB = new Point2d("RRWB",  18.0,-47);
+    public static final Point2d RRWC = new Point2d("RRWC",  40.0,-57);
 
     //Red Left Wobble (A/B/C)
-    public static final Point2d RLWA = new Point2d("RLWA", 0.0,-53);
+    public static final Point2d RLWA = new Point2d("RLWA", 0.0,-57);
     public static final Point2d RLWB = new Point2d("RLWB",  24.0,-36);
-    public static final Point2d RLWC = new Point2d("RLWC",  48.0,-53);
+    public static final Point2d RLWC = new Point2d("RLWC",  48.0,-57);
     //includes offset for veh center. actual
 
-    public static final Point2d RRPA = new Point2d("RRPA",  0.0,-53);
-    public static final Point2d RRPB = new Point2d("RRPB",  0.0,-48);
-    public static final Point2d RRPC = new Point2d("RRPC",  0.0,-53);
+    public static final Point2d RRPA = new Point2d("RRPA",  -8.0,-57);
+    public static final Point2d RRPB = new Point2d("RRPB",  -8.0,-57);
+    public static final Point2d RRPC = new Point2d("RRPC",  -8.0,-57);
 
     public static final Point2d RLPA = new Point2d("RLPA",  0.0,-53);
     public static final Point2d RLPB = new Point2d("RLPB",  0.0,-24);

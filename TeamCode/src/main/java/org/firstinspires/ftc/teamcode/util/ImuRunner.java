@@ -12,13 +12,13 @@ public class ImuRunner extends Thread
     private static final String TAG = "SJH_IRN";
     private static ImuRunner INSTANCE = null;
     private static boolean isRunning = false;
-    private CommonUtil com;
+    private CommonUtil cmu;
     private BNO055IMU imu;
     private Orientation angles;
 
     private ImuRunner(BNO055IMU imu)
     {
-        com = CommonUtil.getInstance();
+        cmu = CommonUtil.getInstance();
         this.imu = imu;
     }
 
@@ -62,7 +62,7 @@ public class ImuRunner extends Thread
             return;
         }
 
-        LinearOpMode lop = com.getLinearOpMode();
+        LinearOpMode lop = cmu.getLinearOpMode();
 
         isRunning = true;
         while(!lop.isStopRequested())

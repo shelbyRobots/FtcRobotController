@@ -741,9 +741,9 @@ public class Drivetrain
 
     public void init(ShelbyBot robot)
     {
-        com = CommonUtil.getInstance();
-        op = com.getLinearOpMode();
-        dl = com.getDataLogger();
+        cmu = CommonUtil.getInstance();
+        op = cmu.getLinearOpMode();
+        dl = cmu.getDataLogger();
         frame = 0;
         this.robot  = robot;
 
@@ -1413,7 +1413,7 @@ public class Drivetrain
     private double strSlope = (maxStr - minStr)/(maxStrAng - minStrAng);
     private double strB = maxStr - strSlope * maxStrAng;
 
-    private CommonUtil com;
+    private CommonUtil cmu;
     private LinearOpMode op;
     private DataLogger   dl;
 

@@ -31,8 +31,8 @@ public class LayoutModifier
 
     public LayoutModifier()
     {
-        CommonUtil com = CommonUtil.getInstance();
-        act   = com.getActivity();
+        CommonUtil cmu = CommonUtil.getInstance();
+        act   = cmu.getActivity();
         rsrcs = act.getResources();
         pName = act.getPackageName();
         setupRemoveViews();

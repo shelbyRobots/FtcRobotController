@@ -75,10 +75,10 @@ public class VuforiaInitializer
 
     private void genParameters(boolean useScreen)
     {
-        CommonUtil com = CommonUtil.getInstance();
-        Activity act = com.getActivity();
+        CommonUtil cmu = CommonUtil.getInstance();
+        Activity act = cmu.getActivity();
         String pName = act.getPackageName();
-        int viewId = com.getCameraMonitorViewId();
+        int viewId = cmu.getCameraMonitorViewId();
 
         if(useScreen) parameters = new VuforiaLocalizer.Parameters(viewId);
         else          parameters = new VuforiaLocalizer.Parameters();

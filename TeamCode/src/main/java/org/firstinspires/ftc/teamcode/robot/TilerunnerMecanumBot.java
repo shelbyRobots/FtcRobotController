@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -8,12 +9,14 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.util.Units;
 
+import java.util.List;
+
 public class TilerunnerMecanumBot extends TilerunnerGtoBot
 {
-    public DcMotor lfMotor = null;
-    public DcMotor lrMotor = null;
-    public DcMotor rfMotor = null;
-    public DcMotor rrMotor = null;
+    public DcMotorEx lfMotor = null;
+    public DcMotorEx lrMotor = null;
+    public DcMotorEx rfMotor = null;
+    public DcMotorEx rrMotor = null;
 
     private static final String TAG = "SJH_MEC";
 
@@ -51,10 +54,10 @@ public class TilerunnerMecanumBot extends TilerunnerGtoBot
         RobotLog.dd(TAG, "Initializing mecanum drive motors");
         try  //Drivetrain
         {
-            lfMotor = hwMap.dcMotor.get("FL");
-            lrMotor = hwMap.dcMotor.get("BL");
-            rfMotor = hwMap.dcMotor.get("FR");
-            rrMotor = hwMap.dcMotor.get("BR");
+            lfMotor = hwMap.get(DcMotorEx.class, "FL");
+            lrMotor = hwMap.get(DcMotorEx.class, "BL");
+            rfMotor = hwMap.get(DcMotorEx.class, "FR");
+            rrMotor = hwMap.get(DcMotorEx.class, "BR");
             motors.put("FR", rfMotor);
             motors.put("BR", rrMotor);
             motors.put("BL", lrMotor);
@@ -64,6 +67,12 @@ public class TilerunnerMecanumBot extends TilerunnerGtoBot
             rightMotors.add(numRmotors++, rfMotor);
             rightMotors.add(numRmotors++, rrMotor);
             capMap.put("drivetrain", true);
+
+            List<LynxModule> allHubs = hwMap.getAll(LynxModule.class);
+            for (LynxModule module : allHubs)
+            {
+                module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+            }
         }
         catch (Exception e)
         {

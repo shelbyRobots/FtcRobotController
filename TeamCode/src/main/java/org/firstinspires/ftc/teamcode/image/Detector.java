@@ -37,8 +37,8 @@ public abstract class Detector implements ImageProcessor
 
     Detector()
     {
-        CommonUtil com = CommonUtil.getInstance();
-        ocvInit = com.getOcvInit();
+        CommonUtil cmu = CommonUtil.getInstance();
+        ocvInit = cmu.getOcvInit();
         RobotLog.dd(TAG, "Setting ocvInit image processor in Detector??");
         ocvInit.setImageProcessor(this);
         RobotLog.dd(TAG, "Back from Setting ocvInit image processor");

@@ -48,7 +48,6 @@ import org.firstinspires.ftc.teamcode.util.CommonUtil;
 @Disabled
 public class AutoDriveByEncoder_Linear extends InitLinearOpMode
 {
-    private CommonUtil com = CommonUtil.getInstance();
     private ElapsedTime runtime = new ElapsedTime();
     private ShelbyBot robot = new ShelbyBot();
 
@@ -91,7 +90,7 @@ public class AutoDriveByEncoder_Linear extends InitLinearOpMode
         super.runOpMode();
         if (logData)
         {
-            dl = com.getDataLogger();
+            dl = cmu.getDataLogger();
             if(dl != null)
             {
                 dl.addField("Gyro");

@@ -29,9 +29,9 @@ public class RingDetector extends Detector {
     private static final String TAG = "SJH_SCD";
 
     @SuppressWarnings("FieldCanBeLocal")
-    private boolean saveSizedImage  = false;
+    private boolean saveSizedImage  = true;
     @SuppressWarnings("FieldCanBeLocal")
-    private boolean saveMaskedImage = false;
+    private boolean saveMaskedImage = true;
     @SuppressWarnings("FieldCanBeLocal")
     private boolean saveThreshImage = true;
 
@@ -128,6 +128,7 @@ public class RingDetector extends Detector {
                 MatOfPoint contour = each.next();
                 bounded_box = Imgproc.boundingRect(contour);
                 StackHeight = bounded_box.height;
+                RobotLog.dd(TAG, "StackHeight:" + StackHeight);
                 if(StackHeight > ThreshHeight){
 
                     foundPosition = Position.RIGHT;
