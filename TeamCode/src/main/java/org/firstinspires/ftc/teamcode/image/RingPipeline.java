@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.image;
 
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.jetbrains.annotations.NotNull;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -196,7 +195,6 @@ public class RingPipeline
 		}
 
 		@Override
-		@NotNull
 		public String toString() {
 			return this.label;
 		}
