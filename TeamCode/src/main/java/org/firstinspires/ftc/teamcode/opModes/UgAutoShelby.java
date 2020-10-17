@@ -282,7 +282,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         RobotLog.ii(TAG, "DELAY    %4.2f", delay);
         RobotLog.ii(TAG, "BOT      %s", robotName);
 
-        UgRoute pts = new UgRoute(startPos, alliance, robotName);
+        pts = new UgRoute(startPos, alliance, robotName);
 
         pathSegs.addAll(Arrays.asList(pts.getSegments()));
 
@@ -589,10 +589,10 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
         //3dim array [allnc][start][rPos]
         Point2d[][][] wPts =
-           {{{UgField.RRWA, UgField.RRWB, UgField.RRWC},
-             {UgField.RLWA, UgField.RLWB, UgField.RLWC}},
-            {{UgRoute.convRtoB(UgField.RRWA), UgRoute.convRtoB(UgField.RRWB), UgRoute.convRtoB(UgField.RRWC)},
-             {UgRoute.convRtoB(UgField.RLWA), UgRoute.convRtoB(UgField.RLWB), UgRoute.convRtoB(UgField.RLWC)}}};
+           {{{UgField.ROWA, UgField.ROWB, UgField.ROWC},
+             {UgField.RIWA, UgField.RIWB, UgField.RIWC}},
+            {{pts.convertRtoB(UgField.ROWA), pts.convertRtoB(UgField.ROWB), pts.convertRtoB(UgField.ROWC)},
+             {pts.convertRtoB(UgField.RIWA), pts.convertRtoB(UgField.RIWB), pts.convertRtoB(UgField.RIWC)}}};
 
         Point2d wPt = wPts[allnc][start][rPos];
 
@@ -600,13 +600,13 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
         for (Segment s : pathSegs) {
             String sPt = s.getStrtPt().getName();
-            if (sPt.equals("RRWA") || sPt.equals("RLWA") ||sPt.equals("BRWA") || sPt.equals("BLWA"))
+            if (sPt.equals("ROWA") || sPt.equals("RIWA") ||sPt.equals("BOWA") || sPt.equals("BIWA"))
             {
                 s.setStrtPt(wPt);
             }
 
             String ePt = s.getTgtPt().getName();
-            if (ePt.equals("RRWA") || ePt.equals("RLWA") || ePt.equals("BRWA") || ePt.equals("BLWA"))
+            if (ePt.equals("ROWA") || ePt.equals("RIWA") || ePt.equals("BOWA") || ePt.equals("BIWA"))
             {
                 s.setEndPt(wPt);
             }
@@ -917,6 +917,8 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
     private List<Segment> pathSegs = new ArrayList<>();
 
     private TilerunnerGtoBot   robot;
+
+    private Route pts;
 
     private ElapsedTime timer = new ElapsedTime();
     private ElapsedTime startTimer = new ElapsedTime();

@@ -119,13 +119,17 @@ public abstract class Route
         return null;
     }
 
-    private Point2d convertRtoB(Point2d rpt)
+    public Point2d convertRtoB(Point2d rpt)
     {
-        double bx = -rpt.getY();
-        double by = -rpt.getX();
-        rpt.setX(bx);
-        rpt.setY(by);
-        return rpt;
+        double bx =  rpt.getX();
+        double by = -rpt.getY();
+
+        String nm = "B" + rpt.getName().substring(1);
+
+        RobotLog.dd(TAG, "convRtoB %s to %s %4.1f %4.1f", rpt.getName(), nm,
+                bx, by);
+
+        return new Point2d(nm, bx, by);
     }
 
     public String toString()

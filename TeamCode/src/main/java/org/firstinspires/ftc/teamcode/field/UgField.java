@@ -28,39 +28,39 @@ public class UgField extends Field
 
     //Red Route > Left
     //Red (Left/Right) Start Points
-    public static final Point2d RRS1 = new Point2d("RRS1", -61.5,  -47);
-    public static final Point2d RLS1 = new Point2d("RLS1", -61.5,  -24);
+    public static final Point2d ROS1 = new Point2d("ROS1", -61.5,  -47);
+    public static final Point2d RIS1 = new Point2d("RIS1", -61.5,  -24);
 
     //Red (Left/Right) Scan Pt's (Image Scan Pt)
-    public static final Point2d RRSP = new Point2d("RRSP", -61.45,  -47);
-    public static final Point2d RLSP = new Point2d("RLSP", -61.45,  -24);
+    public static final Point2d ROSP = new Point2d("ROSP", -61.45,  -47);
+    public static final Point2d RISP = new Point2d("RISP", -61.45,  -24);
 
     //Red (Left/Right) Turn Pt's (Image Scan Pt)
-    public static final Point2d RRTP = new Point2d("RRTP", -55.0,  -47);
-    public static final Point2d RLTP = new Point2d("RLTP", -55.0,  -24);
+    public static final Point2d ROTP = new Point2d("ROTP", -55.0,  -47);
+    public static final Point2d RITP = new Point2d("RITP", -55.0,  -24);
 
     //Red (Left/Right) Dodge Points
-    public static final Point2d RRDP = new Point2d("RRDP", -12.0, -57);
-    public static final Point2d RLDP = new Point2d("RLDP", -12.0, -19);
+    public static final Point2d RODP = new Point2d("RODP", -12.0, -53);
+    public static final Point2d RIDP = new Point2d("RIDP", -12.0, -19);
     
     //Red Right Wobble (A/B/C)
-    public static final Point2d RRWA = new Point2d("RRWA",   0.0,-57);
-    public static final Point2d RRWB = new Point2d("RRWB",  18.0,-47);
-    public static final Point2d RRWC = new Point2d("RRWC",  40.0,-57);
+    public static final Point2d ROWA = new Point2d("ROWA",   0.0,-53);
+    public static final Point2d ROWB = new Point2d("ROWB",  18.0,-47);
+    public static final Point2d ROWC = new Point2d("ROWC",  40.0,-53);
 
     //Red Left Wobble (A/B/C)
-    public static final Point2d RLWA = new Point2d("RLWA",  12.0,-44);
-    public static final Point2d RLWB = new Point2d("RLWB",  22.0,-26);
-    public static final Point2d RLWC = new Point2d("RLWC",  52.0,-46);
+    public static final Point2d RIWA = new Point2d("RIWA",  12.0,-44);
+    public static final Point2d RIWB = new Point2d("RIWB",  22.0,-26);
+    public static final Point2d RIWC = new Point2d("RIWC",  52.0,-46);
     //includes offset for veh center. actual
 
-    public static final Point2d RRPA = new Point2d("RRPA",  -8.0,-57);
-    public static final Point2d RRPB = new Point2d("RRPB",  -8.0,-57);
-    public static final Point2d RRPC = new Point2d("RRPC",  -8.0,-57);
+    public static final Point2d ROPA = new Point2d("ROPA",  -8.0,-53);
+    public static final Point2d ROPB = new Point2d("ROPB",  -8.0,-53);
+    public static final Point2d ROPC = new Point2d("ROPC",  -8.0,-53);
 
-    public static final Point2d RLPA = new Point2d("RLPA",  -4.0,-20);
-    public static final Point2d RLPB = new Point2d("RLPB",  -4.0,-20);
-    public static final Point2d RLPC = new Point2d("RLPC",  -4.0,-20);
+    public static final Point2d RIPA = new Point2d("RIPA",  -4.0,-20);
+    public static final Point2d RIPB = new Point2d("RIPB",  -4.0,-20);
+    public static final Point2d RIPC = new Point2d("RIPC",  -4.0,-20);
 
     private static final int ALNC_RED = 0;
     private static final int ALNC_BLU = 1;

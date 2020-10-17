@@ -38,21 +38,21 @@ public class UgRoute extends Route
         Segment.TargetType colType = Segment.TargetType.COLOR;
         if(startPos == StartPos.START_1)  //Wall Start
         {
-            points.add(UgField.RRS1);
-            addPoint(points, fwd, 0.60, 1.00, encType, scan, UgField.RRSP);
-            addPoint(points, fwd, 0.60, 1.00, encType, none, UgField.RRTP);
-            addPoint(points, fwd, 0.60, 1.00, encType, none, UgField.RRDP);
-            addPoint(points, fwd, 0.50, 1.00, encType, drop, UgField.RRWA);
-            addPoint(points, rev, 0.50, 1.00, encType, park, UgField.RRPA);
+            points.add(UgField.ROS1);
+            addPoint(points, fwd, 0.60, 1.00, encType, scan, UgField.ROSP);
+            addPoint(points, fwd, 0.60, 1.00, encType, none, UgField.ROTP);
+            addPoint(points, fwd, 0.60, 1.00, encType, none, UgField.RODP);
+            addPoint(points, fwd, 0.50, 1.00, encType, drop, UgField.ROWA);
+            addPoint(points, rev, 0.50, 1.00, encType, park, UgField.ROPA);
         }
         else if(startPos == StartPos.START_2)  //Center Start
         {
-            points.add(UgField.RLS1);
-            addPoint(points, fwd, 0.60, 1.00, encType, scan, UgField.RLSP);
-            addPoint(points, fwd, 0.60, 1.00, encType, none, UgField.RLTP);
-            addPoint(points, fwd, 0.60, 1.00, encType, none, UgField.RLDP);
-            addPoint(points, fwd, 0.50, 1.00, encType, drop, UgField.RLWA);
-            addPoint(points, rev, 0.50, 1.00, encType, park, UgField.RLPA);
+            points.add(UgField.RIS1);
+            addPoint(points, fwd, 0.60, 1.00, encType, scan, UgField.RISP);
+            addPoint(points, fwd, 0.60, 1.00, encType, none, UgField.RITP);
+            addPoint(points, fwd, 0.60, 1.00, encType, none, UgField.RIDP);
+            addPoint(points, fwd, 0.50, 1.00, encType, drop, UgField.RIWA);
+            addPoint(points, rev, 0.50, 1.00, encType, park, UgField.RIPA);
         }
 
         return points;
@@ -72,27 +72,15 @@ public class UgRoute extends Route
         this.goForTwo = goForTwo;
     }
 
-    private Point2d convertRtoB(Point2d rpt)
-    {
-//        double bx =  rpt.getX();
-//        double by = -rpt.getY();
-//
-//        String nm = "B" + rpt.getName().substring(1);
-//
-//        RobotLog.dd(TAG, "convertRtoB %s to %s", rpt.getName(), nm);
-//
-//        return new Point2d(nm, bx, by);
-        return UgRoute.convRtoB(rpt);
-    }
-
-    public static Point2d convRtoB(Point2d rpt)
+    public Point2d convertRtoB(Point2d rpt)
     {
         double bx =  rpt.getX();
         double by = -rpt.getY();
 
         String nm = "B" + rpt.getName().substring(1);
 
-        RobotLog.dd(TAG, "convertRtoB %s to %s", rpt.getName(), nm);
+        RobotLog.dd(TAG, "convRtoB %s to %s %4.1f %4.1f", rpt.getName(), nm,
+                bx, by);
 
         return new Point2d(nm, bx, by);
     }
