@@ -206,7 +206,7 @@ public class SkyBot extends TilerunnerGtoBot {
     @Override
     public void initArm() //rotate, extend
     {
-        RobotLog.dd(TAG, "GTO initArm");
+        RobotLog.dd(TAG, TAG + " initArm");
         try {
             armExtend = hwMap.dcMotor.get("armExtend");
             armExtend.setDirection(DcMotorSimple.Direction.FORWARD);

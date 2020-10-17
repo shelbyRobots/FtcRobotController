@@ -38,7 +38,7 @@ public class RingDetector extends Detector {
     @SuppressWarnings("WeakerAccess")
     public RingDetector()
     {
-        name = "StoneDetector";
+        name = "RingDetector";
         dashboard = CommonUtil.getInstance().getDashboard();
     }
 

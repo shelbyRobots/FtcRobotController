@@ -51,8 +51,8 @@ public class TilerunnerMecanumBot extends TilerunnerGtoBot
     @Override
     protected void initDriveMotors()
     {
-        RobotLog.dd(TAG, "Initializing mecanum drive motors");
-        try  //Drivetrain
+        RobotLog.dd(TAG, TAG + "Initializing drive motors");
+        try
         {
             lfMotor = hwMap.get(DcMotorEx.class, "FL");
             lrMotor = hwMap.get(DcMotorEx.class, "BL");
@@ -118,7 +118,17 @@ public class TilerunnerMecanumBot extends TilerunnerGtoBot
     }
 
     @Override
+    protected void initArm()
+    {
+    }
+
+    @Override
     protected void initCollectorLifter()
+    {
+    }
+
+    @Override
+    protected void initHolder()
     {
     }
 

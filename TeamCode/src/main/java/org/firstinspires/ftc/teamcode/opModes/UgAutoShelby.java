@@ -39,6 +39,8 @@ import ftclib.FtcChoiceMenu;
 import ftclib.FtcMenu;
 import ftclib.FtcValueMenu;
 
+import static org.firstinspires.ftc.teamcode.field.Route.StartPos.START_1;
+
 //import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
@@ -280,7 +282,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         RobotLog.ii(TAG, "DELAY    %4.2f", delay);
         RobotLog.ii(TAG, "BOT      %s", robotName);
 
-        Route pts = new UgRoute(startPos, alliance, robotName);
+        UgRoute pts = new UgRoute(startPos, alliance, robotName);
 
         pathSegs.addAll(Arrays.asList(pts.getSegments()));
 
@@ -580,7 +582,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
                 alliance, startPos, ringPos, segIdx);
 
         int allnc = alliance == Field.Alliance.RED     ? 0 : 1;
-        int start = startPos == Route.StartPos.START_1 ? 0 : 1;
+        int start = startPos == START_1 ? 0 : 1;
         int rPos  = ringPos  == RingDetector.Position.NONE   ? 0 :
                     ringPos  == RingDetector.Position.LEFT   ? 0 :
                     ringPos  == RingDetector.Position.CENTER ? 1 : 2;
@@ -589,8 +591,8 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         Point2d[][][] wPts =
            {{{UgField.RRWA, UgField.RRWB, UgField.RRWC},
              {UgField.RLWA, UgField.RLWB, UgField.RLWC}},
-            {{UgRoute.convertRtoB(UgField.RRWA), UgRoute.convertRtoB(UgField.RRWB), UgRoute.convertRtoB(UgField.RRWC)},
-             {UgRoute.convertRtoB(UgField.RLWA), UgRoute.convertRtoB(UgField.RLWB), UgRoute.convertRtoB(UgField.RLWC)}}};
+            {{UgRoute.convRtoB(UgField.RRWA), UgRoute.convRtoB(UgField.RRWB), UgRoute.convRtoB(UgField.RRWC)},
+             {UgRoute.convRtoB(UgField.RLWA), UgRoute.convRtoB(UgField.RLWB), UgRoute.convRtoB(UgField.RLWC)}}};
 
         Point2d wPt = wPts[allnc][start][rPos];
 
@@ -855,7 +857,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
                 = new FtcValueMenu("DELAY:", parkMenu, this,
                 0.0, 20.0, 1.0, 0.0, "%5.2f");
 
-        startPosMenu.addChoice("Start_1", Route.StartPos.START_1, true, allianceMenu);
+        startPosMenu.addChoice("Start_1", START_1, true, allianceMenu);
         startPosMenu.addChoice("Start_2", Route.StartPos.START_2, false, allianceMenu);
         startPosMenu.addChoice("Start_3", Route.StartPos.START_3, false, allianceMenu);
         startPosMenu.addChoice("Start_4", Route.StartPos.START_4, false, allianceMenu);
@@ -930,7 +932,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
     @SuppressWarnings("FieldCanBeLocal")
     private boolean usePostTurn = true;
 
-    private static PositionOption startPos = Route.StartPos.START_1;
+    private static PositionOption startPos = START_1;
     private static Field.Alliance alliance = Field.Alliance.RED;
 
     private static PositionOption parkPos = Route.ParkPos.CENTER_PARK;
@@ -955,4 +957,34 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
     private String robotName = "MEC";
     private static final String TAG = "SJH_RRA";
+
+
+//    public static void main(String[] args)
+//    {
+//        for (RingDetector.Position ringPos : RingDetector.Position.values()) {
+//            for (Field.Alliance all : Field.Alliance.values()) {
+//                for (PositionOption strt : EnumSet.range(START_1,START_2)) {
+//                    int allnc = all == Field.Alliance.RED ? 0 : 1;
+//                    int start = strt == START_1 ? 0 : 1;
+//                    int rPos =
+//                            ringPos == RingDetector.Position.NONE ? 0 :
+//                                    ringPos == RingDetector.Position.LEFT ? 0 :
+//                                            ringPos == RingDetector.Position.CENTER ? 1 : 2;
+//
+//                    //3dim array [allnc][start][rPos]
+//                    Point2d[][][] wPts =
+//                            {{{UgField.RRWA, UgField.RRWB, UgField.RRWC},
+//                                    {UgField.RLWA, UgField.RLWB, UgField.RLWC}},
+//                                    {{UgRoute.convertRtoB(UgField.RRWA), UgRoute.convertRtoB(UgField.RRWB), UgRoute.convertRtoB(UgField.RRWC)},
+//                                            {UgRoute.convertRtoB(UgField.RLWA), UgRoute.convertRtoB(UgField.RLWB), UgRoute.convertRtoB(UgField.RLWC)}}};
+//
+//                    Point2d wPt = wPts[allnc][start][rPos];
+//
+//                    String s = String.format("Alnc %4s Strt %s Rpos %6s %4s", all, strt, ringPos, wPt.getName());
+//                    System.out.println(s);
+//                    //RobotLog.dd(TAG, "Setting wobbly drop to " + wPt.getName());
+//                }
+//            }
+//        }
+//    }
 }

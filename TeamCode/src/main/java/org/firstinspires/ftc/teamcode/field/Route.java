@@ -119,7 +119,7 @@ public abstract class Route
         return null;
     }
 
-    static public Point2d convertRtoB(Point2d rpt)
+    private Point2d convertRtoB(Point2d rpt)
     {
         double bx = -rpt.getY();
         double by = -rpt.getX();

@@ -16,7 +16,7 @@ public class UgRoute extends Route
     @Override
     protected Vector<Point2d> initPoints()
     {
-        RobotLog.dd(TAG, "In RoroRoute initPoints alliance=%s startPos=%s goForTwo=%s",
+        RobotLog.dd(TAG, "In UgRoute initPoints alliance=%s startPos=%s goForTwo=%s",
                 alliance, startPos, goForTwo);
         Vector<Point2d> points = new Vector<>(MAX_SEGMENTS);
 
@@ -72,7 +72,20 @@ public class UgRoute extends Route
         this.goForTwo = goForTwo;
     }
 
-    static public Point2d convertRtoB(Point2d rpt)
+    private Point2d convertRtoB(Point2d rpt)
+    {
+//        double bx =  rpt.getX();
+//        double by = -rpt.getY();
+//
+//        String nm = "B" + rpt.getName().substring(1);
+//
+//        RobotLog.dd(TAG, "convertRtoB %s to %s", rpt.getName(), nm);
+//
+//        return new Point2d(nm, bx, by);
+        return UgRoute.convRtoB(rpt);
+    }
+
+    public static Point2d convRtoB(Point2d rpt)
     {
         double bx =  rpt.getX();
         double by = -rpt.getY();

@@ -183,7 +183,7 @@ public class RoRuBot extends TilerunnerGtoBot {
 
     @Override
     public void initArm() {
-        RobotLog.dd(TAG, "GTO initArm");
+        RobotLog.dd(TAG, TAG + " initArm");
         try
         {
             armExtend = hwMap.dcMotor.get("armExtend");

@@ -377,6 +377,14 @@ public class Drivetrain
         return driveToPointLinear(tgtPt, pwr, dir, robot.getGyroFhdg());
     }
 
+    private double angNormalize(double ang)
+    {
+        double ret = ang;
+        while (ret >   180) ret -= 360;
+        while (ret <= -180) ret += 360;
+        return ret;
+    }
+
     public void ctrTurnEncoder(double angle, double pwr)
     {
         //perform a turn about drive axle center
@@ -387,9 +395,7 @@ public class Drivetrain
         setInitValues();
         setPositions(tgtLpositions, begLpositions, -counts);
         setPositions(tgtRpositions, begRpositions,  counts);
-        trgtHdg  = initHdg  + (int) Math.round(angle);
-        while(trgtHdg >   180) trgtHdg -= 360;
-        while(trgtHdg <= -180) trgtHdg += 360;
+        trgtHdg  = angNormalize(initHdg  + (int) Math.round(angle));
         String angStr = String.format(Locale.US, "ENC_TURN %4.2f", angle);
         logStartValues(angStr);
 
@@ -565,18 +571,16 @@ public class Drivetrain
 
         if(doStopAndReset) stopAndReset();
 
-        setMode(robot.leftMotors, DcMotor.RunMode.RUN_USING_ENCODER);
-        setMode(robot.rightMotors, DcMotor.RunMode.RUN_USING_ENCODER);
-
-        moveInit(0.0, 0.0);
-
         setInitValues();
-        setPositions(tgtLpositions, 0);
+        setPositions(tgtLpositions, 0); //doesn't matter for gyro
         setPositions(tgtRpositions, 0);
-
         trgtHdg = (int) tgtHdg;
         String gyroStr = String.format(Locale.US, "GYRO_TURN %4.1f", tgtHdg);
         logStartValues(gyroStr);
+
+        setMode(robot.leftMotors, DcMotor.RunMode.RUN_USING_ENCODER);
+        setMode(robot.rightMotors, DcMotor.RunMode.RUN_USING_ENCODER);
+        moveInit(0.0, 0.0);
 
         ElapsedTime tTimer = new ElapsedTime();
 
@@ -610,22 +614,21 @@ public class Drivetrain
         double rr = radius + robot.BOT_WIDTH/2.0;
         int lcnts = angleToCounts(angle, rl);
         int rcnts = angleToCounts(angle, rr);
-
+        
         setBusyAnd(false);
-        setMode(robot.leftMotors, DcMotor.RunMode.RUN_TO_POSITION);
-        setMode(robot.rightMotors, DcMotor.RunMode.RUN_TO_POSITION);
 
         setInitValues();
 
         setPositions(tgtLpositions, begLpositions, lcnts);
         setPositions(tgtRpositions, begRpositions, rcnts);
-        trgtHdg  = initHdg  + (int) Math.round(angle);
-        while(trgtHdg >   180) trgtHdg -= 360;
-        while(trgtHdg <= -180) trgtHdg += 360;
+        trgtHdg  = angNormalize(initHdg  + (int) Math.round(angle));
         logStartValues("ENC_CURVE");
 
-        setPos(tgtLpositions, robot.leftMotors);
-        setPos(tgtRpositions, robot.rightMotors);
+        setTargetPositions(robot.leftMotors, tgtLpositions);
+        setTargetPositions(robot.rightMotors, tgtRpositions);
+
+        setMode(robot.leftMotors, DcMotor.RunMode.RUN_TO_POSITION);
+        setMode(robot.rightMotors, DcMotor.RunMode.RUN_TO_POSITION);
 
         double arl = Math.abs(rl);
         double arr = Math.abs(rr);
@@ -865,9 +868,7 @@ public class Drivetrain
     private double getGyroError(double tgtHdg)
     {
         double gHdg = curHdg;
-        double robotError = tgtHdg - gHdg;
-        while (robotError > 180)   robotError -= 360;
-        while (robotError <= -180) robotError += 360;
+        double robotError = angNormalize(tgtHdg - gHdg);
         return robotError;
     }
 
@@ -892,9 +893,7 @@ public class Drivetrain
     {
         setPos(begLpositions, robot.leftMotors);
         setPos(begRpositions, robot.rightMotors);
-        initHdg = robot.getGyroFhdg();
-        while (initHdg <= -180) initHdg += 360;
-        while (initHdg >   180) initHdg -= 360;
+        initHdg = angNormalize(robot.getGyroFhdg());
         setPositions(curLpositions, begLpositions, 0);
         setPositions(curRpositions, begRpositions, 0);
         curHdg  = initHdg;

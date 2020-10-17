@@ -327,12 +327,12 @@ public class TilerunnerGtoBot extends ShelbyImuBot
 
     protected void initArm()
     {
-        RobotLog.dd(TAG, "GTO initArm");
+        RobotLog.dd(TAG, TAG + " initArm");
         try
         {
             int RELP_COUNTS_PER_MOTOR_REV = 28;
             int RELP_GEAR_ONE = 40;
-            double RELP_GEAR_TWO = 40/120;
+            double RELP_GEAR_TWO = 40.0/120.0;
             double RELP_CPR = RELP_COUNTS_PER_MOTOR_REV * RELP_GEAR_ONE * RELP_GEAR_TWO;
             double RELP_ARM_LENGTH = 16.0;
             @SuppressWarnings("unused")

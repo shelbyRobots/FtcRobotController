@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.image.VuforiaInitializer;
 
 import hallib.HalDashboard;
 
-@SuppressWarnings({"unused", "FieldCanBeLocal"})
+@SuppressWarnings({"unused", "FieldCanBeLocal", "Convert2Lambda"})
 public class CommonUtil
 {
     private static HardwareMap  h;
@@ -278,6 +278,7 @@ public class CommonUtil
         });
     }
 
+    @SuppressWarnings("Anonymous2MethodRef")
     public void emptyView(int containerId)
     {
         final Activity act = getActivity();

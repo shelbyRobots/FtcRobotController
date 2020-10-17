@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.image;
 
 import com.qualcomm.robotcore.util.RobotLog;
 
+import org.jetbrains.annotations.NotNull;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -47,11 +48,6 @@ public class RingPipeline
 
 	public void setName(String name) {this.name = name;}
 
-	@SuppressWarnings("FieldCanBeLocal")
-	private double GTO1_TOP = 0.35; //Changed to 0.48, was: 0.54
-	@SuppressWarnings("FieldCanBeLocal")
-	private double GTO1_BOT = 0.75;
-
 	private boolean drawContours = false;
 	public void setDrawContours(boolean drawContours) { this.drawContours = drawContours; }
 
@@ -59,13 +55,21 @@ public class RingPipeline
 	{
 		RobotLog.dd(TAG, "Processing image WXH= %dx%d", source0.cols(), source0.rows());
 
-		double top = GTO1_TOP;
-		double bot = GTO1_BOT;
-		roiMat = new Mat(source0, new Rect(0, (int)(top * source0.height()),
-				source0.width(), (int)((bot-top) * source0.height())));
+		final double TOP = 0.35;
+		final double BOT = 0.75;
+		final double LFT = 0.25;
+		final double RGT = 0.75;
+
+		int roiX = (int)(LFT * source0.width());
+		int roiY = (int)(TOP * source0.height());
+		int roiW = (int)((RGT-LFT) * source0.width());
+		int roiH = (int)((BOT-TOP) * source0.height());
+//		roiMat = new Mat(source0, new Rect(0, (int)(TOP * source0.height()),
+//				source0.width(), (int)((BOT-TOP) * source0.height())));
+		roiMat = new Mat(source0, new Rect(roiX, roiY, roiW, roiH));
 		RobotLog.dd(TAG, " roiMat image WXH= %dx%d", roiMat.cols(), roiMat.rows());
 
-		int resizeImageWidth = 480;
+		int resizeImageWidth  = (int)(480 * (RGT-LFT));
 		int resizeImageHeight = (int)(resizeImageWidth*((double)roiMat.height()/roiMat.width()));
 
 		if(resizeImageOutput == null)
@@ -93,9 +97,9 @@ public class RingPipeline
 
         // Step HSV_Threshold0:
         Mat hsvThresholdInput = goldSource;
-        double[] hsvThresholdHue = {10, 25};
-        double[] hsvThresholdSaturation = {160, 255};
-        double[] hsvThresholdValue = {160.0, 255.0};
+        double[] hsvThresholdHue = {5, 25};
+        double[] hsvThresholdSaturation = {170, 255};
+        double[] hsvThresholdValue = {110.0, 255.0};
         hsvThreshold(hsvThresholdInput, hsvThresholdHue, hsvThresholdSaturation, hsvThresholdValue, hsvThresholdOutput);
 
 //		// Step CV_erode0:
@@ -111,7 +115,7 @@ public class RingPipeline
 		Mat cvDilateSrc = hsvThresholdOutput;
 		Mat cvDilateKernel = new Mat();
 		Point cvDilateAnchor = new Point(-1, -1);
-		double cvDilateIterations = 2.0;
+		double cvDilateIterations = 3.0;
 		int cvDilateBordertype = Core.BORDER_CONSTANT;
 		Scalar cvDilateBordervalue = new Scalar(-1);
 		cvDilate(cvDilateSrc, cvDilateKernel, cvDilateAnchor, cvDilateIterations, cvDilateBordertype, cvDilateBordervalue, cvDilateOutput);
@@ -131,16 +135,16 @@ public class RingPipeline
 
 		// Step Filter_Contours0:
 		ArrayList<MatOfPoint> filterContoursContours = convexHullsOutput;
-		double filterContoursMinArea = 50.0;
-		double filterContoursMinPerimeter = 0.0;
+		double filterContoursMinArea = 250.0;
+		double filterContoursMinPerimeter = 100.0;
 		double filterContoursMinWidth = 40.0;
 		double filterContoursMaxWidth = 1000.0;
-		double filterContoursMinHeight = 2.0;
+		double filterContoursMinHeight = 10.0;
 		double filterContoursMaxHeight = 1000.0;
 		double[] filterContoursSolidity = {0, 100};
 		double filterContoursMaxVertices = 20000.0;
 		double filterContoursMinVertices = 0.0;
-		double filterContoursMinRatio = 1.0;
+		double filterContoursMinRatio = 0.8;
 		double filterContoursMaxRatio = 8.0;
 		filterContours(filterContoursContours,
                 filterContoursMinArea,
@@ -192,6 +196,7 @@ public class RingPipeline
 		}
 
 		@Override
+		@NotNull
 		public String toString() {
 			return this.label;
 		}

@@ -27,7 +27,7 @@ public abstract class Detector implements ImageProcessor
 
     /* package-private */ Mat showImg;
     private Mat cvImage;
-    private OpenCvInitializer ocvInit = null;
+    private OpenCvInitializer ocvInit;
     protected Telemetry telemetry = null;
     private static String dateStr;
 
@@ -39,7 +39,7 @@ public abstract class Detector implements ImageProcessor
     {
         CommonUtil cmu = CommonUtil.getInstance();
         ocvInit = cmu.getOcvInit();
-        RobotLog.dd(TAG, "Setting ocvInit image processor in Detector??");
+        RobotLog.dd(TAG, "Setting ocvInit image processor in Detector");
         ocvInit.setImageProcessor(this);
         RobotLog.dd(TAG, "Back from Setting ocvInit image processor");
 

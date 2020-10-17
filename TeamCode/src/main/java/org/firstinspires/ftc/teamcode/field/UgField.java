@@ -44,23 +44,23 @@ public class UgField extends Field
     public static final Point2d RLDP = new Point2d("RLDP", -12.0, -19);
     
     //Red Right Wobble (A/B/C)
-    public static final Point2d RRWA = new Point2d("RRWA", 0.0,-57);
+    public static final Point2d RRWA = new Point2d("RRWA",   0.0,-57);
     public static final Point2d RRWB = new Point2d("RRWB",  18.0,-47);
     public static final Point2d RRWC = new Point2d("RRWC",  40.0,-57);
 
     //Red Left Wobble (A/B/C)
-    public static final Point2d RLWA = new Point2d("RLWA", 0.0,-57);
-    public static final Point2d RLWB = new Point2d("RLWB",  24.0,-36);
-    public static final Point2d RLWC = new Point2d("RLWC",  48.0,-57);
+    public static final Point2d RLWA = new Point2d("RLWA",  12.0,-44);
+    public static final Point2d RLWB = new Point2d("RLWB",  22.0,-26);
+    public static final Point2d RLWC = new Point2d("RLWC",  52.0,-46);
     //includes offset for veh center. actual
 
     public static final Point2d RRPA = new Point2d("RRPA",  -8.0,-57);
     public static final Point2d RRPB = new Point2d("RRPB",  -8.0,-57);
     public static final Point2d RRPC = new Point2d("RRPC",  -8.0,-57);
 
-    public static final Point2d RLPA = new Point2d("RLPA",  0.0,-53);
-    public static final Point2d RLPB = new Point2d("RLPB",  0.0,-24);
-    public static final Point2d RLPC = new Point2d("RLPC",  0.0,-24);
+    public static final Point2d RLPA = new Point2d("RLPA",  -4.0,-20);
+    public static final Point2d RLPB = new Point2d("RLPB",  -4.0,-20);
+    public static final Point2d RLPC = new Point2d("RLPC",  -4.0,-20);
 
     private static final int ALNC_RED = 0;
     private static final int ALNC_BLU = 1;

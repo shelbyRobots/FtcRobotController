@@ -52,7 +52,7 @@ public class ImuRunner extends Thread
     {
         if(imu == null)
         {
-            RobotLog.ee(TAG, "IMU THREAD ALREADY RUNNING");
+            RobotLog.ee(TAG, "IMU THREAD - NO IMU");
             return;
         }
 

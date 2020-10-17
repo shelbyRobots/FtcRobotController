@@ -35,6 +35,9 @@ class ShelbyImuBot extends ShelbyBot
         parameters.loggingTag          = "IMU";
         //parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
 
+        boolean clrGood = false;
+        boolean imuGood = false;
+
         try
         {
             imu = (BNO055IMU) cmu.getHardwareMap().get("imu");
@@ -43,17 +46,28 @@ class ShelbyImuBot extends ShelbyBot
             if(useImuThread)
             {
                 imuRunner = ImuRunner.getInstance(imu);
-                imuRunner.run();
+                imuRunner.start();
             }
 
-            colorSensor = hwMap.get(ColorSensor.class, "color1");
-
-            capMap.put("sensor", true);
+            imuGood = true;
         }
         catch(Exception e)
         {
             RobotLog.ee(TAG, "ERROR get imu\n" + e.toString());
         }
+
+        try
+        {
+            colorSensor = hwMap.get(ColorSensor.class, "color1");
+
+            clrGood = true;
+        }
+        catch(Exception e)
+        {
+            RobotLog.ee(TAG, "ERROR get colorSensor\n" + e.toString());
+        }
+
+        capMap.put("sensor", clrGood && imuGood);
     }
 
     @Override
