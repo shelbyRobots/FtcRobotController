@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.opModes;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -49,9 +48,6 @@ public class Teleop_Driver extends InitLinearOpMode
             RobotLog.dd(TAG, "Start mode to %s", robot.leftMotor.getMode());
 
             dtrn.setCurrPt(robot.getAutonEndPos());
-
-            lex = (DcMotorEx)(robot.leftMotors.get(0));
-            rex = (DcMotorEx)(robot.rightMotors.get(0));
         }
     }
 
@@ -375,10 +371,8 @@ public class Teleop_Driver extends InitLinearOpMode
         {
             out_left  = maxDPS*left;
             out_right = maxDPS*right;
-            lex = (DcMotorEx)(robot.leftMotors.get(0));
-            rex = (DcMotorEx)(robot.rightMotors.get(0));
-            lex.setVelocity(out_left,  AngleUnit.DEGREES);
-            rex.setVelocity(out_right, AngleUnit.DEGREES);
+            robot.leftMotors.get(0).setVelocity(out_left,  AngleUnit.DEGREES);
+            robot.rightMotors.get(0).setVelocity(out_right, AngleUnit.DEGREES);
         }
         else
         {
@@ -545,9 +539,6 @@ public class Teleop_Driver extends InitLinearOpMode
 
     public final double minPwr = 0.10;
     public final double minTrn = 0.10;
-
-    private DcMotorEx lex = null;
-    private DcMotorEx rex = null;
 
     private SkyBot robot = new SkyBot();
     private Drivetrain dtrn = new Drivetrain();

@@ -51,17 +51,17 @@ public class ShelbyBot
     public static OpModeType curOpModeType = OpModeType.UNKNOWN;
 
     /* Public OpMode members. */
-    public DcMotor  leftMotor   = null;
-    public DcMotor  rightMotor  = null;
-    public DcMotor  elevMotor   = null;
-    public DcMotor  sweepMotor  = null;
-    public DcMotor  shotmotor1  = null;
-    public DcMotor  shotmotor2  = null;
+    public DcMotorEx  leftMotor   = null;
+    public DcMotorEx  rightMotor  = null;
+    public DcMotorEx  elevMotor   = null;
+    public DcMotorEx  sweepMotor  = null;
+    public DcMotorEx  shotmotor1  = null;
+    public DcMotorEx  shotmotor2  = null;
     public Servo    lpusher     = null;
     public Servo    rpusher     = null;
 
-    public List<DcMotor> leftMotors  = new ArrayList<>(2);
-    public List<DcMotor> rightMotors = new ArrayList<>(2);
+    public List<DcMotorEx> leftMotors  = new ArrayList<>(2);
+    public List<DcMotorEx> rightMotors = new ArrayList<>(2);
 
     public int numLmotors = 0;
     public int numRmotors = 0;
@@ -123,7 +123,7 @@ public class ShelbyBot
     public static DcMotor.Direction  LEFT_DIR = DcMotor.Direction.FORWARD;
     public static DcMotor.Direction RIGHT_DIR = DcMotor.Direction.REVERSE;
 
-    public Map<String, DcMotor> motors = new HashMap<>();
+    public Map<String, DcMotorEx> motors = new HashMap<>();
 
     public boolean gyroReady = false;
     Map<String, Boolean> capMap = new HashMap<>();
@@ -205,8 +205,8 @@ public class ShelbyBot
         // REVERSE for  CW drive shaft rotation if using AndyMark motors
         try  //Drivetrain
         {
-            leftMotor  = hwMap.dcMotor.get("leftdrive");
-            rightMotor = hwMap.dcMotor.get("rightdrive");
+            leftMotor  = hwMap.get(DcMotorEx.class,"leftdrive");
+            rightMotor = hwMap.get(DcMotorEx.class,"rightdrive");
 
             leftMotors.add(numLmotors++, leftMotor);
             rightMotors.add(numRmotors++, rightMotor);
@@ -216,34 +216,29 @@ public class ShelbyBot
             motors.put("FL", leftMotor);
             motors.put("FR", rightMotor);
 
-            if (leftMotor instanceof DcMotorEx)
+            DcMotorEx lm0 = leftMotors.get(0);
+            PIDFCoefficients pid;
+            pid = lm0.getPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION);
+            RobotLog.dd(TAG, "RUN_TO_POS Motor PIDs. P:%.2f I:%.2f D:%.2f F:%.2f",
+                    pid.p, pid.i, pid.d, pid.f);
+            pid = lm0.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+            RobotLog.dd(TAG, "RUN_USING_ENC Motor PIDs. P:%.2f I:%.2f D:%.2f F:%.2f",
+                    pid.p, pid.i, pid.d, pid.f);
+
+            for (DcMotorEx m : leftMotors)
             {
-                DcMotorEx lex = (DcMotorEx) leftMotor;
-                PIDFCoefficients pid;
-                pid = lex.getPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION);
-                RobotLog.dd(TAG, "RUN_TO_POS Motor PIDs. P:%.2f I:%.2f D:%.2f F:%.2f",
-                        pid.p, pid.i, pid.d, pid.f);
-                pid = lex.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
-                RobotLog.dd(TAG, "RUN_USING_ENC Motor PIDs. P:%.2f I:%.2f D:%.2f F:%.2f",
-                        pid.p, pid.i, pid.d, pid.f);
+                PIDFCoefficients lpid;
+                lpid = m.getPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION);
+                lpid.p = 6.0;
+                m.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, lpid);
             }
 
-            if (leftMotor instanceof DcMotorEx)
+            for (DcMotorEx m : rightMotors)
             {
-                DcMotorEx lex = (DcMotorEx) leftMotor;
-                PIDFCoefficients pid;
-                pid = lex.getPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION);
-                pid.p = 6.0;
-                lex.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, pid);
-            }
-
-            if (rightMotor instanceof DcMotorEx)
-            {
-                DcMotorEx rex = (DcMotorEx) rightMotor;
-                PIDFCoefficients pid;
-                pid = rex.getPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION);
-                pid.p = 6.0;
-                rex.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, pid);
+                PIDFCoefficients rpid;
+                rpid = m.getPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION);
+                rpid.p = 6.0;
+                m.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, rpid);
             }
 
             capMap.put("drivetrain", true);
@@ -270,8 +265,8 @@ public class ShelbyBot
         RobotLog.dd(TAG, "ShelbyBot collector/lifter");
         try  //Collector
         {
-            elevMotor = hwMap.dcMotor.get("elevmotor");
-            sweepMotor = hwMap.dcMotor.get("sweepmotor");
+            elevMotor = hwMap.get(DcMotorEx.class, "elevmotor");
+            sweepMotor = hwMap.get(DcMotorEx.class, "sweepmotor");
             capMap.put("collector", true);
         }
         catch (Exception e)
@@ -292,8 +287,8 @@ public class ShelbyBot
         RobotLog.dd(TAG, "ShelbyBot init shooters");
         try  //Shooters
         {
-            shotmotor1 = hwMap.dcMotor.get("leftshooter");
-            shotmotor2 = hwMap.dcMotor.get("rightshooter");
+            shotmotor1 = hwMap.get(DcMotorEx.class, "leftshooter");
+            shotmotor2 = hwMap.get(DcMotorEx.class, "rightshooter");
             capMap.put("shooter", true);
         }
         catch (Exception e)
@@ -374,7 +369,7 @@ public class ShelbyBot
 
     protected void initCapabilities()
     {
-        for (Map.Entry mEnt : capMap.entrySet())
+        for (Map.Entry<String, Boolean> mEnt : capMap.entrySet())
         {
             RobotLog.dd(TAG, mEnt.getKey() + " = " + mEnt.getValue());
         }
@@ -420,9 +415,9 @@ public class ShelbyBot
         int n = numLmotors - 1;
         for(int m = 0; m < numRmotors; m++)
         {
-            DcMotor lMotor = leftMotors.get(m);
+            DcMotorEx lMotor = leftMotors.get(m);
             lMotor.setDirection(RIGHT_DIR);
-            DcMotor rMotor = rightMotors.get(n);
+            DcMotorEx rMotor = rightMotors.get(n);
             rMotor.setDirection(LEFT_DIR);
             RobotLog.dd(TAG, "Setting l(%d) to r(%d)", m, n);
             leftMotors.set(m, rMotor);

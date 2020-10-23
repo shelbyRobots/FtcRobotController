@@ -18,6 +18,8 @@ public class TilerunnerMecanumBot extends TilerunnerGtoBot
     public DcMotorEx rfMotor = null;
     public DcMotorEx rrMotor = null;
 
+    public Lifter liftyBoi = null;
+
     private static final String TAG = "SJH_MEC";
 
     public TilerunnerMecanumBot()
@@ -125,6 +127,8 @@ public class TilerunnerMecanumBot extends TilerunnerGtoBot
     @Override
     protected void initCollectorLifter()
     {
+        liftyBoi = new Lifter(hwMap);
+        liftyBoi.init();
     }
 
     @Override

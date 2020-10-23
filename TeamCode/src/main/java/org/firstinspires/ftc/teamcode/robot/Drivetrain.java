@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.RobotLog;
@@ -1238,19 +1239,19 @@ public class Drivetrain
         logData(false);
     }
 
-    public void setMode (List<DcMotor> motors, DcMotor.RunMode mode)
+    public void setMode (List<DcMotorEx> motors, DcMotor.RunMode mode)
     {
         RobotLog.dd(TAG, "Setting mode %s on %d motors", mode, motors.size());
-        for (DcMotor m : motors)
+        for (DcMotorEx m : motors)
             m.setMode(mode);
     }
-    private void  setPower (List<DcMotor> motors, double power)
+    private void  setPower (List<DcMotorEx> motors, double power)
     {
         for (DcMotor m : motors)
             m.setPower(power);
     }
 
-    private void setPos(List<Integer> positions, List<DcMotor> motors)
+    private void setPos(List<Integer> positions, List<DcMotorEx> motors)
     {
         for(int i = 0; i < motors.size(); i++)
         {
@@ -1259,8 +1260,8 @@ public class Drivetrain
         }
     }
 
-    private  void setTargetPositions(List<DcMotor> motors,
-                                     List<Integer> tgtPositions)
+    private  void setTargetPositions(List<DcMotorEx> motors,
+                                     List<Integer>   tgtPositions)
     {
         for (int m = 0; m < motors.size(); m++)
         {
