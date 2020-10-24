@@ -10,7 +10,6 @@ import java.util.Locale;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_TO_POSITION;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
-import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_WITHOUT_ENCODER;
 
 public class Lifter
 {
@@ -51,13 +50,10 @@ public class Lifter
 
     public void setLiftPos(LiftPos pos)
     {
-        double stwDeg = 0.0;
-        double grbDeg = 180.0;
-        double hldDeg = 90.0;
-        double drpDeg = 150.0;
-
-        if(lastRunMode != RUN_TO_POSITION) liftMotor.setMode(RUN_TO_POSITION);
-        lastRunMode = RUN_TO_POSITION;
+        final double stwDeg = 0.0;
+        final double grbDeg = 180.0;
+        final double hldDeg = 90.0;
+        final double drpDeg = 150.0;
 
         switch (pos)
         {
@@ -68,8 +64,10 @@ public class Lifter
             case HERE : liftMotor.setTargetPosition(lftCnts); break;
         }
 
-        liftMotor.setPower(0.2);
-        //liftMotor.setVelocity(LIFTER_CPD * 10);
+        if(lastRunMode != RUN_TO_POSITION) liftMotor.setMode(RUN_TO_POSITION);
+        lastRunMode = RUN_TO_POSITION;
+
+        liftMotor.setVelocity(LIFTER_CPD * 10);
     }
 
     public void setLiftSpd(double pwr)

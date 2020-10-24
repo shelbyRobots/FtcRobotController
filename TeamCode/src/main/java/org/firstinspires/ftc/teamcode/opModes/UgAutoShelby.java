@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.opModes;
 import android.graphics.Bitmap;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.vuforia.CameraDevice;
@@ -106,7 +106,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
                 dashboard.displayPrintf(10, "GyroReady %s RGyroReady %s",
                         gyroReady, robot.gyroReady);
                 StringBuilder motStr = new StringBuilder("ENCs:");
-                for (Map.Entry<String, DcMotor> e : robot.motors.entrySet())
+                for (Map.Entry<String, DcMotorEx> e : robot.motors.entrySet())
                 {
                     motStr.append(" ");
                     motStr.append(e.getKey());

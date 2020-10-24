@@ -124,10 +124,10 @@ public class Drivetrain
     public void driveToTarget(double pwr, int thresh)
     {
         setBusyAnd(false);
-        setMode(robot.leftMotors, DcMotor.RunMode.RUN_TO_POSITION);
-        setMode(robot.rightMotors, DcMotor.RunMode.RUN_TO_POSITION);
         setTargetPositions(robot.leftMotors, tgtLpositions);
         setTargetPositions(robot.rightMotors, tgtRpositions);
+        setMode(robot.leftMotors, DcMotor.RunMode.RUN_TO_POSITION);
+        setMode(robot.rightMotors, DcMotor.RunMode.RUN_TO_POSITION);
         setInitValues();
         logStartValues("DRIVE_TRGT " + curLpositions.get(0) + " " + curRpositions.get(0)+
                                " - " + tgtLpositions.get(0) + " " + tgtRpositions.get(0));
@@ -402,11 +402,10 @@ public class Drivetrain
 
         RobotLog.ii(TAG, "Angle: %5.2f Counts: %4d CHdg: %6.3f", angle, counts, initHdg);
 
-        setTargetPositions(robot.leftMotors, tgtLpositions);
-        setTargetPositions(robot.rightMotors, tgtRpositions);
-
         setMode(robot.leftMotors, DcMotor.RunMode.RUN_TO_POSITION);
         setMode(robot.rightMotors, DcMotor.RunMode.RUN_TO_POSITION);
+        setTargetPositions(robot.leftMotors, tgtLpositions);
+        setTargetPositions(robot.rightMotors, tgtRpositions);
 
         moveInit(pwr, pwr);
     }
@@ -625,11 +624,10 @@ public class Drivetrain
         trgtHdg  = angNormalize(initHdg  + (int) Math.round(angle));
         logStartValues("ENC_CURVE");
 
-        setTargetPositions(robot.leftMotors, tgtLpositions);
-        setTargetPositions(robot.rightMotors, tgtRpositions);
-
         setMode(robot.leftMotors, DcMotor.RunMode.RUN_TO_POSITION);
         setMode(robot.rightMotors, DcMotor.RunMode.RUN_TO_POSITION);
+        setTargetPositions(robot.leftMotors, tgtLpositions);
+        setTargetPositions(robot.rightMotors, tgtRpositions);
 
         double arl = Math.abs(rl);
         double arr = Math.abs(rr);
