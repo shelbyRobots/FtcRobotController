@@ -49,5 +49,5 @@ public class Intake {
     private DcMotorEx intakeLeft;
     private DcMotorEx intakeRight;
     protected HardwareMap hwMap;
-    private static final String TAG = "SJH_LFT";
+    private static final String TAG = "SJH_INT";
 }
