@@ -714,6 +714,9 @@ public class Drivetrain
         int curRcnt = curRpositions.get(0);
         double radHdg = Math.toRadians(curHdg);
 
+        double cH = Math.cos(radHdg);
+        double sH = Math.sin(radHdg);
+
         if(curDriveDir != robot.getDriveDir())
         {
             curDriveDir = robot.getDriveDir();
@@ -724,14 +727,37 @@ public class Drivetrain
 
         int dCntL = curLcnt - lstLpositions.get(0);
         int dCntR = curRcnt - lstRpositions.get(0);
-        double dX = 0.5*(dCntL+dCntR)/DEF_CPI * Math.cos(radHdg);
-        double dY = 0.5*(dCntL+dCntR)/DEF_CPI * Math.sin(radHdg);
-        xPos += dX;
-        yPos += dY;
+        double dXRel = 0.0;
+        double dYRel = 0.0;
+        double dXAbs = 0.0;
+        double dYAbs = 0.0;
+        double dAng = (dCntR-dCntL)/(CPI*robot.BOT_WIDTH);
+
+        if(Math.abs(dCntR - dCntL) <= Math.abs(dCntR + dCntL) * 0.01)
+        {
+            dXRel = (dCntR + dCntL)/2.0/CPI;
+            dYRel = 0;
+        }
+        else
+        {
+            double trajR = robot.BOT_WIDTH * (dCntR + dCntL) / (2 * (dCntR-dCntL));
+            dXRel = trajR * Math.sin(dAng);
+            dYRel = trajR * (1 - Math.cos(dAng));
+            dXAbs = dXRel * cH + dYRel * sH; //TODO subtract?
+            dYAbs = dXRel * sH - dYRel * cH;
+        }
+        boolean OLDWAY = false;
+        if(OLDWAY)
+        {
+            dXAbs = 0.5 * (dCntL + dCntR) / DEF_CPI * cH;
+            dYAbs = 0.5 * (dCntL + dCntR) / DEF_CPI * sH;
+        }
+
+        xPos += dXAbs;
+        yPos += dYAbs;
         estPos.setX(xPos);
         estPos.setY(yPos);
-        double dH = (dCntR-dCntL)/CPI/ robot.BOT_WIDTH;
-        estHdg += dH;
+        estHdg += dAng;
         setPositions(lstLpositions, curLpositions, 0);
         setPositions(lstRpositions, curRpositions, 0);
     }
@@ -809,7 +835,7 @@ public class Drivetrain
 
         double err = getGyroError(thdg);
 
-        double steer = getSteer(err, Kp_GyrCorrection);
+        double steer = getSteer(err);
         if (dir == Direction.REVERSE) steer *= -1;
 
         if     (pwr + steer >  1.0) steer =  1.0 - pwr;
@@ -871,9 +897,9 @@ public class Drivetrain
         return robotError;
     }
 
-    private double getSteer(double error, double PCoeff)
+    private double getSteer(double error)
     {
-        return Range.clip(error * PCoeff, -1, 1);
+        return Range.clip(error * Kp_GyrCorrection, -1, 1);
     }
 
     private double getTurnSteer(double error)
