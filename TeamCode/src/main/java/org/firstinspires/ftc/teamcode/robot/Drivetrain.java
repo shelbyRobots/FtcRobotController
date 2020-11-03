@@ -147,21 +147,6 @@ public class Drivetrain
         setEndValues("DRIVE_TRGT");
     }
 
-    public void driveToColor(double pwr, int thresh )
-    {
-        driveDistance(15, pwr, Direction.FORWARD);
-
-        int totalcolor=0;
-        while(op.opModeIsActive()    &&
-                !op.isStopRequested()  &&
-                totalcolor < thresh)
-        {
-            setCurValues();
-            totalcolor = curRed + curGrn + curBlu;
-        }
-        stopMotion();
-    }
-
     public void driveDistance(double dst, double pwr, Direction dir)
     {
         int counts = distanceToCounts(dst);
@@ -691,10 +676,8 @@ public class Drivetrain
         currPt = curPt;
         if(numPts == 0 || resetEstPt)
         {
-            xPos = currPt.getX();
-            yPos = currPt.getY();
-            estPos.setX(xPos);
-            estPos.setY(yPos);
+            estPos.setX(currPt.getX());
+            estPos.setY(currPt.getY());
             estHdg = initHdg;
         }
         ++numPts;
@@ -710,6 +693,14 @@ public class Drivetrain
 
     public void estimatePosition()
     {
+        if(curDriveDir != robot.getDriveDir())
+        {
+            curDriveDir = robot.getDriveDir();
+            setPositions(lstLpositions, curLpositions, 0);
+            setPositions(lstRpositions, curRpositions, 0);
+            logData(true, "DDIR=" + curDriveDir.toString());
+        }
+
         int curLcnt = curLpositions.get(0);
         int curRcnt = curRpositions.get(0);
         double radHdg = Math.toRadians(curHdg);
@@ -717,47 +708,34 @@ public class Drivetrain
         double cH = Math.cos(radHdg);
         double sH = Math.sin(radHdg);
 
-        if(curDriveDir != robot.getDriveDir())
-        {
-            curDriveDir = robot.getDriveDir();
-            setPositions(lstLpositions, curLpositions, 0);
-            setPositions(lstRpositions, curRpositions, 0);
-            logData(true, "DDIR=" + curDriveDir.toString());
-        } 
-
         int dCntL = curLcnt - lstLpositions.get(0);
         int dCntR = curRcnt - lstRpositions.get(0);
-        double dXRel = 0.0;
-        double dYRel = 0.0;
-        double dXAbs = 0.0;
-        double dYAbs = 0.0;
+        int difCnt = dCntR - dCntL;
+        int sumCnt = dCntR + dCntL;
+        double avgCnt = sumCnt/2.0;
         double dAng = (dCntR-dCntL)/(CPI*robot.BOT_WIDTH);
 
-        if(Math.abs(dCntR - dCntL) <= Math.abs(dCntR + dCntL) * 0.01)
+        estHdg = angNormalize(estHdg + dAng);
+
+        double dXAbs = 0.0;
+        double dYAbs = 0.0;
+        double hyp = 0.0;
+
+        if(Math.abs(dAng) <= 0.00156) //straight - roughly 1 enc cnt diff btwn L & R in 10000 cnts
         {
-            dXRel = (dCntR + dCntL)/2.0/CPI;
-            dYRel = 0;
+            hyp = (dCntR + dCntL)/2.0;
         }
         else
         {
-            double trajR = robot.BOT_WIDTH * (dCntR + dCntL) / (2 * (dCntR-dCntL));
-            dXRel = trajR * Math.sin(dAng);
-            dYRel = trajR * (1 - Math.cos(dAng));
-            dXAbs = dXRel * cH + dYRel * sH; //TODO subtract?
-            dYAbs = dXRel * sH - dYRel * cH;
-        }
-        boolean OLDWAY = false;
-        if(OLDWAY)
-        {
-            dXAbs = 0.5 * (dCntL + dCntR) / DEF_CPI * cH;
-            dYAbs = 0.5 * (dCntL + dCntR) / DEF_CPI * sH;
+            double trajR = avgCnt/dAng;
+            hyp = 2 * trajR * Math.sin(dAng/2.0);
         }
 
-        xPos += dXAbs;
-        yPos += dYAbs;
-        estPos.setX(xPos);
-        estPos.setY(yPos);
-        estHdg += dAng;
+        dXAbs = hyp * Math.cos(estHdg - dAng/2.0)/CPI;
+        dYAbs = hyp * Math.sin(estHdg - dAng/2.0)/CPI;
+
+        estPos.setX(estPos.getX() + dXAbs);
+        estPos.setY(estPos.getY() + dYAbs);
         setPositions(lstLpositions, curLpositions, 0);
         setPositions(lstRpositions, curRpositions, 0);
     }
@@ -1411,10 +1389,8 @@ public class Drivetrain
     private ShelbyBot.DriveDir lastDriveDir;
     private ShelbyBot.DriveDir curDriveDir;
 
-    private double xPos = 0.0;
-    private double yPos = 0.0;
-    public Point2d estPos = new Point2d(xPos, yPos);
-    private double  estHdg = 0.0;
+    public Point2d estPos = new Point2d(0.0, 0.0);
+    private double estHdg = 0.0;
     private int numPts = 0;
 
     private double noMoveTimeout = 1.0;

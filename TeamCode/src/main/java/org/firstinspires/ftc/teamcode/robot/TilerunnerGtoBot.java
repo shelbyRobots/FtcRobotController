@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.PwmControl;
@@ -158,7 +159,7 @@ public class TilerunnerGtoBot extends ShelbyImuBot
                 srvCntrlrEx.setServoPwmRange(rPort, range);
             }
 
-            elevMotor = hwMap.dcMotor.get("elevmotor");
+            elevMotor = hwMap.get(DcMotorEx.class, "elevmotor");
             elevMotor.setDirection(DcMotor.Direction.REVERSE);
             elevMotor.setPower(0.0);
             //elevMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

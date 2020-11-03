@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.test;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -15,11 +15,10 @@ import org.firstinspires.ftc.teamcode.util.ManagedGamepad;
  * INCREMENT sets how much to increase/decrease the power each cycle
  * CYCLE_MS sets the update period.
  */
-@Autonomous(name = "Concept: Step Motor Speed", group = "Test")
+@TeleOp(name = "Testloader", group = "Test")
 //@Disabled
 public class Testloader extends InitLinearOpMode
 {
-
     private static final double INCREMENT = 0.02;     // amount to step motor each CYCLE_MS cycle
     private static final int     CYCLE_MS = 50;       // period of each cycle
     private static final double   MAX_FWD =  1.0;     // Maximum FWD power applied to motor
