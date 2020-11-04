@@ -37,8 +37,7 @@ public class Intake {
         return success;
 
     }
-
-
+    
     public void suck(double pwr){
 
         intakeLeft.setPower(pwr);

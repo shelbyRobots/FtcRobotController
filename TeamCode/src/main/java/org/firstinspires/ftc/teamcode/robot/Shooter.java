@@ -25,7 +25,7 @@ public class Shooter {
         catch (Exception e)
         {
             RobotLog.ee(TAG, "ERROR get hardware map initShooter\n" + e.toString());
-        }
+        }   
 
         if(shooter != null)
         {
@@ -38,11 +38,8 @@ public class Shooter {
     }
 
     private double calculate(double distance, double hight, double hightOfShooter){
-        double peakY = hight;
-        double shooterHight =  hightOfShooter;
         //hight
-        double h = peakY - shooterHight;
-        double dis = distance;
+        double h = hight - hightOfShooter;
 
         double g = 9.81 *3.28084 *12;
         //diameter of the wheels
@@ -52,7 +49,7 @@ public class Shooter {
         //starting y velocity
         double Vynot = Math.sqrt(2 * h * g);
         //starting x velocity
-        double Vxnot = ((dis * g) / Vynot);
+        double Vxnot = ((distance * g) / Vynot);
         double atanconst = Vynot/Vxnot;
         double theta = Math.atan(atanconst);
         double Vnot = Math.sqrt(Math.pow(Vxnot, 2) + Math.pow(Vynot, 2));
@@ -63,10 +60,11 @@ public class Shooter {
 
         return rpm;
     }
+
     //Josh was here
     public void shoot()
     {
-        shooter.setPower(calculate(16, 36, 12));
+
     }
 
     private final double SHOOTER_CPER = 6000; //quad encoder cnts/encoder rev
