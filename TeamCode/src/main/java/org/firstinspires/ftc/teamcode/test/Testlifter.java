@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.util.RobotLog;
 import org.firstinspires.ftc.teamcode.opModes.InitLinearOpMode;
 import org.firstinspires.ftc.teamcode.util.ManagedGamepad;
 
-@TeleOp(name = "Testloader", group = "Test")
+@TeleOp(name = "Testlifter", group = "Test")
 
 public class Testlifter extends InitLinearOpMode {
     private static final double INCREMENT = 0.02;     // amount to step motor each CYCLE_MS cycle
