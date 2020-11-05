@@ -159,7 +159,7 @@ public class ConceptVuMarkIdentification extends LinearOpMode {
          */
         parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
 
-        this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
+        this.vuforia = ClassFactory.getInstance().createVuforia(parameters);
 
         Vuforia.setFrameFormat(PIXEL_FORMAT.GRAYSCALE, false);
         Vuforia.setFrameFormat(PIXEL_FORMAT.RGB565, true);
