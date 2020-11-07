@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.util.ManagedGamepad;
 @TeleOp(name = "Testlifter", group = "Test")
 
 public class Testlifter extends InitLinearOpMode {
-    private static final int CYCLE_MS = 50;       // period of each cycle
+    private static final int CYCLE_MS = 20;       // period of each cycle
 
     // Define class members
 

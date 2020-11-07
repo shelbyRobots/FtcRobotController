@@ -18,28 +18,26 @@ public class Loader {
         try
         {
             loadMotor = hwMap.get(DcMotorEx.class, "loader");
+            loadMotor.setDirection(DcMotor.Direction.FORWARD);
+            loadMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            loadMotor.setPower(0);
             success = true;
         }
         catch (Exception e)
         {
-          RobotLog.ee(TAG, "ERROR get hardware map init\n" + e.toString());
+          RobotLog.ee(TAG, "ERROR in loader init\n" + e.toString());
         }
 
-        if(loadMotor != null){
-
-            loadMotor.setDirection(DcMotor.Direction.FORWARD);
-            loadMotor.setPower(0);
-        }
         return success;
-
     }
 
 
-    public void load (double pwr){
-
+    public void load (double pwr)
+    {
         loadMotor.setPower(pwr);
     }
+
     private DcMotorEx loadMotor;
     protected HardwareMap hwMap;
-    private static final String TAG = "SJH_LDR0";
+    private static final String TAG = "SJH_LDR";
 }
