@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.RobotLog;
 
+import java.util.Locale;
+
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
 
 public class Shooter {
@@ -34,6 +36,20 @@ public class Shooter {
         return success;
     }
 
+    public void update(){
+        encPos = shooter.getCurrentPosition();
+        curSpd = shooter.getVelocity();
+    }
+
+    public String toString(){
+        return String.format(Locale.US, "shoot %5d %4.2f %4.2f %4.2f",
+                encPos, curSpd, rps, dist);
+    }
+
+    public void stop(){
+        shooter.setVelocity(0);
+    }
+
     private double calcRps(double distance){
         double height = 35;
         double heightOfShooter = 12;
@@ -47,11 +63,13 @@ public class Shooter {
         double theta = Math.toRadians(35);
         double v0 = Math.sqrt((-g*Math.pow(distance,2))/
                 (2*Math.pow(Math.cos(theta),2)*(height-distance*Math.tan(theta)-heightOfShooter)));
-        return 2 * (v0 / cir);
+        rps = 2 * (v0 / cir);
+        return rps;
     }
 
     public void shoot(double distance)
     {
+        dist = distance;
         shooter.setVelocity(calcRps(distance));
     }
 
@@ -59,7 +77,11 @@ public class Shooter {
     private final double SHOOTER_INT_GEAR = 1; //Neverest 20
     private final double SHOOTER_EXT_GEAR = 1.0;
     private final double LIFTER_CPR = SHOOTER_CPER * SHOOTER_INT_GEAR * SHOOTER_EXT_GEAR;
+    private int encPos = 0;
+    private double curSpd = 0;
     protected HardwareMap hwMap;
     public DcMotorEx shooter;
     private static final String TAG = "SJH_SHT";
+    private double dist;
+    private double rps;
 }
