@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.RobotLog;
 
+import java.util.Locale;
+
 public class Intake {
 
     public Intake(HardwareMap map){
@@ -17,8 +19,10 @@ public class Intake {
         boolean success = false;
             try
             {
-                intakeLeft = hwMap.get(DcMotorEx.class, "inLeft");
-                intakeRight = hwMap.get(DcMotorEx.class, "inRight");
+                intaker = hwMap.get(DcMotorEx.class, "intake");
+                intaker.setDirection(DcMotor.Direction.REVERSE);
+                intaker.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                intaker.setPower(0);
                 success = true;
             }
             catch (Exception e)
@@ -26,27 +30,31 @@ public class Intake {
               RobotLog.ee(TAG, "ERROR get hardware map initIntake\n" + e.toString());
             }
 
-            if(intakeLeft != null && intakeRight != null){
-
-                intakeLeft.setDirection(DcMotor.Direction.REVERSE);
-                intakeLeft.setPower(0);
-
-                intakeRight.setDirection(DcMotor.Direction.FORWARD);
-                intakeRight.setPower(0);
-            }
         return success;
 
     }
-    
+
+    public String toString(){
+        return String.format(Locale.US,
+                "intake %5d %4.2f",
+                encPos, curSpd);
+    }
+    public void update(){
+        encPos = intaker.getCurrentPosition();
+        curSpd = intaker.getVelocity();
+    }
+
+    public void stop(){
+        intaker.setPower(0);
+    }
+
     public void suck(double pwr){
 
-        intakeLeft.setPower(pwr);
-        intakeRight.setPower(pwr);
-
-
+        intaker.setPower(pwr);
     }
-    private DcMotorEx intakeLeft;
-    private DcMotorEx intakeRight;
+    private DcMotorEx intaker;
     protected HardwareMap hwMap;
     private static final String TAG = "SJH_INT";
+    private int encPos;
+    private double curSpd;
 }

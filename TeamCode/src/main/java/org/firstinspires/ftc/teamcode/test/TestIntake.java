@@ -4,13 +4,13 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.opModes.InitLinearOpMode;
-import org.firstinspires.ftc.teamcode.robot.Loader;
+import org.firstinspires.ftc.teamcode.robot.Intake;
 import org.firstinspires.ftc.teamcode.util.ManagedGamepad;
 
 
-@TeleOp(name = "Testloader", group = "Test")
+@TeleOp(name = "Testintake", group = "Test")
 //@Disabled
-public class Testloader extends InitLinearOpMode
+public class TestIntake extends InitLinearOpMode
 {
     private static final double INCREMENT = 0.02;     // amount to step motor each CYCLE_MS cycle
     private static final int     CYCLE_MS = 20;       // period of each cycle
@@ -20,15 +20,15 @@ public class Testloader extends InitLinearOpMode
     // Define class members
     private double power = 0;
 
-    private static final String TAG = "SJH_TLD";
+    private static final String TAG = "SJH_TIN";
 
     @Override
     public void runOpMode()
     {
         initCommon(this, false, false, false, false);
 
-        Loader loader = new Loader(hardwareMap);
-        loader.init();
+        Intake intake = new Intake(hardwareMap);
+        intake.init();
 
         int p;
 
@@ -43,7 +43,8 @@ public class Testloader extends InitLinearOpMode
             p=0;
 
             gpad1.update();
-            loader.update();
+            intake.update();
+
             boolean step_up    = gpad1.just_pressed(ManagedGamepad.Button.D_UP);
             boolean step_down  = gpad1.just_pressed(ManagedGamepad.Button.D_DOWN);
             boolean zeroize    = gpad1.just_pressed(ManagedGamepad.Button.D_RIGHT);
@@ -52,7 +53,7 @@ public class Testloader extends InitLinearOpMode
             else if(step_down && power > MAX_REV)  power -= INCREMENT;
             else if(zeroize)                       power = 0.0;
 
-            loader.load(power);
+            intake.suck(power);
 
             // Display the current value
             dashboard.displayPrintf(p++, "Motor Power %4.2f", power);
@@ -66,7 +67,7 @@ public class Testloader extends InitLinearOpMode
             sleep(CYCLE_MS);
         }
 
-        loader.load(0.0);
+        intake.stop();
 
         dashboard.displayText(  1, "Done." );
     }

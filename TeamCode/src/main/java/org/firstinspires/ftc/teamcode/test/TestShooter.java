@@ -51,10 +51,13 @@ public class TestShooter extends InitLinearOpMode
             boolean step_up    = gpad1.just_pressed(ManagedGamepad.Button.D_UP);
             boolean step_down  = gpad1.just_pressed(ManagedGamepad.Button.D_DOWN);
             boolean zeroize    = gpad1.just_pressed(ManagedGamepad.Button.D_RIGHT);
+            boolean shoot      = gpad1.just_pressed(ManagedGamepad.Button.D_LEFT);
+
 
             if (step_up && distance < MAX_DIST) distance += INCREMENT;
             if (step_down && distance > MIN_DIST) distance -= INCREMENT;
             if (zeroize) shooter.stop();
+            if (shoot) shooter.shoot(distance);
 
             dashboard.displayPrintf(1, shooter.toString());
             RobotLog.dd(TAG, shooter.toString());

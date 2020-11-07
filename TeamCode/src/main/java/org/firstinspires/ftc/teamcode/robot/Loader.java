@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.RobotLog;
 
+import java.util.Locale;
+
 public class Loader {
 
     public Loader(HardwareMap map){
@@ -31,6 +33,15 @@ public class Loader {
         return success;
     }
 
+    public void update(){
+        encPos = loadMotor.getCurrentPosition();
+        curSpd = loadMotor.getVelocity();
+    }
+
+    public String toString(){
+        return String.format(Locale.US, "shoot %5d %4.2f",
+                encPos, curSpd);
+    }
 
     public void load (double pwr)
     {
@@ -40,4 +51,6 @@ public class Loader {
     private DcMotorEx loadMotor;
     protected HardwareMap hwMap;
     private static final String TAG = "SJH_LDR";
+    private int encPos;
+    private double curSpd;
 }
