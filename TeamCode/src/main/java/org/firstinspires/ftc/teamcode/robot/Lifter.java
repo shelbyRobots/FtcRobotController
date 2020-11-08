@@ -48,19 +48,33 @@ public class Lifter
         return success;
     }
 
-    public void setLiftPos(LiftPos pos)
+    private int convLiftpos(LiftPos pos)
     {
+        int encPos = 0;
         final double stwDeg = 0.0;
         final double grbDeg = 180.0;
         final double hldDeg = 90.0;
         final double drpDeg = 150.0;
-
         switch (pos)
         {
-            case STOW : liftMotor.setTargetPosition((int)(stwDeg*LIFTER_CPD)); break;
-            case GRAB : liftMotor.setTargetPosition((int)(grbDeg*LIFTER_CPD)); break;
-            case DROP : liftMotor.setTargetPosition((int)(hldDeg*LIFTER_CPD)); break;
-            case HOLD : liftMotor.setTargetPosition((int)(drpDeg*LIFTER_CPD)); break;
+            case STOW : encPos = (int)(stwDeg*LIFTER_CPD); break;
+            case GRAB : encPos = (int)(grbDeg*LIFTER_CPD); break;
+            case DROP : encPos = (int)(hldDeg*LIFTER_CPD); break;
+            case HOLD : encPos = (int)(drpDeg*LIFTER_CPD); break;
+            case HERE : encPos = lftCnts; break;
+        }
+        return encPos;
+    }
+
+    public void setLiftPos(LiftPos pos)
+    {
+        int encPos = convLiftpos(pos);
+        switch (pos)
+        {
+            case STOW : liftMotor.setTargetPosition(encPos); break;
+            case GRAB : liftMotor.setTargetPosition(encPos); break;
+            case DROP : liftMotor.setTargetPosition(encPos); break;
+            case HOLD : liftMotor.setTargetPosition(encPos); break;
             case HERE : liftMotor.setTargetPosition(lftCnts); break;
         }
 
@@ -72,7 +86,8 @@ public class Lifter
 
     public void setLiftSpd(double pwr)
     {
-        if(Math.abs(pwr) < 0.05 && lastRunMode != RUN_TO_POSITION)
+        double power = pwr;
+        if(Math.abs(power) < 0.05 && lastRunMode != RUN_TO_POSITION)
         {
             setLiftPos(LiftPos.HERE);
         }
@@ -83,7 +98,12 @@ public class Lifter
                 liftMotor.setMode(RUN_USING_ENCODER);
                 lastRunMode = RUN_USING_ENCODER;
             }
-            liftMotor.setVelocity(pwr * LIFTER_CPD * 20);
+
+            //safetycheck
+          if (lftCnts <= convLiftpos(LiftPos.STOW) ||
+                  lftCnts >=convLiftpos(LiftPos.GRAB)) power = 0;
+
+            liftMotor.setVelocity(power * LIFTER_CPD * 20);
         }
     }
 
@@ -129,8 +149,8 @@ public class Lifter
         CLOSED
     }
 
-    private DcMotorEx liftMotor;
-    private Servo clampServo;
+    public DcMotorEx liftMotor;
+    public Servo clampServo;
 
     private DcMotor.RunMode lastRunMode;
     private ClampPos clmpPos;

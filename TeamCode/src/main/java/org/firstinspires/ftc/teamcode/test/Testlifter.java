@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.opModes.InitLinearOpMode;
+import org.firstinspires.ftc.teamcode.robot.Lifter;
 import org.firstinspires.ftc.teamcode.util.ManagedGamepad;
 
 @TeleOp(name = "Testlifter", group = "Test")
@@ -22,6 +23,7 @@ public class Testlifter extends InitLinearOpMode {
     private static final DcMotor.Direction LEFT_DIR = DcMotor.Direction.FORWARD;
 
     private static final int MAX_MOTORS = 4;
+    private Lifter lifter = null;
 
     private static final String TAG = "SJH_RMT";
 
@@ -32,25 +34,10 @@ public class Testlifter extends InitLinearOpMode {
     public void runOpMode() {
         initCommon(this, false, false, false, false);
 
+        lifter = new Lifter(hardwareMap);
+        lifter.init();
         int p;
 
-        String motorName = "lifter";
-        String servoName = "grabber";
-        DcMotor mot = null;
-        Servo srv = null;
-
-        try {
-            mot = hardwareMap.dcMotor.get(motorName);
-            srv = hardwareMap.servo.get(servoName);
-        } catch (IllegalArgumentException e) {
-            RobotLog.ee(TAG, "Problem finding motor " + motorName);
-        }
-
-        RobotLog.dd(TAG, "Found motor " + motorName + " and " + servoName);
-        if (mot != null) {
-            mot.setDirection(LEFT_DIR);
-            mot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        }
 
         // Wait for the start button
         dashboard.displayPrintf(0, "Press Start to run Motors.");
@@ -58,11 +45,11 @@ public class Testlifter extends InitLinearOpMode {
         int encPos = 0;
         double srvPos = 0;
         while (!isStarted()) {
-            if (mot != null) {
-                encPos = mot.getCurrentPosition();
+            if (lifter.liftMotor != null) {
+                encPos = lifter.liftMotor.getCurrentPosition();
             }
-            if (srv != null){
-                srvPos = srv.getPosition();
+            if (lifter.clampServo != null){
+                srvPos = lifter.clampServo.getPosition();
             }
             dashboard.displayPrintf(1, "CNT %d", encPos);
             dashboard.displayPrintf(2, "CNT %d", srvPos);
@@ -71,33 +58,45 @@ public class Testlifter extends InitLinearOpMode {
         }
         waitForStart();
 
-        if (mot == null || srv == null) return;
+        if (lifter.liftMotor == null || lifter.clampServo == null) return;
 
         // Ramp motor speeds till stop pressed.
         while (opModeIsActive()) {
             p = 0;
 
             gpad1.update();
-            boolean step_up = gpad1.just_pressed(ManagedGamepad.Button.D_UP);
-            boolean step_down = gpad1.just_pressed(ManagedGamepad.Button.D_DOWN);
-            boolean ungrab = gpad1.just_pressed(ManagedGamepad.Button.D_RIGHT);
-            boolean grab = gpad1.just_pressed(ManagedGamepad.Button.R_BUMP);
-            if (step_up && power < MAX_FWD) power += INCREMENT;
-            else if (step_down && power > MAX_REV) power -= INCREMENT;
-            else if (grab) srv.setPosition(closeGrab);
-            else if (ungrab) srv.setPosition(openGrab);
+            double lftPwr = -gpad1.value(ManagedGamepad.AnalogInput.L_STICK_Y);
+            boolean ungrip = gpad1.just_pressed(ManagedGamepad.Button.L_BUMP);
+            boolean grip = gpad1.just_pressed(ManagedGamepad.Button.R_BUMP);
+            boolean stow = gpad1.just_pressed(ManagedGamepad.Button.A);
+            boolean grab = gpad1.just_pressed(ManagedGamepad.Button.B);
+            boolean hold = gpad1.just_pressed(ManagedGamepad.Button.X);
+            boolean drop = gpad1.just_pressed(ManagedGamepad.Button.Y);
+
+            if (grip) lifter.clampServo.setPosition(closeGrab);
+            else if (ungrip) lifter.clampServo.setPosition(openGrab);
+
+            double safety = 0.5;
+            if(lftPwr > safety) lftPwr = safety;
+            if(lftPwr < -safety) lftPwr = -safety;
+
+            if(stow)lifter.setLiftPos(Lifter.LiftPos.STOW);
+            else if(grab)lifter.setLiftPos(Lifter.LiftPos.GRAB);
+            else if(hold)lifter.setLiftPos(Lifter.LiftPos.HOLD);
+            else if(drop)lifter.setLiftPos(Lifter.LiftPos.DROP);
+            else if(lftPwr != 0.0) lifter.setLiftSpd( lftPwr);
 
             // Display the current value
             dashboard.displayPrintf(MAX_MOTORS + p++, "Motor Power %4.2f", power);
-            encPos = mot.getCurrentPosition();
+            encPos = lifter.liftMotor.getCurrentPosition();
             dashboard.displayPrintf(1, "Mot CNT:%d PWR:%.2f MOD:%s",
-                    encPos, power, mot.getMode());
+                    encPos, power, lifter.liftMotor.getMode());
 
-            srvPos = srv.getPosition();
+            srvPos = lifter.clampServo.getPosition();
             dashboard.displayPrintf(1, "Mot CNT:%d PWR:%.2f MOD:%s",
                     srvPos);
 
-            mot.setPower(power);
+            lifter.liftMotor.setPower(power);
 
             dashboard.displayPrintf(MAX_MOTORS + p++, "Press Stop to end test.");
             dashboard.displayPrintf(MAX_MOTORS + p++, "Incr power : Dpad up");
@@ -108,7 +107,7 @@ public class Testlifter extends InitLinearOpMode {
             sleep(CYCLE_MS);
         }
 
-        mot.setPower(0.0);
+        lifter.liftMotor.setPower(0.0);
         dashboard.displayText(MAX_MOTORS + 1, "Done.");
     }
 }

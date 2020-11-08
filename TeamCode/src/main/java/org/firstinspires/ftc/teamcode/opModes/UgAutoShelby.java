@@ -666,17 +666,17 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
                 "DRIVE", snm, spt, ept, fhd, speed, dir);
 
         Drivetrain.Direction ddir = Drivetrain.Direction.FORWARD;
-        drvTrn.logData(true, seg.getName() + " move");
+        drvTrn.logData(true, snm + " move");
         drvTrn.setDrvTuner(fudge);
 
         timer.reset();
 
-        if(seg.getTgtType() == Segment.TargetType.COLOR)
+        if(ttype == Segment.TargetType.COLOR)
         {
             RobotLog.dd(TAG, "colorSensor is %s", robot.colorSensor == null ? "null" : "good");
         }
 
-        if(robot.colorSensor != null && seg.getTgtType() == Segment.TargetType.COLOR)
+        if(robot.colorSensor != null && ttype == Segment.TargetType.COLOR)
         {
             RobotLog.dd(TAG,"Doing color seg %d", colSegNum);
             colSegNum++;
