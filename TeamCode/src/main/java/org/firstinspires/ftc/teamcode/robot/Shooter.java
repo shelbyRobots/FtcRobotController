@@ -50,7 +50,7 @@ public class Shooter {
         shooter.setVelocity(0);
     }
 
-    private double calcRps(double distance){
+    private double calcCps(double distance){
         double height = 35;
         double heightOfShooter = 12;
 
@@ -63,20 +63,20 @@ public class Shooter {
         double theta = Math.toRadians(35);
         double v0 = Math.sqrt((-g*Math.pow(distance,2))/
                 (2*Math.pow(Math.cos(theta),2)*(height-distance*Math.tan(theta)-heightOfShooter)));
-        rps = 2 * (v0 / cir);
+        rps = 2 * (v0 / cir) * SHOOTER_CPR;
         return rps;
     }
 
     public void shoot(double distance)
     {
         dist = distance;
-        shooter.setVelocity(calcRps(distance));
+        shooter.setVelocity(calcCps(distance));
     }
 
     private final double SHOOTER_CPER = 6000; //quad encoder cnts/encoder rev
     private final double SHOOTER_INT_GEAR = 1; //Neverest 20
     private final double SHOOTER_EXT_GEAR = 1.0;
-    private final double LIFTER_CPR = SHOOTER_CPER * SHOOTER_INT_GEAR * SHOOTER_EXT_GEAR;
+    private final double SHOOTER_CPR = SHOOTER_CPER * SHOOTER_INT_GEAR * SHOOTER_EXT_GEAR;
     private int encPos = 0;
     private double curSpd = 0;
     protected HardwareMap hwMap;
@@ -84,4 +84,13 @@ public class Shooter {
     private static final String TAG = "SJH_SHT";
     private double dist;
     private double rps;
+
+    public static void main(String[] args)
+    {
+        Shooter shtr = new Shooter(null);
+        double dist = 70;
+        double cps = shtr.calcCps(dist);
+        System.out.println(String.format(Locale.US, "Dist %4.2f cps %4.2f rps %4.2f",
+                dist, cps, cps/shtr.SHOOTER_CPR));
+    }
 }

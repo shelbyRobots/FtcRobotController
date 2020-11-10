@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.test;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.opModes.InitLinearOpMode;
@@ -13,6 +14,7 @@ public class Testlifter extends InitLinearOpMode {
     private static final int CYCLE_MS = 20;       // period of each cycle
 
     // Define class members
+    private ElapsedTime period  = new ElapsedTime();
 
     private static final String TAG = "SJH_TLF";
 
@@ -28,19 +30,14 @@ public class Testlifter extends InitLinearOpMode {
         // Wait for the start button
         dashboard.displayPrintf(0, "Press Start to run Motors.");
 
-        int encPos = 0;
-        double srvPos = 0;
         while (!isStarted()) {
-            if (lifter.liftMotor != null) {
-                encPos = lifter.liftMotor.getCurrentPosition();
-            }
-            if (lifter.clampServo != null){
-                srvPos = lifter.clampServo.getPosition();
-            }
-            dashboard.displayPrintf(1, "CNT %d", encPos);
-            dashboard.displayPrintf(2, "CNT %d", srvPos);
+            lifter.update();
 
-            sleep(10);
+            String lStr = lifter.toString();
+            dashboard.displayPrintf(3, lStr);
+            RobotLog.dd(TAG, lStr);
+
+            waitForTick(CYCLE_MS);
         }
         waitForStart();
 
@@ -68,10 +65,6 @@ public class Testlifter extends InitLinearOpMode {
             else if (lsrv) lifter.adjClampPos(-srvIncr);
             else if (rsrv) lifter.adjClampPos(srvIncr);
 
-            double safety = 0.5;
-            if(lftPwr > safety) lftPwr = safety;
-            if(lftPwr < -safety) lftPwr = -safety;
-
             if(stop) lifter.liftMotor.setVelocity(0.0);
             else
             {
@@ -90,12 +83,28 @@ public class Testlifter extends InitLinearOpMode {
             dashboard.displayPrintf(p++, "Press Stop to end test.");
             dashboard.displayPrintf(p++, "Decr srv : Dpad left");
             dashboard.displayPrintf(p++, "Incr srv : Dpad right");
+            dashboard.displayPrintf(p++, "Stow : A");
+            dashboard.displayPrintf(p++, "Grab : B");
+            dashboard.displayPrintf(p++, "Hold : X");
+            dashboard.displayPrintf(p++, "Drop : Y");
             dashboard.displayPrintf(p, "Zero power : Dpad down");
 
-            sleep(CYCLE_MS);
+            waitForTick(CYCLE_MS);
         }
 
         lifter.liftMotor.setPower(0.0);
         dashboard.displayText(1, "Done.");
+    }
+
+    public void waitForTick(long periodMs)
+    {
+        long  remaining = periodMs - (long)period.milliseconds();
+
+        // sleep for the remaining portion of the regular cycle period.
+        if (remaining > 0)
+            sleep(remaining);
+
+        // Reset the cycle clock for the next pass.
+        period.reset();
     }
 }

@@ -93,6 +93,24 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         dashboard.displayPrintf(5, "Pref Delay: %.2f", delay);
 
         setup();
+
+        com.vuforia.CameraCalibration camCal = com.vuforia.CameraDevice.getInstance().getCameraCalibration();
+        Vec4F distParam = camCal.getDistortionParameters();
+        Vec2F camFov    = camCal.getFieldOfViewRads();
+        Vec2F camFlen   = camCal.getFocalLength();
+        Vec2F camPpt    = camCal.getPrincipalPoint();
+        Vec2F camSize   = camCal.getSize();
+
+        RobotLog.dd(TAG, "DistortionParams %f %f %f %f",
+                distParam.getData()[0],
+                distParam.getData()[1],
+                distParam.getData()[2],
+                distParam.getData()[3]);
+        RobotLog.dd(TAG, "CamFOV %f %f", camFov.getData()[0], camFov.getData()[1]);
+        RobotLog.dd(TAG, "CamFlen %f %f", camFlen.getData()[0], camFlen.getData()[1]);
+        RobotLog.dd(TAG, "CamPpt %f %f", camPpt.getData()[0], camPpt.getData()[1]);
+        RobotLog.dd(TAG, "CamSize %f %f", camSize.getData()[0], camSize.getData()[1]);
+
         int initCycle = 0;
         int initSleep = 10;
         timer.reset();
@@ -129,32 +147,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
             sleep(initSleep);
         }
 
-        com.vuforia.CameraCalibration camCal = com.vuforia.CameraDevice.getInstance().getCameraCalibration();
-        Vec4F distParam = camCal.getDistortionParameters();
-        Vec2F camFov    = camCal.getFieldOfViewRads();
-        Vec2F camFlen   = camCal.getFocalLength();
-        Vec2F camPpt    = camCal.getPrincipalPoint();
-        Vec2F camSize   = camCal.getSize();
-
-        RobotLog.dd(TAG, "DistortionParams %f %f %f %f",
-                distParam.getData()[0],
-                distParam.getData()[1],
-                distParam.getData()[2],
-                distParam.getData()[3]);
-        RobotLog.dd(TAG, "CamFOV %f %f", camFov.getData()[0], camFov.getData()[1]);
-        RobotLog.dd(TAG, "CamFlen %f %f", camFlen.getData()[0], camFlen.getData()[1]);
-        RobotLog.dd(TAG, "CamPpt %f %f", camPpt.getData()[0], camPpt.getData()[1]);
-        RobotLog.dd(TAG, "CamSize %f %f", camSize.getData()[0], camSize.getData()[1]);
-
-        telemetry.addData("A", "DistortionParams %f %f %f %f",
-                distParam.getData()[0], distParam.getData()[1],
-                distParam.getData()[2], distParam.getData()[3]);
-        telemetry.addData("B", "CamFOV %f %f", camFov.getData()[0], camFov.getData()[1]);
-        telemetry.addData("C", "CamFlen %f %f", camFlen.getData()[0], camFlen.getData()[1]);
-        telemetry.addData("D", "CamPpt %f %f", camPpt.getData()[0], camPpt.getData()[1]);
-        telemetry.addData("E","CamSize %f %f", camSize.getData()[0], camSize.getData()[1]);
-
-        startMode();
+        if(!isStopRequested()) startMode();
         stopMode();
     }
 
@@ -193,6 +186,8 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
                 break;
             }
         }
+
+        if(isStopRequested()) return;
 
         if(doMen) doMenus();
 

@@ -25,7 +25,7 @@ public class Lifter
         try
         {
             liftMotor = hwMap.get(DcMotorEx.class, "lift");
-            liftMotor.setDirection(DcMotor.Direction.FORWARD);
+            liftMotor.setDirection(DcMotor.Direction.REVERSE); //bevel gear reverses
             liftMotor.setPower(0);
             liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             liftMotor.setMode(RUN_USING_ENCODER);
@@ -72,7 +72,7 @@ public class Lifter
             lastRunMode = RUN_TO_POSITION;
         }
 
-        tgtVel = LIFTER_CPD * 10;
+        tgtVel = LIFTER_CPD * 90;
         liftMotor.setVelocity(tgtVel);
     }
 
@@ -83,7 +83,7 @@ public class Lifter
         {
             setLiftPos(LiftPos.HERE);
         }
-        else
+        else if (Math.abs(power) >= 0.05)
         {
             if(lastRunMode != RUN_USING_ENCODER)
             {
@@ -92,10 +92,10 @@ public class Lifter
             }
 
             //safetycheck
-            if (lftCnts <= convLiftpos(LiftPos.STOW) ||
-                lftCnts >= convLiftpos(LiftPos.GRAB)) power = 0;
+            if (lftCnts <= convLiftpos(LiftPos.STOW) - SAFE_DEG * LIFTER_CPD ||
+                lftCnts >= convLiftpos(LiftPos.GRAB) + SAFE_DEG * LIFTER_CPD) power = 0;
 
-            tgtVel = power * LIFTER_CPD * 10;
+            tgtVel = power * LIFTER_CPD * 45;
             liftMotor.setVelocity(tgtVel);
         }
     }
@@ -165,10 +165,11 @@ public class Lifter
     private LiftPos tgtPos = LiftPos.STOW;
     private int lftCnts = convLiftpos(tgtPos);
     private double tgtVel = 0.0;
+    private static final double SAFE_DEG = 5.0;
 
     private static final double LIFTER_CPER = 28; //quad encoder cnts/encoder rev
     private static final double LIFTER_INT_GEAR = 19.2; //Neverest 20
-    private static final double LIFTER_EXT_GEAR = 1.0;
+    private static final double LIFTER_EXT_GEAR = 1.0; //1:1 bevel
     private static final double LIFTER_CPR = LIFTER_CPER * LIFTER_INT_GEAR * LIFTER_EXT_GEAR; // cnts/outShaftRev
     private static final double LIFTER_CPD = LIFTER_CPR / 360.0;
 

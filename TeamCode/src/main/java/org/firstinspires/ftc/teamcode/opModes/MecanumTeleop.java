@@ -21,7 +21,7 @@ public class MecanumTeleop extends InitLinearOpMode
 {
     private void initPreStart() {
         robot.setName(pmgr.getBotName());
-        prevOpModeType = SkyBot.curOpModeType;
+        ShelbyBot.OpModeType prevOpModeType = SkyBot.curOpModeType;
         ShelbyBot.curOpModeType = ShelbyBot.OpModeType.TELE;
 
         /* Initialize the hardware variables. */
@@ -40,7 +40,7 @@ public class MecanumTeleop extends InitLinearOpMode
         RobotLog.dd(TAG, "Start Aend fHdg %.2f", robot.getAutonEndHdg());
         //RobotLog.dd(TAG, "Start Hdg %.2f", robot.get);
         RobotLog.dd(TAG, "Start Pos %s", robot.getAutonEndPos().toString());
-        RobotLog.dd(TAG, "Start mode to %s", robot.leftMotor.getMode());
+        RobotLog.dd(TAG, "Start mode to %s", robot.leftMotors.get(0).getMode());
     }
 
     private void update()
@@ -251,7 +251,6 @@ public class MecanumTeleop extends InitLinearOpMode
     private boolean fieldAlign = false;
     private boolean useSetVel = true;
     private TilerunnerMecanumBot robot = new TilerunnerMecanumBot();
-    private ShelbyBot.OpModeType prevOpModeType = ShelbyBot.OpModeType.UNKNOWN;
     private Drivetrain dtrn = new Drivetrain();
 
     double raw_lr_x;
