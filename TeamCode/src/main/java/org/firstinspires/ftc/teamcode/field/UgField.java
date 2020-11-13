@@ -44,23 +44,33 @@ public class UgField extends Field
     public static final Point2d RIDP = new Point2d("RIDP", -12.0, -19);
     
     //Red Right Wobble (A/B/C)
-    public static final Point2d ROWA = new Point2d("ROWA",   0.0,-53);
+    public static final Point2d ROWA = new Point2d("ROWA",   6,-53);
     public static final Point2d ROWB = new Point2d("ROWB",  18.0,-47);
     public static final Point2d ROWC = new Point2d("ROWC",  40.0,-53);
 
     //Red Left Wobble (A/B/C)
-    public static final Point2d RIWA = new Point2d("RIWA",  12.0,-44);
-    public static final Point2d RIWB = new Point2d("RIWB",  22.0,-26);
-    public static final Point2d RIWC = new Point2d("RIWC",  52.0,-46);
+    public static final Point2d RIWA = new Point2d("RIWA",  8,-44);
+    public static final Point2d RIWB = new Point2d("RIWB",  8,-26);
+    public static final Point2d RIWC = new Point2d("RIWC",  8,-46);
     //includes offset for veh center. actual
 
-    public static final Point2d ROPA = new Point2d("ROPA",  -8.0,-53);
-    public static final Point2d ROPB = new Point2d("ROPB",  -8.0,-53);
-    public static final Point2d ROPC = new Point2d("ROPC",  -8.0,-53);
+    public static final Point2d ROPA = new Point2d("ROPA",  0,-53);
+    public static final Point2d ROPB = new Point2d("ROPB",  0,-53);
+    public static final Point2d ROPC = new Point2d("ROPC",  0,-53);
 
-    public static final Point2d RIPA = new Point2d("RIPA",  -4.0,-20);
-    public static final Point2d RIPB = new Point2d("RIPB",  -4.0,-20);
-    public static final Point2d RIPC = new Point2d("RIPC",  -4.0,-20);
+    public static final Point2d RIPA = new Point2d("RIPA",  0,-20);
+    public static final Point2d RIPB = new Point2d("RIPB",  0,-20);
+    public static final Point2d RIPC = new Point2d("RIPC",  0,-20);
+
+    //shoot points, Red Outside Shoot A
+    public static final Point2d ROSA = new Point2d("ROSA", -4, -53);
+    public static final Point2d RISA = new Point2d("RISA", -4, -20);
+
+    // Red Outside Grab Wobble
+    public static final Point2d ROGW = new Point2d("ROGW", -54, -8);
+
+    //Red Outside Turn
+    public static final Point2d ROT2 = new Point2d("ROT2", -20, -53);
 
     private static final int ALNC_RED = 0;
     private static final int ALNC_BLU = 1;
