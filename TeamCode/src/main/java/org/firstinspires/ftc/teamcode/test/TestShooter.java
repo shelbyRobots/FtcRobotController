@@ -16,7 +16,7 @@ public class TestShooter extends InitLinearOpMode
     private static final int     CYCLE_MS = 20;       // period of each cycle
     private static final double   MAX_DIST = 136;     // Maximum that we can shoot
     private static final double   MIN_DIST = 60;     // Minimum that we can shoot.
-
+    private static final double   FAV_DIST = 70;
     // Define class members
 
     private static final String TAG = "SJH_TSH";
@@ -29,7 +29,7 @@ public class TestShooter extends InitLinearOpMode
         Shooter shooter = new Shooter(hardwareMap);
         shooter.init();
 
-        int distance = 75;
+        double distance = FAV_DIST;
 
 
         // Wait for the start button
@@ -51,13 +51,22 @@ public class TestShooter extends InitLinearOpMode
             boolean step_up    = gpad1.just_pressed(ManagedGamepad.Button.D_UP);
             boolean step_down  = gpad1.just_pressed(ManagedGamepad.Button.D_DOWN);
             boolean zeroize    = gpad1.just_pressed(ManagedGamepad.Button.D_RIGHT);
-            boolean shoot      = gpad1.just_pressed(ManagedGamepad.Button.D_LEFT);
+            boolean normal     = gpad1.just_pressed(ManagedGamepad.Button.D_LEFT);
 
 
-            if (step_up && distance < MAX_DIST) distance += INCREMENT;
-            if (step_down && distance > MIN_DIST) distance -= INCREMENT;
+            if (step_up && distance < MAX_DIST) {
+                distance += INCREMENT;
+                shooter.shoot(distance);
+            }
+            if (step_down && distance > MIN_DIST) {
+                distance -= INCREMENT;
+                shooter.shoot(distance);
+            }
             if (zeroize) shooter.stop();
-            if (shoot) shooter.shoot(distance);
+            if (normal){
+                distance = FAV_DIST;
+                shooter.shoot(distance);
+            }
 
             dashboard.displayPrintf(1, shooter.toString());
             RobotLog.dd(TAG, shooter.toString());

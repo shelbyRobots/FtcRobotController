@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.robot.Drivetrain;
+import org.firstinspires.ftc.teamcode.robot.Lifter;
 import org.firstinspires.ftc.teamcode.robot.ShelbyBot;
 import org.firstinspires.ftc.teamcode.robot.SkyBot;
 import org.firstinspires.ftc.teamcode.robot.TilerunnerMecanumBot;
@@ -19,6 +20,8 @@ import java.util.Locale;
 //@Disabled
 public class MecanumTeleop extends InitLinearOpMode
 {
+
+    
     private void initPreStart() {
         robot.setName(pmgr.getBotName());
         ShelbyBot.OpModeType prevOpModeType = SkyBot.curOpModeType;
@@ -33,7 +36,6 @@ public class MecanumTeleop extends InitLinearOpMode
         RobotLog.dd(TAG, "Initialize drivetrain");
         //robot.setDriveDir(ShelbyBot.DriveDir.INTAKE);
         dtrn.init(robot);
-
         dtrn.setRampUp(false);
         dtrn.setRampDown(false);
 
@@ -71,18 +73,55 @@ public class MecanumTeleop extends InitLinearOpMode
     private void controlArmElev()
     {
         if(robot.liftyBoi == null) return;
-        double  aelev       = -gpad2.value(ManagedGamepad.AnalogInput.L_STICK_Y);
+        double lftPwr = -gpad2.value(ManagedGamepad.AnalogInput.R_STICK_Y);
+        boolean stow = gpad2.just_pressed(ManagedGamepad.Button.A);
+        boolean grab = gpad2.just_pressed(ManagedGamepad.Button.B);
+        boolean hold = gpad2.just_pressed(ManagedGamepad.Button.X);
+        boolean drop = gpad2.just_pressed(ManagedGamepad.Button.Y);
 
-        //aelev  = ishaper.shape(aelev);
-        robot.liftyBoi.setLiftSpd(aelev);
+        if (stow) robot.liftyBoi.setLiftPos(Lifter.LiftPos.STOW);
+        else if (grab) robot.liftyBoi.setLiftPos(Lifter.LiftPos.GRAB);
+        else if (hold) robot.liftyBoi.setLiftPos(Lifter.LiftPos.HOLD);
+        else if (drop) robot.liftyBoi.setLiftPos(Lifter.LiftPos.DROP);
+        else robot.liftyBoi.setLiftSpd(lftPwr);
+
+        // Display the current value
+        String lStr = robot.liftyBoi.toString();
+        dashboard.displayPrintf(5, lStr);
+        RobotLog.dd(TAG, lStr);
     }
 
     private void controlGripper()
     {
         if(robot.liftyBoi == null) return;
-        boolean toggleGrp = gpad2.just_pressed(ManagedGamepad.Button.X);
-
+        boolean toggleGrp = gpad2.just_pressed(ManagedGamepad.Button.R_BUMP);
         if(toggleGrp) robot.liftyBoi.toggleClampPos();
+    }
+
+    private void controlShooter()
+    {
+        boolean step_up    = gpad1.just_pressed(ManagedGamepad.Button.D_UP);
+        boolean step_down  = gpad1.just_pressed(ManagedGamepad.Button.D_DOWN);
+        boolean zeroize    = gpad1.just_pressed(ManagedGamepad.Button.D_RIGHT);
+        boolean normal     = gpad1.just_pressed(ManagedGamepad.Button.D_LEFT);
+
+
+        if (step_up && distance < MAX_DIST) {
+            distance += INCREMENT;
+            robot.burr.shoot(distance);
+        }
+        if (step_down && distance > MIN_DIST) {
+            distance -= INCREMENT;
+            robot.burr.shoot(distance);
+        }
+        if (zeroize) robot.burr.stop();
+        if (normal){
+            distance = FAV_DIST;
+            robot.burr.shoot(distance);
+        }
+
+        dashboard.displayPrintf(1, robot.burr.toString());
+        RobotLog.dd(TAG, robot.burr.toString());
     }
 
     private void controlArm()
@@ -91,6 +130,8 @@ public class MecanumTeleop extends InitLinearOpMode
         controlArmElev();
         controlGripper();
     }
+
+
 
     private void controlDrive()
     {
@@ -199,7 +240,10 @@ public class MecanumTeleop extends InitLinearOpMode
     private void processControllerInputs()
     {
         gpad2.update();
+        robot.liftyBoi.update();
+        controlShooter();
         controlArm();
+
     }
 
     private void processDriverInputs()
@@ -263,5 +307,13 @@ public class MecanumTeleop extends InitLinearOpMode
     int[] cnts = {0,0,0,0};
     double hdg = 0;
 
+    private boolean grab = false;
+    private static final double MIN_DIST = 60;
+    private static final double MAX_DIST = 136;
+    private static final double INCREMENT = 6;
+
+
+    private static final double FAV_DIST = 75;
+    private double distance = FAV_DIST;
     private static final String TAG = "SJH_MTD";
 }
