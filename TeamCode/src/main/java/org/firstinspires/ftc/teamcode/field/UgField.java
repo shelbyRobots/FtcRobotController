@@ -68,9 +68,12 @@ public class UgField extends Field
 
     // Red Outside Grab Wobble
     public static final Point2d ROGW = new Point2d("ROGW", -54, -8);
+    public static final Point2d RIGW = new Point2d("RIGW", -48,-48);
 
     //Red Outside Turn
     public static final Point2d ROT2 = new Point2d("ROT2", -20, -53);
+    public static final Point2d RIT2 = new Point2d("RIT2", -24, -48);
+
 
     private static final int ALNC_RED = 0;
     private static final int ALNC_BLU = 1;
