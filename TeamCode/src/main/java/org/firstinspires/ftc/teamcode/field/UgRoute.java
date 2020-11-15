@@ -36,6 +36,9 @@ public class UgRoute extends Route
         Segment.Action shot    = Segment.Action.SHOOT;
         Segment.TargetType encType = Segment.TargetType.ENCODER;
         Segment.TargetType colType = Segment.TargetType.COLOR;
+
+        boolean goForTwo = true;
+
         if(startPos == StartPos.START_1)  //Wall Start
         {
             points.add(UgField.ROS1);
@@ -44,10 +47,12 @@ public class UgRoute extends Route
             addPoint(points, fwd, 0.60, 1.00, encType, none, UgField.RODP);
             addPoint(points, fwd, 0.50, 1.00, encType, drop, UgField.ROWA);
             addPoint(points, fwd, 0.50, 1.00, encType, shot, UgField.ROSA);
-            addPoint(points, rev, 0.60, 1.00, encType, none, UgField.ROTP);
-            addPoint(points, rev, 0.60, 1.00, encType, none, UgField.ROGW);
-            addPoint(points, fwd, 0.60, 1.00, encType, none, UgField.ROT2);
-            addPoint(points, fwd, 0.60, 1.00, encType, drop, UgField.ROWA);
+            if (goForTwo) {
+                addPoint(points, rev, 0.60, 1.00, encType, none, UgField.ROTP);
+                addPoint(points, rev, 0.60, 1.00, encType, none, UgField.ROGW);
+                addPoint(points, fwd, 0.60, 1.00, encType, none, UgField.ROT2);
+                addPoint(points, fwd, 0.60, 1.00, encType, drop, UgField.ROWA);
+            }
             addPoint(points, rev, 0.50, 1.00, encType, park, UgField.ROPA);
         }
         else if(startPos == StartPos.START_2)  //Center Start
@@ -57,6 +62,13 @@ public class UgRoute extends Route
             addPoint(points, fwd, 0.60, 1.00, encType, none, UgField.RITP);
             addPoint(points, fwd, 0.60, 1.00, encType, none, UgField.RIDP);
             addPoint(points, fwd, 0.50, 1.00, encType, drop, UgField.RIWA);
+            addPoint(points, fwd, 0.60, 1.00, encType, shot, UgField.RISA);
+           /* if (goForTwo) {
+                addPoint(points, rev, 0.60, 1.00, encType, none, UgField.RITP);
+                addPoint(points, rev, 0.60, 1.00, encType, none, UgField.RIGW);
+                addPoint(points, fwd, 0.60, 1.00, encType, none, UgField.RIT2);
+                addPoint(points, fwd, 0.60, 1.00, encType, drop, UgField.RIWA);
+            }*/
             addPoint(points, rev, 0.50, 1.00, encType, park, UgField.RIPA);
         }
 

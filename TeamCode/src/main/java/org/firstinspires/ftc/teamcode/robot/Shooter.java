@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -22,7 +23,7 @@ public class Shooter {
         try
         {
             shooter = hwMap.get(DcMotorEx.class, "shoot");
-            shooter.setDirection(DcMotor.Direction.FORWARD);
+            shooter.setDirection(DcMotor.Direction.REVERSE);
             shooter.setPower(0);
             shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             shooter.setMode(RUN_USING_ENCODER);

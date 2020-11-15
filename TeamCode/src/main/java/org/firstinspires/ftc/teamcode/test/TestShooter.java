@@ -15,7 +15,7 @@ public class TestShooter extends InitLinearOpMode
     private static final double INCREMENT = 3.0;     // amount to step motor each CYCLE_MS cycle
     private static final int     CYCLE_MS = 20;       // period of each cycle
     private static final double   MAX_DIST = 136;     // Maximum that we can shoot
-    private static final double   MIN_DIST = 60;     // Minimum that we can shoot.
+    private static final double   MIN_DIST = 0;     // Minimum that we can shoot.
     private static final double   FAV_DIST = 70;
     // Define class members
 
@@ -44,7 +44,6 @@ public class TestShooter extends InitLinearOpMode
         // Ramp motor speeds till stop pressed.
         while(opModeIsActive())
         {
-
             shooter.update();
             gpad1.update();
 
