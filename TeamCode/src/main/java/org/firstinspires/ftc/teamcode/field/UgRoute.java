@@ -54,7 +54,6 @@ public class UgRoute extends Route
                 addPoint(points, fwd, 0.60, 1.00, encType, drop, UgField.ROWA);
             }
                 addPoint(points, rev, 0.50, 1.00, encType, park, UgField.ROPA);
-            }
         }
         else if(startPos == StartPos.START_2)  //Center Start
         {
