@@ -53,7 +53,8 @@ public class UgRoute extends Route
                 addPoint(points, fwd, 0.60, 1.00, encType, none, UgField.ROT2);
                 addPoint(points, fwd, 0.60, 1.00, encType, drop, UgField.ROWA);
             }
-            addPoint(points, rev, 0.50, 1.00, encType, park, UgField.ROPA);
+                addPoint(points, rev, 0.50, 1.00, encType, park, UgField.ROPA);
+            }
         }
         else if(startPos == StartPos.START_2)  //Center Start
         {
@@ -70,6 +71,15 @@ public class UgRoute extends Route
                 addPoint(points, fwd, 0.60, 1.00, encType, drop, UgField.RIWA);
             }*/
             addPoint(points, rev, 0.50, 1.00, encType, park, UgField.RIPA);
+            addPoint(points, rev, 0.50, 1.00, encType, shot, UgField.RISA);
+            if(goForTwo){
+                addPoint(points, fwd, 0.50, 1.00, encType, none, UgField.RIT2);
+                addPoint(points, fwd, 0.50, 1.00, encType, grab, UgField.RIGW);
+                addPoint(points, fwd, 0.50, 1.00, encType, drop, UgField.ROWA);
+                addPoint(points, rev, 0.50, 1.00, encType, park, UgField.RIPA);
+            }
+
+            return points;
         }
 
         return points;
