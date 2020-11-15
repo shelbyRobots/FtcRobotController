@@ -64,16 +64,16 @@ public class Lifter
     {
         tgtPos = pos;
         int encPos = convLiftpos(tgtPos);
-        liftMotor.setTargetPosition(encPos);
+        if(liftMotor != null) liftMotor.setTargetPosition(encPos);
 
         if(lastRunMode != RUN_TO_POSITION)
         {
-            liftMotor.setMode(RUN_TO_POSITION);
+            if(liftMotor != null) liftMotor.setMode(RUN_TO_POSITION);
             lastRunMode = RUN_TO_POSITION;
         }
 
         tgtVel = LIFTER_CPD * 90;
-        liftMotor.setVelocity(tgtVel);
+        if(liftMotor != null) liftMotor.setVelocity(tgtVel);
     }
 
     public void setLiftSpd(double pwr)
@@ -87,7 +87,7 @@ public class Lifter
         {
             if(lastRunMode != RUN_USING_ENCODER)
             {
-                liftMotor.setMode(RUN_USING_ENCODER);
+                if(liftMotor != null) liftMotor.setMode(RUN_USING_ENCODER);
                 lastRunMode = RUN_USING_ENCODER;
             }
 
@@ -96,7 +96,7 @@ public class Lifter
                 lftCnts >= convLiftpos(LiftPos.GRAB) + SAFE_DEG * LIFTER_CPD) power = 0;
 
             tgtVel = power * LIFTER_CPD * 45;
-            liftMotor.setVelocity(tgtVel);
+            if(liftMotor != null) liftMotor.setVelocity(tgtVel);
         }
     }
 
@@ -104,13 +104,13 @@ public class Lifter
     {
         clmpPos = pos;
         clmpLoc = clmpPos.srvPos;
-        clampServo.setPosition(clmpLoc);
+        if(clampServo != null) clampServo.setPosition(clmpLoc);
     }
 
     public void adjClampPos(double incr)
     {
         clmpLoc +=incr;
-        clampServo.setPosition(clmpLoc);
+        if(clampServo != null) clampServo.setPosition(clmpLoc);
     }
 
     public void toggleClampPos ()
@@ -121,7 +121,7 @@ public class Lifter
 
     public void update()
     {
-        lftCnts = liftMotor.getCurrentPosition();
+        if(liftMotor != null) lftCnts = liftMotor.getCurrentPosition();
     }
 
     public String toString()

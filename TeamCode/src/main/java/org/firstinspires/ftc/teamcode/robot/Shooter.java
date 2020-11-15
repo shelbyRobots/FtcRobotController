@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -38,13 +37,16 @@ public class Shooter {
     }
 
     public void update(){
-        encPos = shooter.getCurrentPosition();
-        curSpd = shooter.getVelocity();
+        if(shooter != null)
+        {
+            encPos = shooter.getCurrentPosition();
+            curSpd = shooter.getVelocity();
+        }
     }
 
     public String toString(){
         return String.format(Locale.US, "shoot %5d %4.2f %4.2f %4.2f",
-                encPos, curSpd, rps, dist);
+                encPos, curSpd, cps, dist);
     }
 
     public void stop(){
@@ -64,27 +66,27 @@ public class Shooter {
         double theta = Math.toRadians(35);
         double v0 = Math.sqrt((-g*Math.pow(distance,2))/
                 (2*Math.pow(Math.cos(theta),2)*(height-distance*Math.tan(theta)-heightOfShooter)));
-        rps = 2 * (v0 / cir) * SHOOTER_CPR;
-        return rps;
+        cps = 2 * (v0 / cir) * SHOOTER_CPR;
+        return cps;
     }
 
     public void shoot(double distance)
     {
         dist = distance;
-        shooter.setVelocity(calcCps(distance));
+        if(shooter != null) shooter.setVelocity(calcCps(distance));
     }
 
-    private final double SHOOTER_CPER = 6000; //quad encoder cnts/encoder rev
-    private final double SHOOTER_INT_GEAR = 1; //Neverest 20
+    private final double SHOOTER_CPER = 28; //quad encoder cnts/encoder rev
+    private final double SHOOTER_INT_GEAR = 1; //1:1 motor - approx 6000 rpm (no load)
     private final double SHOOTER_EXT_GEAR = 1.0;
     private final double SHOOTER_CPR = SHOOTER_CPER * SHOOTER_INT_GEAR * SHOOTER_EXT_GEAR;
     private int encPos = 0;
     private double curSpd = 0;
     protected HardwareMap hwMap;
-    public DcMotorEx shooter;
+    public DcMotorEx shooter = null;
     private static final String TAG = "SJH_SHT";
-    private double dist;
-    private double rps;
+    private double dist = 0;
+    private double cps = 0;
 
     public static void main(String[] args)
     {
