@@ -31,7 +31,7 @@ public class TilerunnerMecanumBot extends TilerunnerGtoBot
         COUNTS_PER_MOTOR_REV = 28;
         DRIVE_GEARS = new double[]{19.2, 1.0};
 
-        WHEEL_DIAMETER_INCHES = 4.0;
+        WHEEL_DIAMETER_INCHES = 96.0/25.4; //4.0
         TUNE = 1.00;
 
         BOT_WIDTH  = 14.9f; //Wheel width
@@ -57,13 +57,14 @@ public class TilerunnerMecanumBot extends TilerunnerGtoBot
         try
         {
             lfMotor = hwMap.get(DcMotorEx.class, "FL");
-            lrMotor = hwMap.get(DcMotorEx.class, "BL");
             rfMotor = hwMap.get(DcMotorEx.class, "FR");
+            lrMotor = hwMap.get(DcMotorEx.class, "BL");
             rrMotor = hwMap.get(DcMotorEx.class, "BR");
-            motors.put("FR", rfMotor);
-            motors.put("BR", rrMotor);
-            motors.put("BL", lrMotor);
             motors.put("FL", lfMotor);
+            motors.put("FR", rfMotor);
+            motors.put("BL", lrMotor);
+            motors.put("BR", rrMotor);
+
             leftMotors.add(numLmotors++, lfMotor);
             leftMotors.add(numLmotors++, lrMotor);
             rightMotors.add(numRmotors++, rfMotor);

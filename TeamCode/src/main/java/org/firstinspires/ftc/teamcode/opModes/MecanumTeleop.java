@@ -48,26 +48,43 @@ public class MecanumTeleop extends InitLinearOpMode
     private void update()
     {
         int c = 0;
+        l = 0;
         for (DcMotorEx m : robot.motors.values())
         {
-            cnts[c++] = m.getCurrentPosition();
+            cnts[c] = m.getCurrentPosition();
+            vels[c++] = m.getVelocity();
         }
 
         hdg = robot.getGyroFhdg();
+
+        if(robot.liftyBoi != null)
+        {
+            robot.liftyBoi.update();
+            // Display the current value
+            lStr = robot.liftyBoi.toString();
+        }
+        if(robot.burr != null)
+        {
+            robot.burr.update();
+            sStr = robot.burr.toString();
+        }
     }
 
     private void printTelem()
     {
         String cntStr = String.format(Locale.US,"CNTS: %d %d %d %d",
                 cnts[0], cnts[1], cnts[2], cnts[3]);
+        String velStr = String.format(Locale.US,"VELS: %d %d %d %d",
+                (int)vels[0], (int)vels[1], (int)vels[2], (int)vels[3]);
 
-        int l = 0;
         dashboard.displayPrintf(l++, "Dir %s", robot.getDriveDir());
         dashboard.displayText  (l++, cntStr);
-        dashboard.displayText  (l++, robot.liftyBoi.toString());
-        dashboard.displayPrintf(l++, "L_IN %4.2f L %4.2f", raw_lr_x, lr_x);
-        dashboard.displayPrintf(l++, "R_IN %4.2f R %4.2f", raw_fb_y, fb_y);
-        dashboard.displayPrintf(l,   "T_IN %4.2f T %4.2f", raw_turn, turn);
+        dashboard.displayText  (l++, velStr);
+        dashboard.displayText  (l++, lStr);
+        dashboard.displayPrintf(l++, sStr);
+        dashboard.displayPrintf(l++,"L_IN %4.2f L %4.2f", raw_lr_x, lr_x);
+        dashboard.displayPrintf(l++,"R_IN %4.2f R %4.2f", raw_fb_y, fb_y);
+        dashboard.displayPrintf(l++,"T_IN %4.2f T %4.2f", raw_turn, turn);
     }
 
     private void controlArmElev()
@@ -84,11 +101,6 @@ public class MecanumTeleop extends InitLinearOpMode
         else if (hold) robot.liftyBoi.setLiftPos(Lifter.LiftPos.HOLD);
         else if (drop) robot.liftyBoi.setLiftPos(Lifter.LiftPos.DROP);
         else robot.liftyBoi.setLiftSpd(lftPwr);
-
-        // Display the current value
-        String lStr = robot.liftyBoi.toString();
-        dashboard.displayPrintf(5, lStr);
-        RobotLog.dd(TAG, lStr);
     }
 
     private void controlGripper()
@@ -100,10 +112,11 @@ public class MecanumTeleop extends InitLinearOpMode
 
     private void controlShooter()
     {
-        boolean step_up    = gpad1.just_pressed(ManagedGamepad.Button.D_UP);
-        boolean step_down  = gpad1.just_pressed(ManagedGamepad.Button.D_DOWN);
-        boolean zeroize    = gpad1.just_pressed(ManagedGamepad.Button.D_RIGHT);
-        boolean normal     = gpad1.just_pressed(ManagedGamepad.Button.D_LEFT);
+        if(robot.burr == null) return;
+        boolean step_up    = gpad2.just_pressed(ManagedGamepad.Button.D_UP);
+        boolean step_down  = gpad2.just_pressed(ManagedGamepad.Button.D_DOWN);
+        boolean zeroize    = gpad2.just_pressed(ManagedGamepad.Button.D_RIGHT);
+        boolean normal     = gpad2.just_pressed(ManagedGamepad.Button.D_LEFT);
 
 
         if (step_up && distance < MAX_DIST) {
@@ -119,14 +132,10 @@ public class MecanumTeleop extends InitLinearOpMode
             distance = FAV_DIST;
             robot.burr.shoot(distance);
         }
-
-        dashboard.displayPrintf(1, robot.burr.toString());
-        RobotLog.dd(TAG, robot.burr.toString());
     }
 
     private void controlArm()
     {
-        robot.liftyBoi.update();
         controlArmElev();
         controlGripper();
     }
@@ -147,6 +156,7 @@ public class MecanumTeleop extends InitLinearOpMode
         boolean bak  = gpad1.pressed(ManagedGamepad.Button.D_DOWN);
         boolean incr = gpad1.just_pressed(ManagedGamepad.Button.R_BUMP);
         boolean decr = gpad1.just_pressed(ManagedGamepad.Button.L_BUMP);
+        boolean hspd = gpad1.pressed(ManagedGamepad.Button.R_TRIGGER);
         boolean tglV = gpad1.just_pressed(ManagedGamepad.Button.Y);
         //boolean step_driveType = gpad1.just_pressed(ManagedGamepad.Button.A);
 
@@ -218,10 +228,18 @@ public class MecanumTeleop extends InitLinearOpMode
 
         if (useSetVel)
         {
-            robot.lfMotor.setVelocity(lf * maxDPS, AngleUnit.DEGREES);
-            robot.rfMotor.setVelocity(rf * maxDPS, AngleUnit.DEGREES);
-            robot.lrMotor.setVelocity(lr * maxDPS, AngleUnit.DEGREES);
-            robot.rrMotor.setVelocity(rr * maxDPS, AngleUnit.DEGREES);
+            double ips = maxIPS;
+            if(hspd) ips = sprMaxIPS;
+            calcMaxCpsDps(ips);
+
+            robot.lfMotor.setVelocity(lf * maxCPS);
+            robot.rfMotor.setVelocity(rf * maxCPS);
+            robot.lrMotor.setVelocity(lr * maxCPS);
+            robot.rrMotor.setVelocity(rr * maxCPS);
+//            robot.lfMotor.setVelocity(lf * maxDPS, AngleUnit.DEGREES);
+//            robot.rfMotor.setVelocity(rf * maxDPS, AngleUnit.DEGREES);
+//            robot.lrMotor.setVelocity(lr * maxDPS, AngleUnit.DEGREES);
+//            robot.rrMotor.setVelocity(rr * maxDPS, AngleUnit.DEGREES);
         } else
         {
             robot.lfMotor.setPower(lf);
@@ -230,7 +248,6 @@ public class MecanumTeleop extends InitLinearOpMode
             robot.rrMotor.setPower(rr);
         }
 
-        int l = 6;
         dashboard.displayPrintf(l++, "SPD %4.2f DIR %4.2f DSPD: %3.1f FALGN %s USEVEL %s",
                 speed, direction, dSpd, fieldAlign, useSetVel);
         dashboard.displayPrintf(l, "OUT: lf %4.2f rf %4.2f lr %4.2f rr %4.2f",
@@ -240,10 +257,8 @@ public class MecanumTeleop extends InitLinearOpMode
     private void processControllerInputs()
     {
         gpad2.update();
-        robot.liftyBoi.update();
         controlShooter();
         controlArm();
-
     }
 
     private void processDriverInputs()
@@ -282,11 +297,20 @@ public class MecanumTeleop extends InitLinearOpMode
         }
     }
 
+    void calcMaxCpsDps(double ips)
+    {
+        maxCPS = ips*robot.CPI;
+        maxDPS = 360.0 * ips/circ;
+    }
+
     double dSpd = 0.0;
     double dStp = 0.1;
-    static final double diam   = 4.0;  //Inches
-    static final double maxIPS = 30.0;
-    static final double maxDPS = 360.0 * maxIPS/(diam*Math.PI);
+    final double diam   = 96.0/25.4; //4.0;  //Inches
+    final double circ   = diam*Math.PI;
+    final double maxIPS = 30.0;
+    final double sprMaxIPS = 60.0;
+    double maxCPS = 0.0;
+    double maxDPS = 0.0;
     static final double rlrAng = Math.PI/4.0;
     static final double spdScl = Math.sqrt(2.0);
     static final boolean trig = true;
@@ -305,13 +329,16 @@ public class MecanumTeleop extends InitLinearOpMode
     double turn;
 
     int[] cnts = {0,0,0,0};
+    double[] vels = {0,0,0,0};
     double hdg = 0;
 
-    private boolean grab = false;
     private static final double MIN_DIST = 60;
     private static final double MAX_DIST = 136;
     private static final double INCREMENT = 6;
 
+    private String lStr = "";
+    private String sStr = "";
+    private int l = 0;
 
     private static final double FAV_DIST = 75;
     private double distance = FAV_DIST;
