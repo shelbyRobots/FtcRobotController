@@ -90,7 +90,7 @@ public class UgRoute extends Route
     {
         super(startPos, alliance);
     }
-
+//Alex was here
     private boolean goForTwo = false;
 
     public void setGoForTwo(boolean goForTwo)
