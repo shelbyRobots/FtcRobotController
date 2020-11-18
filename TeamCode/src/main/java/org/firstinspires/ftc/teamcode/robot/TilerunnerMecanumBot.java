@@ -20,6 +20,8 @@ public class TilerunnerMecanumBot extends TilerunnerGtoBot
 
     public Lifter liftyBoi = null;
     public Shooter burr = null;
+    public Intake intake = null;
+    public Loader loader = null;
     private static final String TAG = "SJH_MEC";
 
     public TilerunnerMecanumBot()
@@ -147,5 +149,14 @@ public class TilerunnerMecanumBot extends TilerunnerGtoBot
     @Override
     protected void initPushers()
     {
+    }
+
+    protected void initIntake()
+    {
+        intake = new Intake(hwMap);
+        intake.init();
+
+        loader = new Loader(hwMap);
+        loader.init();
     }
 }

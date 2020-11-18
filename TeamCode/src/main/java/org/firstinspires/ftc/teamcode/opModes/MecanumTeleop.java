@@ -68,6 +68,14 @@ public class MecanumTeleop extends InitLinearOpMode
             robot.burr.update();
             sStr = robot.burr.toString();
         }
+        if(robot.intake != null)
+        {
+            robot.intake.update();
+        }
+        if(robot.loader != null)
+        {
+            robot.loader.update();
+        }
     }
 
     private void printTelem()
@@ -109,7 +117,15 @@ public class MecanumTeleop extends InitLinearOpMode
         boolean toggleGrp = gpad2.just_pressed(ManagedGamepad.Button.R_BUMP);
         if(toggleGrp) robot.liftyBoi.toggleClampPos();
     }
-
+    private void controlIntake()
+    {
+        double intake = -gpad2.value(ManagedGamepad.AnalogInput.L_STICK_Y);
+        //L Bump acts as a toggle to activate or deactivate the loader
+        boolean loader  = gpad2.just_pressed(ManagedGamepad.Button.L_BUMP);
+        if(loader) runLoader = !runLoader;
+        if(robot.intake != null) robot.intake.suck(intake);
+        if(robot.loader != null && runLoader) robot.loader.load(intake);
+    }
     private void controlShooter()
     {
         if(robot.burr == null) return;
@@ -259,6 +275,7 @@ public class MecanumTeleop extends InitLinearOpMode
         gpad2.update();
         controlShooter();
         controlArm();
+        controlIntake();
     }
 
     private void processDriverInputs()
@@ -303,6 +320,7 @@ public class MecanumTeleop extends InitLinearOpMode
         maxDPS = 360.0 * ips/circ;
     }
 
+    private boolean runLoader = false;
     double dSpd = 0.0;
     double dStp = 0.1;
     final double diam   = 96.0/25.4; //4.0;  //Inches
