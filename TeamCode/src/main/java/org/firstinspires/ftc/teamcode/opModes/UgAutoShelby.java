@@ -20,7 +20,6 @@ import org.firstinspires.ftc.teamcode.image.ImageTracker;
 import org.firstinspires.ftc.teamcode.image.RingDetector;
 import org.firstinspires.ftc.teamcode.robot.Drivetrain;
 import org.firstinspires.ftc.teamcode.robot.ShelbyBot;
-import org.firstinspires.ftc.teamcode.robot.TilerunnerGtoBot;
 import org.firstinspires.ftc.teamcode.robot.TilerunnerMecanumBot;
 import org.firstinspires.ftc.teamcode.util.AutoTransitioner;
 import org.firstinspires.ftc.teamcode.util.ManagedGamepad;
@@ -550,6 +549,12 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         tracker.setActive(false);
     }
 
+
+    private void update()
+    {
+        TilerunnerMecanumBot trmRobot = (TilerunnerMecanumBot)robot;
+        trmRobot.update();
+    }
     private void doScan(int segIdx)
     {
         RobotLog.dd(TAG, "doScan" + " segIdx:" + segIdx);
@@ -635,7 +640,11 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
     private void doShoot()
     {
+        double shotdist =70.0;
         RobotLog.dd(TAG, "Shooting");
+        if(robot.burr == null)
+            return;
+        robot.burr.shoot(shotdist);
     }
 
     private void doMove(Segment seg)
@@ -911,7 +920,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
     private List<Segment> pathSegs = new ArrayList<>();
 
-    private TilerunnerGtoBot   robot;
+    private TilerunnerMecanumBot   robot;
 
     private Route pts;
 

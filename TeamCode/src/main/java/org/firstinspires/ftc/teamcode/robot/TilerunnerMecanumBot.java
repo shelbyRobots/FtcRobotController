@@ -22,6 +22,11 @@ public class TilerunnerMecanumBot extends TilerunnerGtoBot
     public Shooter burr = null;
     public Intake intake = null;
     public Loader loader = null;
+
+    private int[] cnts = {0,0,0,0};
+    private double[] vels = {0,0,0,0};
+    private double hdg = 0;
+
     private static final String TAG = "SJH_MEC";
 
     public TilerunnerMecanumBot()
@@ -158,5 +163,50 @@ public class TilerunnerMecanumBot extends TilerunnerGtoBot
 
         loader = new Loader(hwMap);
         loader.init();
+    }
+
+    public void update()
+    {
+        int c = 0;
+        for (DcMotorEx m : motors.values())
+        {
+            cnts[c] = m.getCurrentPosition();
+            vels[c++] = m.getVelocity();
+        }
+
+        hdg = getGyroFhdg();
+
+        if(liftyBoi != null)
+        {
+            liftyBoi.update();
+            // Display the current value
+        }
+        if(burr != null)
+        {
+            burr.update();
+        }
+        if(intake != null)
+        {
+           intake.update();
+        }
+        if(loader != null)
+        {
+           loader.update();
+        }
+    }
+
+    public int[] getCnts()
+    {
+        return cnts;
+    }
+
+    public double[] getVels()
+    {
+        return vels;
+    }
+
+    public double getHdg()
+    {
+        return hdg;
     }
 }

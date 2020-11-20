@@ -47,35 +47,16 @@ public class MecanumTeleop extends InitLinearOpMode
 
     private void update()
     {
-        int c = 0;
+        robot.update();
+
         l = 0;
-        for (DcMotorEx m : robot.motors.values())
-        {
-            cnts[c] = m.getCurrentPosition();
-            vels[c++] = m.getVelocity();
-        }
 
-        hdg = robot.getGyroFhdg();
+        cnts=robot.getCnts();
+        vels=robot.getVels();
+        hdg=robot.getHdg();
 
-        if(robot.liftyBoi != null)
-        {
-            robot.liftyBoi.update();
-            // Display the current value
-            lStr = robot.liftyBoi.toString();
-        }
-        if(robot.burr != null)
-        {
-            robot.burr.update();
-            sStr = robot.burr.toString();
-        }
-        if(robot.intake != null)
-        {
-            robot.intake.update();
-        }
-        if(robot.loader != null)
-        {
-            robot.loader.update();
-        }
+        lStr = robot.liftyBoi.toString();
+        sStr = robot.burr.toString();
     }
 
     private void printTelem()
