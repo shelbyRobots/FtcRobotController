@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.opModes;
 import android.graphics.Bitmap;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.vuforia.CameraDevice;
@@ -20,7 +20,6 @@ import org.firstinspires.ftc.teamcode.image.ImageTracker;
 import org.firstinspires.ftc.teamcode.image.RingDetector;
 import org.firstinspires.ftc.teamcode.robot.Drivetrain;
 import org.firstinspires.ftc.teamcode.robot.ShelbyBot;
-import org.firstinspires.ftc.teamcode.robot.TilerunnerGtoBot;
 import org.firstinspires.ftc.teamcode.robot.TilerunnerMecanumBot;
 import org.firstinspires.ftc.teamcode.util.AutoTransitioner;
 import org.firstinspires.ftc.teamcode.util.ManagedGamepad;
@@ -38,6 +37,8 @@ import java.util.concurrent.Executors;
 import ftclib.FtcChoiceMenu;
 import ftclib.FtcMenu;
 import ftclib.FtcValueMenu;
+
+import static org.firstinspires.ftc.teamcode.field.Route.StartPos.START_1;
 
 //import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
@@ -91,6 +92,24 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         dashboard.displayPrintf(5, "Pref Delay: %.2f", delay);
 
         setup();
+
+        com.vuforia.CameraCalibration camCal = com.vuforia.CameraDevice.getInstance().getCameraCalibration();
+        Vec4F distParam = camCal.getDistortionParameters();
+        Vec2F camFov    = camCal.getFieldOfViewRads();
+        Vec2F camFlen   = camCal.getFocalLength();
+        Vec2F camPpt    = camCal.getPrincipalPoint();
+        Vec2F camSize   = camCal.getSize();
+
+        RobotLog.dd(TAG, "DistortionParams %f %f %f %f",
+                distParam.getData()[0],
+                distParam.getData()[1],
+                distParam.getData()[2],
+                distParam.getData()[3]);
+        RobotLog.dd(TAG, "CamFOV %f %f", camFov.getData()[0], camFov.getData()[1]);
+        RobotLog.dd(TAG, "CamFlen %f %f", camFlen.getData()[0], camFlen.getData()[1]);
+        RobotLog.dd(TAG, "CamPpt %f %f", camPpt.getData()[0], camPpt.getData()[1]);
+        RobotLog.dd(TAG, "CamSize %f %f", camSize.getData()[0], camSize.getData()[1]);
+
         int initCycle = 0;
         int initSleep = 10;
         timer.reset();
@@ -104,7 +123,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
                 dashboard.displayPrintf(10, "GyroReady %s RGyroReady %s",
                         gyroReady, robot.gyroReady);
                 StringBuilder motStr = new StringBuilder("ENCs:");
-                for (Map.Entry<String, DcMotor> e : robot.motors.entrySet())
+                for (Map.Entry<String, DcMotorEx> e : robot.motors.entrySet())
                 {
                     motStr.append(" ");
                     motStr.append(e.getKey());
@@ -127,32 +146,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
             sleep(initSleep);
         }
 
-        com.vuforia.CameraCalibration camCal = com.vuforia.CameraDevice.getInstance().getCameraCalibration();
-        Vec4F distParam = camCal.getDistortionParameters();
-        Vec2F camFov    = camCal.getFieldOfViewRads();
-        Vec2F camFlen   = camCal.getFocalLength();
-        Vec2F camPpt    = camCal.getPrincipalPoint();
-        Vec2F camSize   = camCal.getSize();
-
-        RobotLog.dd(TAG, "DistortionParams %f %f %f %f",
-                distParam.getData()[0],
-                distParam.getData()[1],
-                distParam.getData()[2],
-                distParam.getData()[3]);
-        RobotLog.dd(TAG, "CamFOV %f %f", camFov.getData()[0], camFov.getData()[1]);
-        RobotLog.dd(TAG, "CamFlen %f %f", camFlen.getData()[0], camFlen.getData()[1]);
-        RobotLog.dd(TAG, "CamPpt %f %f", camPpt.getData()[0], camPpt.getData()[1]);
-        RobotLog.dd(TAG, "CamSize %f %f", camSize.getData()[0], camSize.getData()[1]);
-
-        telemetry.addData("A", "DistortionParams %f %f %f %f",
-                distParam.getData()[0], distParam.getData()[1],
-                distParam.getData()[2], distParam.getData()[3]);
-        telemetry.addData("B", "CamFOV %f %f", camFov.getData()[0], camFov.getData()[1]);
-        telemetry.addData("C", "CamFlen %f %f", camFlen.getData()[0], camFlen.getData()[1]);
-        telemetry.addData("D", "CamPpt %f %f", camPpt.getData()[0], camPpt.getData()[1]);
-        telemetry.addData("E","CamSize %f %f", camSize.getData()[0], camSize.getData()[1]);
-
-        startMode();
+        if(!isStopRequested()) startMode();
         stopMode();
     }
 
@@ -191,6 +185,8 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
                 break;
             }
         }
+
+        if(isStopRequested()) return;
 
         if(doMen) doMenus();
 
@@ -280,7 +276,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         RobotLog.ii(TAG, "DELAY    %4.2f", delay);
         RobotLog.ii(TAG, "BOT      %s", robotName);
 
-        Route pts = new UgRoute(startPos, alliance, robotName);
+        pts = new UgRoute(startPos, alliance, robotName);
 
         pathSegs.addAll(Arrays.asList(pts.getSegments()));
 
@@ -553,6 +549,12 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         tracker.setActive(false);
     }
 
+
+    private void update()
+    {
+        TilerunnerMecanumBot trmRobot = (TilerunnerMecanumBot)robot;
+        trmRobot.update();
+    }
     private void doScan(int segIdx)
     {
         RobotLog.dd(TAG, "doScan" + " segIdx:" + segIdx);
@@ -580,17 +582,17 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
                 alliance, startPos, ringPos, segIdx);
 
         int allnc = alliance == Field.Alliance.RED     ? 0 : 1;
-        int start = startPos == Route.StartPos.START_1 ? 0 : 1;
+        int start = startPos == START_1 ? 0 : 1;
         int rPos  = ringPos  == RingDetector.Position.NONE   ? 0 :
                     ringPos  == RingDetector.Position.LEFT   ? 0 :
                     ringPos  == RingDetector.Position.CENTER ? 1 : 2;
 
         //3dim array [allnc][start][rPos]
         Point2d[][][] wPts =
-           {{{UgField.RRWA, UgField.RRWB, UgField.RRWC},
-             {UgField.RLWA, UgField.RLWB, UgField.RLWC}},
-            {{UgRoute.convertRtoB(UgField.RRWA), UgRoute.convertRtoB(UgField.RRWB), UgRoute.convertRtoB(UgField.RRWC)},
-             {UgRoute.convertRtoB(UgField.RLWA), UgRoute.convertRtoB(UgField.RLWB), UgRoute.convertRtoB(UgField.RLWC)}}};
+           {{{UgField.ROWA, UgField.ROWB, UgField.ROWC},
+             {UgField.RIWA, UgField.RIWB, UgField.RIWC}},
+            {{pts.convertRtoB(UgField.ROWA), pts.convertRtoB(UgField.ROWB), pts.convertRtoB(UgField.ROWC)},
+             {pts.convertRtoB(UgField.RIWA), pts.convertRtoB(UgField.RIWB), pts.convertRtoB(UgField.RIWC)}}};
 
         Point2d wPt = wPts[allnc][start][rPos];
 
@@ -598,13 +600,13 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
         for (Segment s : pathSegs) {
             String sPt = s.getStrtPt().getName();
-            if (sPt.equals("RRWA") || sPt.equals("RLWA") ||sPt.equals("BRWA") || sPt.equals("BLWA"))
+            if (sPt.equals("ROWA") || sPt.equals("RIWA") ||sPt.equals("BOWA") || sPt.equals("BIWA"))
             {
                 s.setStrtPt(wPt);
             }
 
             String ePt = s.getTgtPt().getName();
-            if (ePt.equals("RRWA") || ePt.equals("RLWA") || ePt.equals("BRWA") || ePt.equals("BLWA"))
+            if (ePt.equals("ROWA") || ePt.equals("RIWA") || ePt.equals("BOWA") || ePt.equals("BIWA"))
             {
                 s.setEndPt(wPt);
             }
@@ -638,7 +640,11 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
     private void doShoot()
     {
+        double shotdist =70.0;
         RobotLog.dd(TAG, "Shooting");
+        if(robot.burr == null)
+            return;
+        robot.burr.shoot(shotdist);
     }
 
     private void doMove(Segment seg)
@@ -664,17 +670,17 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
                 "DRIVE", snm, spt, ept, fhd, speed, dir);
 
         Drivetrain.Direction ddir = Drivetrain.Direction.FORWARD;
-        drvTrn.logData(true, seg.getName() + " move");
+        drvTrn.logData(true, snm + " move");
         drvTrn.setDrvTuner(fudge);
 
         timer.reset();
 
-        if(seg.getTgtType() == Segment.TargetType.COLOR)
+        if(ttype == Segment.TargetType.COLOR)
         {
             RobotLog.dd(TAG, "colorSensor is %s", robot.colorSensor == null ? "null" : "good");
         }
 
-        if(robot.colorSensor != null && seg.getTgtType() == Segment.TargetType.COLOR)
+        if(robot.colorSensor != null && ttype == Segment.TargetType.COLOR)
         {
             RobotLog.dd(TAG,"Doing color seg %d", colSegNum);
             colSegNum++;
@@ -855,7 +861,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
                 = new FtcValueMenu("DELAY:", parkMenu, this,
                 0.0, 20.0, 1.0, 0.0, "%5.2f");
 
-        startPosMenu.addChoice("Start_1", Route.StartPos.START_1, true, allianceMenu);
+        startPosMenu.addChoice("Start_1", START_1, true, allianceMenu);
         startPosMenu.addChoice("Start_2", Route.StartPos.START_2, false, allianceMenu);
         startPosMenu.addChoice("Start_3", Route.StartPos.START_3, false, allianceMenu);
         startPosMenu.addChoice("Start_4", Route.StartPos.START_4, false, allianceMenu);
@@ -914,7 +920,9 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
     private List<Segment> pathSegs = new ArrayList<>();
 
-    private TilerunnerGtoBot   robot;
+    private TilerunnerMecanumBot   robot;
+
+    private Route pts;
 
     private ElapsedTime timer = new ElapsedTime();
     private ElapsedTime startTimer = new ElapsedTime();
@@ -930,7 +938,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
     @SuppressWarnings("FieldCanBeLocal")
     private boolean usePostTurn = true;
 
-    private static PositionOption startPos = Route.StartPos.START_1;
+    private static PositionOption startPos = START_1;
     private static Field.Alliance alliance = Field.Alliance.RED;
 
     private static PositionOption parkPos = Route.ParkPos.CENTER_PARK;
@@ -955,4 +963,34 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
     private String robotName = "MEC";
     private static final String TAG = "SJH_RRA";
+
+
+//    public static void main(String[] args)
+//    {
+//        for (RingDetector.Position ringPos : RingDetector.Position.values()) {
+//            for (Field.Alliance all : Field.Alliance.values()) {
+//                for (PositionOption strt : EnumSet.range(START_1,START_2)) {
+//                    int allnc = all == Field.Alliance.RED ? 0 : 1;
+//                    int start = strt == START_1 ? 0 : 1;
+//                    int rPos =
+//                            ringPos == RingDetector.Position.NONE ? 0 :
+//                                    ringPos == RingDetector.Position.LEFT ? 0 :
+//                                            ringPos == RingDetector.Position.CENTER ? 1 : 2;
+//
+//                    //3dim array [allnc][start][rPos]
+//                    Point2d[][][] wPts =
+//                            {{{UgField.RRWA, UgField.RRWB, UgField.RRWC},
+//                                    {UgField.RLWA, UgField.RLWB, UgField.RLWC}},
+//                                    {{UgRoute.convertRtoB(UgField.RRWA), UgRoute.convertRtoB(UgField.RRWB), UgRoute.convertRtoB(UgField.RRWC)},
+//                                            {UgRoute.convertRtoB(UgField.RLWA), UgRoute.convertRtoB(UgField.RLWB), UgRoute.convertRtoB(UgField.RLWC)}}};
+//
+//                    Point2d wPt = wPts[allnc][start][rPos];
+//
+//                    String s = String.format("Alnc %4s Strt %s Rpos %6s %4s", all, strt, ringPos, wPt.getName());
+//                    System.out.println(s);
+//                    //RobotLog.dd(TAG, "Setting wobbly drop to " + wPt.getName());
+//                }
+//            }
+//        }
+//    }
 }

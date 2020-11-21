@@ -38,7 +38,7 @@ public class RingDetector extends Detector {
     @SuppressWarnings("WeakerAccess")
     public RingDetector()
     {
-        name = "StoneDetector";
+        name = "RingDetector";
         dashboard = CommonUtil.getInstance().getDashboard();
     }
 
@@ -111,7 +111,7 @@ public class RingDetector extends Detector {
 
         int numGtTwoThird = 0;
         int StackHeight;
-        int ThreshHeight = 30;
+        int ThreshHeight = 40;
 
 
         if (goldcntrs.size() == 0)

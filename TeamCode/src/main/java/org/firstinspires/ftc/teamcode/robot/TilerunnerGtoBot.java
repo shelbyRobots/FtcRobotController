@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.PwmControl;
@@ -158,7 +159,7 @@ public class TilerunnerGtoBot extends ShelbyImuBot
                 srvCntrlrEx.setServoPwmRange(rPort, range);
             }
 
-            elevMotor = hwMap.dcMotor.get("elevmotor");
+            elevMotor = hwMap.get(DcMotorEx.class, "elevmotor");
             elevMotor.setDirection(DcMotor.Direction.REVERSE);
             elevMotor.setPower(0.0);
             //elevMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -327,12 +328,12 @@ public class TilerunnerGtoBot extends ShelbyImuBot
 
     protected void initArm()
     {
-        RobotLog.dd(TAG, "GTO initArm");
+        RobotLog.dd(TAG, TAG + " initArm");
         try
         {
             int RELP_COUNTS_PER_MOTOR_REV = 28;
             int RELP_GEAR_ONE = 40;
-            double RELP_GEAR_TWO = 40/120;
+            double RELP_GEAR_TWO = 40.0/120.0;
             double RELP_CPR = RELP_COUNTS_PER_MOTOR_REV * RELP_GEAR_ONE * RELP_GEAR_TWO;
             double RELP_ARM_LENGTH = 16.0;
             @SuppressWarnings("unused")

@@ -18,6 +18,15 @@ public class TilerunnerMecanumBot extends TilerunnerGtoBot
     public DcMotorEx rfMotor = null;
     public DcMotorEx rrMotor = null;
 
+    public Lifter liftyBoi = null;
+    public Shooter burr = null;
+    public Intake intake = null;
+    public Loader loader = null;
+
+    private int[] cnts = {0,0,0,0};
+    private double[] vels = {0,0,0,0};
+    private double hdg = 0;
+
     private static final String TAG = "SJH_MEC";
 
     public TilerunnerMecanumBot()
@@ -29,7 +38,7 @@ public class TilerunnerMecanumBot extends TilerunnerGtoBot
         COUNTS_PER_MOTOR_REV = 28;
         DRIVE_GEARS = new double[]{19.2, 1.0};
 
-        WHEEL_DIAMETER_INCHES = 4.0;
+        WHEEL_DIAMETER_INCHES = 96.0/25.4; //4.0
         TUNE = 1.00;
 
         BOT_WIDTH  = 14.9f; //Wheel width
@@ -51,17 +60,18 @@ public class TilerunnerMecanumBot extends TilerunnerGtoBot
     @Override
     protected void initDriveMotors()
     {
-        RobotLog.dd(TAG, "Initializing mecanum drive motors");
-        try  //Drivetrain
+        RobotLog.dd(TAG, TAG + "Initializing drive motors");
+        try
         {
             lfMotor = hwMap.get(DcMotorEx.class, "FL");
-            lrMotor = hwMap.get(DcMotorEx.class, "BL");
             rfMotor = hwMap.get(DcMotorEx.class, "FR");
+            lrMotor = hwMap.get(DcMotorEx.class, "BL");
             rrMotor = hwMap.get(DcMotorEx.class, "BR");
-            motors.put("FR", rfMotor);
-            motors.put("BR", rrMotor);
-            motors.put("BL", lrMotor);
             motors.put("FL", lfMotor);
+            motors.put("FR", rfMotor);
+            motors.put("BL", lrMotor);
+            motors.put("BR", rrMotor);
+
             leftMotors.add(numLmotors++, lfMotor);
             leftMotors.add(numLmotors++, lrMotor);
             rightMotors.add(numRmotors++, rfMotor);
@@ -118,12 +128,85 @@ public class TilerunnerMecanumBot extends TilerunnerGtoBot
     }
 
     @Override
+    protected void initArm()
+    {
+    }
+
+    @Override
     protected void initCollectorLifter()
+    {
+        liftyBoi = new Lifter(hwMap);
+        liftyBoi.init();
+    }
+
+    @Override
+    protected void initShooters()
+    {
+        burr = new Shooter(hwMap);
+        burr.init();
+    }
+
+    @Override
+    protected void initHolder()
     {
     }
 
     @Override
     protected void initPushers()
     {
+    }
+
+    protected void initIntake()
+    {
+        intake = new Intake(hwMap);
+        intake.init();
+
+        loader = new Loader(hwMap);
+        loader.init();
+    }
+
+    public void update()
+    {
+        int c = 0;
+        for (DcMotorEx m : motors.values())
+        {
+            cnts[c] = m.getCurrentPosition();
+            vels[c++] = m.getVelocity();
+        }
+
+        hdg = getGyroFhdg();
+
+        if(liftyBoi != null)
+        {
+            liftyBoi.update();
+            // Display the current value
+        }
+        if(burr != null)
+        {
+            burr.update();
+        }
+        if(intake != null)
+        {
+           intake.update();
+        }
+        if(loader != null)
+        {
+           loader.update();
+        }
+    }
+
+    public int[] getCnts()
+    {
+        return cnts;
+    }
+
+    public double[] getVels()
+    {
+        return vels;
+    }
+
+    public double getHdg()
+    {
+        return hdg;
     }
 }

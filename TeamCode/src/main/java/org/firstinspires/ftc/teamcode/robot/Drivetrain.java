@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.RobotLog;
@@ -123,10 +124,10 @@ public class Drivetrain
     public void driveToTarget(double pwr, int thresh)
     {
         setBusyAnd(false);
-        setMode(robot.leftMotors, DcMotor.RunMode.RUN_TO_POSITION);
-        setMode(robot.rightMotors, DcMotor.RunMode.RUN_TO_POSITION);
         setTargetPositions(robot.leftMotors, tgtLpositions);
         setTargetPositions(robot.rightMotors, tgtRpositions);
+        setMode(robot.leftMotors, DcMotor.RunMode.RUN_TO_POSITION);
+        setMode(robot.rightMotors, DcMotor.RunMode.RUN_TO_POSITION);
         setInitValues();
         logStartValues("DRIVE_TRGT " + curLpositions.get(0) + " " + curRpositions.get(0)+
                                " - " + tgtLpositions.get(0) + " " + tgtRpositions.get(0));
@@ -144,21 +145,6 @@ public class Drivetrain
 
         stopMotion();
         setEndValues("DRIVE_TRGT");
-    }
-
-    public void driveToColor(double pwr, int thresh )
-    {
-        driveDistance(15, pwr, Direction.FORWARD);
-
-        int totalcolor=0;
-        while(op.opModeIsActive()    &&
-                !op.isStopRequested()  &&
-                totalcolor < thresh)
-        {
-            setCurValues();
-            totalcolor = curRed + curGrn + curBlu;
-        }
-        stopMotion();
     }
 
     public void driveDistance(double dst, double pwr, Direction dir)
@@ -377,6 +363,14 @@ public class Drivetrain
         return driveToPointLinear(tgtPt, pwr, dir, robot.getGyroFhdg());
     }
 
+    private double angNormalize(double ang)
+    {
+        double ret = ang;
+        while (ret >   180) ret -= 360;
+        while (ret <= -180) ret += 360;
+        return ret;
+    }
+
     public void ctrTurnEncoder(double angle, double pwr)
     {
         //perform a turn about drive axle center
@@ -387,19 +381,16 @@ public class Drivetrain
         setInitValues();
         setPositions(tgtLpositions, begLpositions, -counts);
         setPositions(tgtRpositions, begRpositions,  counts);
-        trgtHdg  = initHdg  + (int) Math.round(angle);
-        while(trgtHdg >   180) trgtHdg -= 360;
-        while(trgtHdg <= -180) trgtHdg += 360;
+        trgtHdg  = angNormalize(initHdg  + (int) Math.round(angle));
         String angStr = String.format(Locale.US, "ENC_TURN %4.2f", angle);
         logStartValues(angStr);
 
         RobotLog.ii(TAG, "Angle: %5.2f Counts: %4d CHdg: %6.3f", angle, counts, initHdg);
 
-        setTargetPositions(robot.leftMotors, tgtLpositions);
-        setTargetPositions(robot.rightMotors, tgtRpositions);
-
         setMode(robot.leftMotors, DcMotor.RunMode.RUN_TO_POSITION);
         setMode(robot.rightMotors, DcMotor.RunMode.RUN_TO_POSITION);
+        setTargetPositions(robot.leftMotors, tgtLpositions);
+        setTargetPositions(robot.rightMotors, tgtRpositions);
 
         moveInit(pwr, pwr);
     }
@@ -565,18 +556,16 @@ public class Drivetrain
 
         if(doStopAndReset) stopAndReset();
 
-        setMode(robot.leftMotors, DcMotor.RunMode.RUN_USING_ENCODER);
-        setMode(robot.rightMotors, DcMotor.RunMode.RUN_USING_ENCODER);
-
-        moveInit(0.0, 0.0);
-
         setInitValues();
-        setPositions(tgtLpositions, 0);
+        setPositions(tgtLpositions, 0); //doesn't matter for gyro
         setPositions(tgtRpositions, 0);
-
         trgtHdg = (int) tgtHdg;
         String gyroStr = String.format(Locale.US, "GYRO_TURN %4.1f", tgtHdg);
         logStartValues(gyroStr);
+
+        setMode(robot.leftMotors, DcMotor.RunMode.RUN_USING_ENCODER);
+        setMode(robot.rightMotors, DcMotor.RunMode.RUN_USING_ENCODER);
+        moveInit(0.0, 0.0);
 
         ElapsedTime tTimer = new ElapsedTime();
 
@@ -610,22 +599,20 @@ public class Drivetrain
         double rr = radius + robot.BOT_WIDTH/2.0;
         int lcnts = angleToCounts(angle, rl);
         int rcnts = angleToCounts(angle, rr);
-
+        
         setBusyAnd(false);
-        setMode(robot.leftMotors, DcMotor.RunMode.RUN_TO_POSITION);
-        setMode(robot.rightMotors, DcMotor.RunMode.RUN_TO_POSITION);
 
         setInitValues();
 
         setPositions(tgtLpositions, begLpositions, lcnts);
         setPositions(tgtRpositions, begRpositions, rcnts);
-        trgtHdg  = initHdg  + (int) Math.round(angle);
-        while(trgtHdg >   180) trgtHdg -= 360;
-        while(trgtHdg <= -180) trgtHdg += 360;
+        trgtHdg  = angNormalize(initHdg  + (int) Math.round(angle));
         logStartValues("ENC_CURVE");
 
-        setPos(tgtLpositions, robot.leftMotors);
-        setPos(tgtRpositions, robot.rightMotors);
+        setMode(robot.leftMotors, DcMotor.RunMode.RUN_TO_POSITION);
+        setMode(robot.rightMotors, DcMotor.RunMode.RUN_TO_POSITION);
+        setTargetPositions(robot.leftMotors, tgtLpositions);
+        setTargetPositions(robot.rightMotors, tgtRpositions);
 
         double arl = Math.abs(rl);
         double arr = Math.abs(rr);
@@ -689,10 +676,8 @@ public class Drivetrain
         currPt = curPt;
         if(numPts == 0 || resetEstPt)
         {
-            xPos = currPt.getX();
-            yPos = currPt.getY();
-            estPos.setX(xPos);
-            estPos.setY(yPos);
+            estPos.setX(currPt.getX());
+            estPos.setY(currPt.getY());
             estHdg = initHdg;
         }
         ++numPts;
@@ -708,28 +693,49 @@ public class Drivetrain
 
     public void estimatePosition()
     {
-        int curLcnt = curLpositions.get(0);
-        int curRcnt = curRpositions.get(0);
-        double radHdg = Math.toRadians(curHdg);
-
         if(curDriveDir != robot.getDriveDir())
         {
             curDriveDir = robot.getDriveDir();
             setPositions(lstLpositions, curLpositions, 0);
             setPositions(lstRpositions, curRpositions, 0);
             logData(true, "DDIR=" + curDriveDir.toString());
-        } 
+        }
+
+        int curLcnt = curLpositions.get(0);
+        int curRcnt = curRpositions.get(0);
+        double radHdg = Math.toRadians(curHdg);
+
+        double cH = Math.cos(radHdg);
+        double sH = Math.sin(radHdg);
 
         int dCntL = curLcnt - lstLpositions.get(0);
         int dCntR = curRcnt - lstRpositions.get(0);
-        double dX = 0.5*(dCntL+dCntR)/DEF_CPI * Math.cos(radHdg);
-        double dY = 0.5*(dCntL+dCntR)/DEF_CPI * Math.sin(radHdg);
-        xPos += dX;
-        yPos += dY;
-        estPos.setX(xPos);
-        estPos.setY(yPos);
-        double dH = (dCntR-dCntL)/CPI/ robot.BOT_WIDTH;
-        estHdg += dH;
+        int difCnt = dCntR - dCntL;
+        int sumCnt = dCntR + dCntL;
+        double avgCnt = sumCnt/2.0;
+        double dAng = (dCntR-dCntL)/(CPI*robot.BOT_WIDTH);
+
+        estHdg = angNormalize(estHdg + dAng);
+
+        double dXAbs = 0.0;
+        double dYAbs = 0.0;
+        double hyp = 0.0;
+
+        if(Math.abs(dAng) <= 0.00156) //straight - roughly 1 enc cnt diff btwn L & R in 10000 cnts
+        {
+            hyp = (dCntR + dCntL)/2.0;
+        }
+        else
+        {
+            double trajR = avgCnt/dAng;
+            hyp = 2 * trajR * Math.sin(dAng/2.0);
+        }
+
+        dXAbs = hyp * Math.cos(estHdg - dAng/2.0)/CPI;
+        dYAbs = hyp * Math.sin(estHdg - dAng/2.0)/CPI;
+
+        estPos.setX(estPos.getX() + dXAbs);
+        estPos.setY(estPos.getY() + dYAbs);
         setPositions(lstLpositions, curLpositions, 0);
         setPositions(lstRpositions, curRpositions, 0);
     }
@@ -807,7 +813,7 @@ public class Drivetrain
 
         double err = getGyroError(thdg);
 
-        double steer = getSteer(err, Kp_GyrCorrection);
+        double steer = getSteer(err);
         if (dir == Direction.REVERSE) steer *= -1;
 
         if     (pwr + steer >  1.0) steer =  1.0 - pwr;
@@ -865,15 +871,13 @@ public class Drivetrain
     private double getGyroError(double tgtHdg)
     {
         double gHdg = curHdg;
-        double robotError = tgtHdg - gHdg;
-        while (robotError > 180)   robotError -= 360;
-        while (robotError <= -180) robotError += 360;
+        double robotError = angNormalize(tgtHdg - gHdg);
         return robotError;
     }
 
-    private double getSteer(double error, double PCoeff)
+    private double getSteer(double error)
     {
-        return Range.clip(error * PCoeff, -1, 1);
+        return Range.clip(error * Kp_GyrCorrection, -1, 1);
     }
 
     private double getTurnSteer(double error)
@@ -892,9 +896,7 @@ public class Drivetrain
     {
         setPos(begLpositions, robot.leftMotors);
         setPos(begRpositions, robot.rightMotors);
-        initHdg = robot.getGyroFhdg();
-        while (initHdg <= -180) initHdg += 360;
-        while (initHdg >   180) initHdg -= 360;
+        initHdg = angNormalize(robot.getGyroFhdg());
         setPositions(curLpositions, begLpositions, 0);
         setPositions(curRpositions, begRpositions, 0);
         curHdg  = initHdg;
@@ -1239,19 +1241,19 @@ public class Drivetrain
         logData(false);
     }
 
-    public void setMode (List<DcMotor> motors, DcMotor.RunMode mode)
+    public void setMode (List<DcMotorEx> motors, DcMotor.RunMode mode)
     {
         RobotLog.dd(TAG, "Setting mode %s on %d motors", mode, motors.size());
-        for (DcMotor m : motors)
+        for (DcMotorEx m : motors)
             m.setMode(mode);
     }
-    private void  setPower (List<DcMotor> motors, double power)
+    private void  setPower (List<DcMotorEx> motors, double power)
     {
         for (DcMotor m : motors)
             m.setPower(power);
     }
 
-    private void setPos(List<Integer> positions, List<DcMotor> motors)
+    private void setPos(List<Integer> positions, List<DcMotorEx> motors)
     {
         for(int i = 0; i < motors.size(); i++)
         {
@@ -1260,8 +1262,8 @@ public class Drivetrain
         }
     }
 
-    private  void setTargetPositions(List<DcMotor> motors,
-                                     List<Integer> tgtPositions)
+    private  void setTargetPositions(List<DcMotorEx> motors,
+                                     List<Integer>   tgtPositions)
     {
         for (int m = 0; m < motors.size(); m++)
         {
@@ -1387,10 +1389,8 @@ public class Drivetrain
     private ShelbyBot.DriveDir lastDriveDir;
     private ShelbyBot.DriveDir curDriveDir;
 
-    private double xPos = 0.0;
-    private double yPos = 0.0;
-    public Point2d estPos = new Point2d(xPos, yPos);
-    private double  estHdg = 0.0;
+    public Point2d estPos = new Point2d(0.0, 0.0);
+    private double estHdg = 0.0;
     private int numPts = 0;
 
     private double noMoveTimeout = 1.0;

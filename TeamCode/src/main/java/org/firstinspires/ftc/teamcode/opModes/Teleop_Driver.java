@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.opModes;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -13,8 +12,6 @@ import org.firstinspires.ftc.teamcode.robot.ShelbyBot;
 import org.firstinspires.ftc.teamcode.robot.SkyBot;
 import org.firstinspires.ftc.teamcode.util.Input_Shaper;
 import org.firstinspires.ftc.teamcode.util.ManagedGamepad;
-import org.firstinspires.ftc.teamcode.util.Point2d;
-import org.firstinspires.ftc.teamcode.util.Segment;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -51,9 +48,6 @@ public class Teleop_Driver extends InitLinearOpMode
             RobotLog.dd(TAG, "Start mode to %s", robot.leftMotor.getMode());
 
             dtrn.setCurrPt(robot.getAutonEndPos());
-
-            lex = (DcMotorEx)(robot.leftMotors.get(0));
-            rex = (DcMotorEx)(robot.rightMotors.get(0));
         }
     }
 
@@ -62,14 +56,12 @@ public class Teleop_Driver extends InitLinearOpMode
         robot.putHolderAtGrab();
     }
 
-    private boolean useExtdCnts = false;
-    private boolean useRotCnts  = false;
 
-    class ArmTask implements Runnable
+
+    class ControllerTask implements Runnable
     {
         public void run()
         {
-            RobotLog.dd(TAG, "Starting arm control arm");
             processControllerInputs();
         }
     }
@@ -268,21 +260,6 @@ public class Teleop_Driver extends InitLinearOpMode
         raw_right                 = -gpad1.value(ManagedGamepad.AnalogInput.R_STICK_Y);
         raw_turn                  =  gpad1.value(ManagedGamepad.AnalogInput.R_STICK_X);
 
-//        boolean goBox       =  gpad1.just_pressed(ManagedGamepad.Button.L_TRIGGER);
-//        boolean goPit       =  gpad1.just_pressed(ManagedGamepad.Button.R_TRIGGER);
-//
-//        if(goBox)
-//        {
-//            goToBox();
-//            return;
-//        }
-//
-//        if(goPit)
-//        {
-//            goToPit();
-//            return;
-//        }
-
         double shp_left  = ishaper.shape(raw_left,  0.1);
         double shp_right = ishaper.shape(raw_right, 0.1);
         double shp_turn  = ishaper.shape(raw_turn, 0.1);
@@ -394,10 +371,8 @@ public class Teleop_Driver extends InitLinearOpMode
         {
             out_left  = maxDPS*left;
             out_right = maxDPS*right;
-            lex = (DcMotorEx)(robot.leftMotors.get(0));
-            rex = (DcMotorEx)(robot.rightMotors.get(0));
-            lex.setVelocity(out_left,  AngleUnit.DEGREES);
-            rex.setVelocity(out_right, AngleUnit.DEGREES);
+            robot.leftMotors.get(0).setVelocity(out_left,  AngleUnit.DEGREES);
+            robot.rightMotors.get(0).setVelocity(out_right, AngleUnit.DEGREES);
         }
         else
         {
@@ -469,84 +444,6 @@ public class Teleop_Driver extends InitLinearOpMode
         controlParker();
     }
 
-    private void doMove(Segment seg)
-    {
-        if(!opModeIsActive() || isStopRequested()) return;
-
-        dtrn.setInitValues();
-        dtrn.logData(true, seg.getName() + " move");
-        dtrn.setDrvTuner(seg.getDrvTuner());
-
-        dtrn.setBusyAnd(true);
-        String  snm = seg.getName();
-        Point2d spt = seg.getStrtPt();
-        Point2d ept = seg.getTgtPt();
-        double  fhd = seg.getFieldHeading();
-        ShelbyBot.DriveDir dir = seg.getDir();
-        double speed = seg.getSpeed();
-        double fudge = seg.getDrvTuner();
-        Segment.TargetType ttype = seg.getTgtType();
-
-        RobotLog.ii(TAG, "Drive %s %s %s %6.2f %3.2f %s tune: %4.2f %s",
-                snm, spt, ept, fhd, speed, dir, fudge, ttype);
-
-        Drivetrain.Direction ddir = Drivetrain.Direction.FORWARD;
-
-        timer.reset();
-
-        double targetHdg = seg.getFieldHeading();
-        dtrn.driveToPointLinear(ept, speed, ddir, targetHdg);
-
-        dtrn.setCurrPt(ept);
-
-        RobotLog.ii(TAG, "Completed move %s. Time: %6.3f HDG: %6.3f",
-                seg.getName(), timer.time(), robot.getGyroFhdg());
-    }
-
-    private void doEncoderTurn(double fHdg, String prefix)
-    {
-        if(!opModeIsActive() || isStopRequested()) return;
-        dtrn.setBusyAnd(true);
-        dtrn.setInitValues();
-        dtrn.logData(true, prefix);
-        double cHdg = dtrn.curHdg;
-        double angle = fHdg - cHdg;
-        RobotLog.ii(TAG, "doEncoderTurn CHDG %6.3f THDG %6.3f", cHdg, fHdg);
-
-        while (angle <= -180.0) angle += 360.0;
-        while (angle >   180.0) angle -= 360.0;
-        if(Math.abs(angle) <= 4.0) return;
-
-        RobotLog.ii(TAG, "Turn %5.2f", angle);
-        dashboard.displayPrintf(8, "STATE: %s %5.2f", "TURN", angle);
-        timer.reset();
-        dtrn.ctrTurnLinear(angle, 0.6, Drivetrain.TURN_BUSYTHRESH);
-        cHdg = robot.getGyroFhdg();
-        RobotLog.ii(TAG, "Completed turn %5.2f. Time: %6.3f CHDG: %6.3f",
-                angle, timer.time(), cHdg);
-    }
-
-    private void doGyroTurn(double fHdg, String prefix)
-    {
-        if(!opModeIsActive() || isStopRequested()) return;
-
-        dtrn.setInitValues();
-        dtrn.logData(true, prefix);
-        double cHdg = dtrn.curHdg;
-
-        RobotLog.ii(TAG, "doGyroTurn CHDG %4.2f THDG %4.2f", cHdg, fHdg);
-
-        if(Math.abs(fHdg-cHdg) < 1.0)
-            return;
-
-        timer.reset();
-        dtrn.ctrTurnToHeading(fHdg, 0.4);
-
-        cHdg = dtrn.curHdg;
-        RobotLog.ii(TAG, "Completed turnGyro %4.2f. Time: %6.3f CHDG: %4.2f",
-                fHdg, timer.time(), cHdg);
-    }
-
     @Override
     public void runOpMode() throws InterruptedException
     {
@@ -592,7 +489,7 @@ public class Teleop_Driver extends InitLinearOpMode
             }
 
             processDriverInputs();
-            es.submit(new ArmTask());
+            es.submit(new ControllerTask());
 
             printTelem();
 
@@ -643,9 +540,6 @@ public class Teleop_Driver extends InitLinearOpMode
     public final double minPwr = 0.10;
     public final double minTrn = 0.10;
 
-    private DcMotorEx lex = null;
-    private DcMotorEx rex = null;
-
     private SkyBot robot = new SkyBot();
     private Drivetrain dtrn = new Drivetrain();
     private Input_Shaper ishaper = new Input_Shaper();
@@ -669,6 +563,8 @@ public class Teleop_Driver extends InitLinearOpMode
     private double raw_turn;
 
     private boolean lastArmTouchPressed = false;
+    private boolean useExtdCnts = false;
+    private boolean useRotCnts  = false;
 
     @SuppressWarnings("FieldCanBeLocal")
     private boolean estimatePos = true;
