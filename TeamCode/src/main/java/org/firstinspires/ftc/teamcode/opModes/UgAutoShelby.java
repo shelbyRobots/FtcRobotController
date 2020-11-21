@@ -501,7 +501,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
                 case SHOOT:
                 {
                     RobotLog.ii(TAG, "Action SHOOT");
-                    doShoot();
+                    doShoot(i);
                     break;
                 }
             }
@@ -620,6 +620,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
     private void doDrop(int segIdx)
     {
         RobotLog.dd(TAG, "Dropping wobblyBOI on seg %d at %f", segIdx, startTimer.seconds());
+        if(robot.burr != null) robot.burr.shoot(DEF_SHT_DST);
     }
 
     private void doPlatch()
@@ -637,13 +638,19 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         RobotLog.dd(TAG, "Parking bot");
     }
 
-    private void doShoot()
+    private void doShoot(int segIdx)
     {
-        double shotdist =70.0;
+        Segment shootSeg = pathSegs .get(i);
+        Point2d shootPoint = shootSeg.getTgtPt();
+        double shotdist = shootPoint.distance(UgField.RRG1);
         RobotLog.dd(TAG, "Shooting");
         if(robot.burr == null)
             return;
         robot.burr.shoot(shotdist);
+        sleep(500);
+        // TODO add control of loader fire
+        sleep(1000);
+        robot.burr.stop();
     }
 
     private void doMove(Segment seg)
@@ -936,6 +943,8 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
     private boolean gyroReady;
     @SuppressWarnings("FieldCanBeLocal")
     private boolean usePostTurn = true;
+
+    private final double DEF_SHT_DST = UgField.ROSA.distance(UgField.RRG1);
 
     private static PositionOption startPos = START_1;
     private static Field.Alliance alliance = Field.Alliance.RED;

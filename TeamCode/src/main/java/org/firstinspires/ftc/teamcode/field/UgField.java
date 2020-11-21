@@ -74,6 +74,7 @@ public class UgField extends Field
     public static final Point2d ROT2 = new Point2d("ROT2", -20, -53);
     public static final Point2d RIT2 = new Point2d("RIT2", -24, -48);
 
+    public static final Point2d RRG1 = new Point2d("RRG1", 70, -36);
 
     private static final int ALNC_RED = 0;
     private static final int ALNC_BLU = 1;

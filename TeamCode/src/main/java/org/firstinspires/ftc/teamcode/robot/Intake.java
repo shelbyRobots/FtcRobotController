@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.robot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import java.util.Locale;
@@ -30,6 +31,18 @@ public class Intake {
               RobotLog.ee(TAG, "ERROR get hardware map initIntake\n" + e.toString());
             }
 
+        try
+        {
+            dropservo = hwMap.get(Servo.class, "clamp");
+            dropPos = DropPos.CLOSED;
+            setDropPos(dropPos);
+        }
+        catch (Exception e)
+        {
+            RobotLog.ee(TAG, "ERROR lifter - no clampServo clamp\n" + e.toString());
+            success = false;
+        }
+
         return success;
 
     }
@@ -52,7 +65,42 @@ public class Intake {
 
         intaker.setPower(pwr);
     }
+
+
+    public void setDropPos(DropPos pos)
+    {
+        dropPos = pos;
+        dropLoc = dropPos.srvPos;
+        if(dropservo != null) dropservo.setPosition(dropLoc);
+    }
+
+    public void adjDropPos(double incr)
+    {
+        dropLoc +=incr;
+        if(dropservo != null) dropservo.setPosition(dropLoc);
+    }
+
+    public void toggleDropPos ()
+    {
+        if (dropPos == DropPos.OPEN) setDropPos(DropPos.CLOSED);
+        else                          setDropPos(DropPos.OPEN);
+    }
+
+    public enum DropPos
+    {
+        OPEN(0.3),
+        CLOSED(0.6),
+        MID(0.5);
+
+        public final double srvPos;
+
+        DropPos(double srvPos) { this.srvPos = srvPos; }
+    }
+
     private DcMotorEx intaker;
+    public Servo dropservo;
+    private DropPos dropPos = DropPos.CLOSED;
+    private double dropLoc = DropPos.CLOSED.srvPos;
     protected HardwareMap hwMap;
     private static final String TAG = "SJH_INT";
     private int encPos;
