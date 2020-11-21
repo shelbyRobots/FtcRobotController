@@ -1,11 +1,9 @@
 package org.firstinspires.ftc.teamcode.opModes;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.robot.Drivetrain;
 import org.firstinspires.ftc.teamcode.robot.Lifter;
 import org.firstinspires.ftc.teamcode.robot.ShelbyBot;
@@ -298,14 +296,12 @@ public class MecanumTeleop extends InitLinearOpMode
     void calcMaxCpsDps(double ips)
     {
         maxCPS = ips*robot.CPI;
-        maxDPS = 360.0 * ips/circ;
+        maxDPS = 360.0 * ips/(robot.WHEEL_DIAMETER_INCHES*Math.PI);
     }
 
     private boolean runLoader = false;
     double dSpd = 0.0;
     double dStp = 0.1;
-    final double diam   = 96.0/25.4; //4.0;  //Inches
-    final double circ   = diam*Math.PI;
     final double maxIPS = 30.0;
     final double sprMaxIPS = 60.0;
     double maxCPS = 0.0;

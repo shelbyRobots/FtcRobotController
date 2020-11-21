@@ -39,9 +39,11 @@ public class TilerunnerMecanumBot extends TilerunnerGtoBot
         DRIVE_GEARS = new double[]{19.2, 1.0};
 
         WHEEL_DIAMETER_INCHES = 96.0/25.4; //4.0
+        if(name == "MEC1") WHEEL_DIAMETER_INCHES = 4.0;
         TUNE = 1.00;
 
-        BOT_WIDTH  = 14.9f; //Wheel width
+        BOT_WIDTH = 16.33f;
+        if(name == "MEC1" ) BOT_WIDTH  = 14.9f; //Wheel width
         BOT_LENGTH = 18.0f;
 
         REAR_OFFSET = 9.0f;

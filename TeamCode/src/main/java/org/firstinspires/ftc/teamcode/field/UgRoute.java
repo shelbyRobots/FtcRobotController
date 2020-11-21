@@ -13,6 +13,8 @@ public class UgRoute extends Route
 {
     private static final String TAG = "SJH_RRP";
 
+    private final String robotName;
+
     @Override
     protected Vector<Point2d> initPoints()
     {
@@ -37,6 +39,9 @@ public class UgRoute extends Route
         Segment.TargetType encType = Segment.TargetType.ENCODER;
         Segment.TargetType colType = Segment.TargetType.COLOR;
 
+        ShelbyBot.DriveDir sdr = fwd;
+        if(robotName == "MEC1") sdr = rev;
+
         boolean goForTwo = true;
 
         if(startPos == StartPos.START_1)  //Wall Start
@@ -46,7 +51,7 @@ public class UgRoute extends Route
             addPoint(points, fwd, 0.60, 1.00, encType, none, UgField.ROTP);
             addPoint(points, fwd, 0.60, 1.00, encType, none, UgField.RODP);
             addPoint(points, fwd, 0.50, 1.00, encType, drop, UgField.ROWA);
-            addPoint(points, fwd, 0.50, 1.00, encType, shot, UgField.ROSA);
+            addPoint(points, sdr, 0.50, 1.00, encType, shot, UgField.ROSA);
             if (goForTwo) {
                 addPoint(points, rev, 0.60, 1.00, encType, none, UgField.ROTP);
                 addPoint(points, rev, 0.60, 1.00, encType, none, UgField.ROGW);
@@ -62,7 +67,7 @@ public class UgRoute extends Route
             addPoint(points, fwd, 0.60, 1.00, encType, none, UgField.RITP);
             addPoint(points, fwd, 0.60, 1.00, encType, none, UgField.RIDP);
             addPoint(points, fwd, 0.50, 1.00, encType, drop, UgField.RIWA);
-            addPoint(points, fwd, 0.60, 1.00, encType, shot, UgField.RISA);
+            addPoint(points, sdr, 0.60, 1.00, encType, shot, UgField.RISA);
            /* if (goForTwo) {
                 addPoint(points, rev, 0.60, 1.00, encType, none, UgField.RITP);
                 addPoint(points, rev, 0.60, 1.00, encType, none, UgField.RIGW);
@@ -89,6 +94,7 @@ public class UgRoute extends Route
                    String robotName)
     {
         super(startPos, alliance);
+        this.robotName = robotName;
     }
 //Alex was here
     private boolean goForTwo = false;

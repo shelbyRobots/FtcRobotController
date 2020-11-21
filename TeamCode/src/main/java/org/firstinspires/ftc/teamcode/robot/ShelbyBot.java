@@ -116,7 +116,7 @@ public class ShelbyBot
     protected double COUNTS_PER_MOTOR_REV;
     protected double[] DRIVE_GEARS;
 
-    protected double WHEEL_DIAMETER_INCHES;
+    public double WHEEL_DIAMETER_INCHES;
     protected double TUNE;
     public double CPI;
 

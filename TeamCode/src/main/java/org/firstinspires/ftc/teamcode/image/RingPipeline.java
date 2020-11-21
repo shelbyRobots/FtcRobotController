@@ -43,7 +43,7 @@ public class RingPipeline
 	private ArrayList<MatOfPoint> filterContoursOutput = new ArrayList<>();
 
 	@SuppressWarnings("FieldCanBeLocal")
-	private String name = "SJH_SPL";
+	private String name = "MEC1";
 
 	public void setName(String name) {this.name = name;}
 

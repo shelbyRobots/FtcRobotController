@@ -256,7 +256,6 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         drvTrn.init(robot);
         drvTrn.setRampUp(false);
         int colThresh = 450;
-        if(robotName.equals("GTO1")) colThresh = 3000;
         drvTrn.setColorThresh(colThresh);
 
         dashboard.displayPrintf(1, "DrvTrn Inited");
@@ -339,7 +338,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
         boolean SkipNextSegment = false;
 
-        if(!robotName.equals("MEC"))
+        if(robotName.equals("GTO1"))
         {
             drvTrn.setRampSpdL(0.15);
             drvTrn.setRampSpdM(0.35);
@@ -787,7 +786,6 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
             if(rgbImage == null)
             {
                 RobotLog.dd(TAG, "getringPos - image from tracker is null");
-                //noinspection ConstantConditions
                 if(!tempTest) continue;
             }
             det.setBitmap(rgbImage);
@@ -875,8 +873,9 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         parkMenu.addChoice("DEFEND_PARK", Route.ParkPos.DEFEND_PARK, false, robotNameMenu);
 
         robotNameMenu.addChoice("GTO1", "GTO1", true, delayMenu);
-        robotNameMenu.addChoice("GTO2", "GTO2", false, delayMenu);
-        robotNameMenu.addChoice("MEC", "MEC", false, delayMenu);
+        robotNameMenu.addChoice("MEC1", "MEC1", false, delayMenu);
+        robotNameMenu.addChoice("MEC2", "MEC2", false, delayMenu);
+        robotNameMenu.addChoice("MEC3", "MEC3", false, delayMenu);
 
         FtcMenu.walkMenuTree(startPosMenu, this);
 
@@ -961,7 +960,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
     private final ExecutorService es = Executors.newSingleThreadExecutor();
 
-    private String robotName = "MEC";
+    private String robotName = "MEC2";
     private static final String TAG = "SJH_RRA";
 
 
