@@ -40,38 +40,40 @@ public class UgField extends Field
     public static final Point2d RITP = new Point2d("RITP", -55.0,  -24);
 
     //Red (Left/Right) Dodge Points
-    public static final Point2d RODP = new Point2d("RODP", -12.0, -53);
-    public static final Point2d RIDP = new Point2d("RIDP", -12.0, -19);
+    public static final Point2d RODP = new Point2d("RODP", -12.0, -54);
+    public static final Point2d RIDP = new Point2d("RIDP", -12.0, -18);
     
     //Red Right Wobble (A/B/C)
-    public static final Point2d ROWA = new Point2d("ROWA",   6,-53);
-    public static final Point2d ROWB = new Point2d("ROWB",  18.0,-47);
-    public static final Point2d ROWC = new Point2d("ROWC",  40.0,-53);
+    public static final Point2d ROWA = new Point2d("ROWA",  4.0,-57);
+    public static final Point2d ROWB = new Point2d("ROWB",  26.0,-46);
+    public static final Point2d ROWC = new Point2d("ROWC",  4.0,-57);
 
     //Red Left Wobble (A/B/C)
-    public static final Point2d RIWA = new Point2d("RIWA",  8,-44);
-    public static final Point2d RIWB = new Point2d("RIWB",  8,-26);
-    public static final Point2d RIWC = new Point2d("RIWC",  8,-46);
+    public static final Point2d RIWA = new Point2d("RIWA",  12,-53);
+    public static final Point2d RIWB = new Point2d("RIWB",  24,-36);
+    public static final Point2d RIWC = new Point2d("RIWC",  48,-53);
     //includes offset for veh center. actual
 
-    public static final Point2d ROPA = new Point2d("ROPA",  0,-53);
-    public static final Point2d ROPB = new Point2d("ROPB",  0,-53);
-    public static final Point2d ROPC = new Point2d("ROPC",  0,-53);
+    public static final Point2d ROPA = new Point2d("ROPA",  0,-56);
+    public static final Point2d ROPB = new Point2d("ROPB",  0,-56);
+    public static final Point2d ROPC = new Point2d("ROPC",  0,-56);
 
-    public static final Point2d RIPA = new Point2d("RIPA",  0,-20);
-    public static final Point2d RIPB = new Point2d("RIPB",  0,-20);
-    public static final Point2d RIPC = new Point2d("RIPC",  0,-20);
+    public static final Point2d RIPA = new Point2d("RIPA",  0,-24);
+    public static final Point2d RIPB = new Point2d("RIPB",  0,-24);
+    public static final Point2d RIPC = new Point2d("RIPC",  0,-24);
 
     //shoot points, Red Outside Shoot A
-    public static final Point2d ROSA = new Point2d("ROSA", -4, -53);
-    public static final Point2d RISA = new Point2d("RISA", -4, -20);
+    public static final Point2d ROSA = new Point2d("ROSA", -6, -52.68);
+    public static final Point2d RISA = new Point2d("RISA", -6, -19.44);
 
     // Red Outside Grab Wobble
     public static final Point2d ROGW = new Point2d("ROGW", -54, -8);
     public static final Point2d RIGW = new Point2d("RIGW", -48,-48);
 
-    //Red Outside Turn
-    public static final Point2d ROT2 = new Point2d("ROT2", -20, -53);
+    //Red Outside Turns
+    public static final Point2d ROT1 = new Point2d("ROT1", -6, -12);
+    public static final Point2d ROT2 = new Point2d("ROT2", -55, -12);
+    public static final Point2d ROT3 = new Point2d("ROT3", -32, -51.8);
     public static final Point2d RIT2 = new Point2d("RIT2", -24, -48);
 
     public static final Point2d RRG1 = new Point2d("RRG1", 70, -36);
