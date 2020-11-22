@@ -42,6 +42,19 @@ public class Point2d
         return Math.toDegrees(seg2FldHdg - seg1FldHdg);
     }
 
+    //Note - the class is named point2d - but the following norm and angle are vectors ops
+    //norm is the length of the vector from 0,0 to pt
+    public double norm()
+    {
+        return Math.sqrt(x*x + y*y);
+    }
+
+    //ang is the angle of the vector from 0,0 to pt.  Do we need to "normalize on 0-360 or +/-180?
+    public double ang()
+    {
+        return Math.atan2(y, x);
+    }
+
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
