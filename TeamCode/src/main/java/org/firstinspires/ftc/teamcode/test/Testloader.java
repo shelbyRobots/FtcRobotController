@@ -19,7 +19,7 @@ public class Testloader extends InitLinearOpMode
 
     // Define class members
     private double power = 0;
-
+    private boolean gatePass = false;
     private static final String TAG = "SJH_TLD";
 
     @Override
@@ -31,6 +31,7 @@ public class Testloader extends InitLinearOpMode
         loader.init();
 
         int p;
+
 
         // Wait for the start button
         dashboard.displayPrintf(0, "Press Start to run Motors.");
@@ -47,10 +48,18 @@ public class Testloader extends InitLinearOpMode
             boolean step_up    = gpad1.just_pressed(ManagedGamepad.Button.D_UP);
             boolean step_down  = gpad1.just_pressed(ManagedGamepad.Button.D_DOWN);
             boolean zeroize    = gpad1.just_pressed(ManagedGamepad.Button.D_RIGHT);
+            boolean pass       = gpad1.just_pressed(ManagedGamepad.Button.A);
 
             if(step_up && power < MAX_FWD)         power += INCREMENT;
             else if(step_down && power > MAX_REV)  power -= INCREMENT;
             else if(zeroize)                       power = 0.0;
+            else if(pass)                          gatePass = !gatePass;
+
+            if(gatePass){
+                loader.setGatePos(Loader.gatePos.OPEN);
+            }else if (!gatePass){
+                loader.setGatePos(Loader.gatePos.CLOSE);
+            }
 
             loader.load(power);
 

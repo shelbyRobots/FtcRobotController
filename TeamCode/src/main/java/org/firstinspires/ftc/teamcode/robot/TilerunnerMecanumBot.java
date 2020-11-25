@@ -28,7 +28,6 @@ public class TilerunnerMecanumBot extends TilerunnerGtoBot
     private double hdg = 0;
 
     private static final String TAG = "SJH_MEC";
-
     public TilerunnerMecanumBot()
     {
         super();
@@ -149,16 +148,11 @@ public class TilerunnerMecanumBot extends TilerunnerGtoBot
     }
 
     @Override
-    protected void initHolder()
-    {
-    }
-
-    @Override
     protected void initPushers()
     {
     }
 
-    protected void initIntake()
+    protected void initIntakes()
     {
         intake = new Intake(hwMap);
         intake.init();
@@ -211,4 +205,5 @@ public class TilerunnerMecanumBot extends TilerunnerGtoBot
     {
         return hdg;
     }
+
 }
