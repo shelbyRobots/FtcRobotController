@@ -51,11 +51,15 @@ public class UgRoute extends Route
             addPoint(points, fwd, 0.60, 1.00, encType, none, UgField.ROTP);
             addPoint(points, fwd, 0.60, 1.00, encType, none, UgField.RODP);
             addPoint(points, fwd, 0.50, 1.00, encType, drop, UgField.ROWA);
+            addPoint(points, rev, 0.60, 1.00, encType, none, UgField.RODP);
             addPoint(points, sdr, 0.50, 1.00, encType, shot, UgField.ROSA);
-            if (goForTwo) {
-                addPoint(points, rev, 0.60, 1.00, encType, none, UgField.ROTP);
-                addPoint(points, rev, 0.60, 1.00, encType, none, UgField.ROGW);
-                addPoint(points, fwd, 0.60, 1.00, encType, none, UgField.ROT2);
+            if (goForTwo)
+            {
+                //TODO - If we can strafe in auton, this can become much simpler
+                addPoint(points, fwd, 0.60, 1.00, encType, none, UgField.ROT1);
+                addPoint(points, rev, 0.60, 1.00, encType, none, UgField.ROT2);
+                addPoint(points, fwd, 0.60, 1.00, encType, none, UgField.ROT3);
+                addPoint(points, fwd, 0.60, 1.00, encType, none, UgField.RODP);
                 addPoint(points, fwd, 0.60, 1.00, encType, drop, UgField.ROWA);
             }
                 addPoint(points, rev, 0.50, 1.00, encType, park, UgField.ROPA);
@@ -67,6 +71,7 @@ public class UgRoute extends Route
             addPoint(points, fwd, 0.60, 1.00, encType, none, UgField.RITP);
             addPoint(points, fwd, 0.60, 1.00, encType, none, UgField.RIDP);
             addPoint(points, fwd, 0.50, 1.00, encType, drop, UgField.RIWA);
+            addPoint(points, rev, 0.60, 1.00, encType, none, UgField.RIDP);
             addPoint(points, sdr, 0.60, 1.00, encType, shot, UgField.RISA);
            /* if (goForTwo) {
                 addPoint(points, rev, 0.60, 1.00, encType, none, UgField.RITP);
@@ -75,13 +80,6 @@ public class UgRoute extends Route
                 addPoint(points, fwd, 0.60, 1.00, encType, drop, UgField.RIWA);
             }*/
             addPoint(points, rev, 0.50, 1.00, encType, park, UgField.RIPA);
-            addPoint(points, rev, 0.50, 1.00, encType, shot, UgField.RISA);
-            if(goForTwo){
-                addPoint(points, fwd, 0.50, 1.00, encType, none, UgField.RIT2);
-                addPoint(points, fwd, 0.50, 1.00, encType, grab, UgField.RIGW);
-                addPoint(points, fwd, 0.50, 1.00, encType, drop, UgField.ROWA);
-                addPoint(points, rev, 0.50, 1.00, encType, park, UgField.RIPA);
-            }
 
             return points;
         }
