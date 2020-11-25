@@ -294,7 +294,6 @@ public class Drivetrain
 
         boolean useOverKludge = false;
         int kludge = 160;
-        //noinspection ConstantConditions
         if(useCol && useOverKludge && !foundLine)
         {
             int overK = colOverCnt + kludge;
@@ -376,7 +375,7 @@ public class Drivetrain
         //perform a turn about drive axle center
         //left turns are positive angles
 
-        int counts = angleToCounts(angle, robot.BOT_WIDTH/2.0);
+        int counts = angleToCounts(angle, RobotConstants.DT_TRACK_WIDTH/2.0);
 
         setInitValues();
         setPositions(tgtLpositions, begLpositions, -counts);
@@ -595,8 +594,8 @@ public class Drivetrain
         //A radius of +w/2 pivots on the left wheel
         //A radius of -w/2 pivots on the right wheel
 
-        double rl = radius - robot.BOT_WIDTH/2.0;
-        double rr = radius + robot.BOT_WIDTH/2.0;
+        double rl = radius - RobotConstants.DT_TRACK_WIDTH/2.0;
+        double rr = radius + RobotConstants.DT_TRACK_WIDTH/2.0;
         int lcnts = angleToCounts(angle, rl);
         int rcnts = angleToCounts(angle, rr);
         
@@ -713,7 +712,7 @@ public class Drivetrain
         int difCnt = dCntR - dCntL;
         int sumCnt = dCntR + dCntL;
         double avgCnt = sumCnt/2.0;
-        double dAng = (dCntR-dCntL)/(CPI*robot.BOT_WIDTH);
+        double dAng = (dCntR-dCntL)/(CPI*RobotConstants.DT_TRACK_WIDTH);
 
         estHdg = angNormalize(estHdg + dAng);
 
@@ -753,7 +752,7 @@ public class Drivetrain
         frame = 0;
         this.robot  = robot;
 
-        CPI = robot.CPI;
+        CPI = RobotConstants.DT_CPI;
         DEF_CPI = CPI;
 
         noMoveThreshLow = (int)CPI;
@@ -865,7 +864,7 @@ public class Drivetrain
         int rdc = Math.abs(curRpositions.get(0));
 
         //convert LR count difference to angle
-        return countsToAngle(rdc - ldc, robot.BOT_WIDTH);
+        return countsToAngle(rdc - ldc, RobotConstants.DT_TRACK_WIDTH);
     }
 
     private double getGyroError(double tgtHdg)
@@ -924,7 +923,6 @@ public class Drivetrain
             }
             RobotLog.dd(TAG, "curLpos: %s", sb.toString());
 
-            //noinspection ConstantConditions
             if (sb != null) sb.delete(0, sb.length());
             for (int i = 0; i < curRpositions.size(); i++)
             {
@@ -1195,7 +1193,7 @@ public class Drivetrain
 
     public void setDrvTuner(double dtnr)
     {
-        CPI = robot.CPI / dtnr;
+        CPI = RobotConstants.DT_CPI/ dtnr;
     }
 
     public void setLogOverrun(boolean lo)
@@ -1326,16 +1324,11 @@ public class Drivetrain
         HWD_4_4X40
     }
 
-    private static double DRV_TUNER = 1.00;
+    private static final double DRV_TUNER = 1.00;
     private final static double TRN_TUNER = 1.0;
     private final static double TURN_TOLERANCE = 2.0;
     private int colSensOffset = 0;
 
-    private static double WHL_DIAMETER = 4.1875; //Diameter of the wheel (inches)
-    private int encoder_CPR;
-    private final static double GEAR_REDUC = 0.5;                   //Gear ratio
-
-    private static double CIRCUMFERENCE = Math.PI * WHL_DIAMETER;
     private double CPI;
     private double DEF_CPI;
 
@@ -1354,9 +1347,9 @@ public class Drivetrain
 
     public int frame   = 0;
 
-    private ElapsedTime period  = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-    private ElapsedTime rt = new ElapsedTime();
-    private ElapsedTime ptmr = new ElapsedTime();
+    private final ElapsedTime period  = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+    private final ElapsedTime rt = new ElapsedTime();
+    private final ElapsedTime ptmr = new ElapsedTime();
 
     public List<Integer> begLpositions = new ArrayList<>();
     public List<Integer> begRpositions = new ArrayList<>();
@@ -1366,8 +1359,8 @@ public class Drivetrain
     public List<Integer> tgtRpositions = new ArrayList<>();
     public List<Integer> endLpositions = new ArrayList<>();
     public List<Integer> endRpositions = new ArrayList<>();
-    private List<Integer> lstLpositions = new ArrayList<>();
-    private List<Integer> lstRpositions = new ArrayList<>();
+    private final List<Integer> lstLpositions = new ArrayList<>();
+    private final List<Integer> lstRpositions = new ArrayList<>();
     private int overLpos;
     private int overRpos;
 
@@ -1393,71 +1386,69 @@ public class Drivetrain
     private double estHdg = 0.0;
     private int numPts = 0;
 
-    private double noMoveTimeout = 1.0;
-    private double noDriveMoveTimeout = 0.5;
+    private final double noMoveTimeout = 1.0;
+    private final double noDriveMoveTimeout = 0.5;
     private int noMoveThreshLow = 10;  //is set to CPI in init
     private int noMoveThreshHi = 40;   //is set to 4*noMoveThreshLow in init
-    private double noMovePwrHi = 0.20;
-    private ElapsedTime accelTimer  = new ElapsedTime();
-    private ElapsedTime noMoveTimer = new ElapsedTime();
+    private final double noMovePwrHi = 0.20;
+    private final ElapsedTime accelTimer  = new ElapsedTime();
+    private final ElapsedTime noMoveTimer = new ElapsedTime();
 
-    private double printTimeout = 0.05;
+    private final double printTimeout = 0.05;
 
-    private double minSpeed = 0.1;
-    private double minGyroTurnSpeed = 0.10;
+    private final double minSpeed = 0.1;
+    private final double minGyroTurnSpeed = 0.10;
 
-    private double maxStrAng = 40.0;
-    private double minStrAng = 5.0;
-    private double maxStr = 1.0;
-    private double minStr = minGyroTurnSpeed;
-    private double strSlope = (maxStr - minStr)/(maxStrAng - minStrAng);
-    private double strB = maxStr - strSlope * maxStrAng;
+    private final double maxStrAng = 40.0;
+    private final double minStrAng = 5.0;
+    private final double maxStr = 1.0;
+    private final double minStr = minGyroTurnSpeed;
+    private final double strSlope = (maxStr - minStr)/(maxStrAng - minStrAng);
+    private final double strB = maxStr - strSlope * maxStrAng;
 
     private CommonUtil cmu;
     private LinearOpMode op;
     private DataLogger   dl;
 
-    private boolean usePosStop = false;
-    private boolean doStopAndReset = false;
+    private final boolean usePosStop = false;
+    private final boolean doStopAndReset = false;
 
     private double lastGyroError = 0;
-    private boolean useDterm = false;
+    private final boolean useDterm = false;
     private boolean gyroFirstGood = false;
-    private ElapsedTime gyroGoodTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-    private double gyroTimeout = 60;
+    private final ElapsedTime gyroGoodTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+    private final double gyroTimeout = 60;
     private int gyroGoodCount = 0;
 
-    private ElapsedTime gyroFrameTime = new ElapsedTime();
-    private ElapsedTime datalogtimer = new ElapsedTime();
+    private final ElapsedTime gyroFrameTime = new ElapsedTime();
+    private final ElapsedTime datalogtimer = new ElapsedTime();
 
-    private boolean logData = true;
-    private double logDataTimeout = 5;
+    private final boolean logData = true;
+    private final double logDataTimeout = 5;
     public ElapsedTime logDataTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     private double logTime = 0.01;
-
-    private int curCntTgt = 0;
 
     double nextPrintTime = ptmr.seconds();
     double nextBusyPrintTime = ptmr.seconds();
 
     private boolean logOverrun = true;
-    private double overtime = 0.12;
+    private final double overtime = 0.12;
 
-    private double reducePower = 0.3;
-    private double reduceTurnPower = 0.2;
+    private final double reducePower = 0.3;
+    private final double reduceTurnPower = 0.2;
 
     private boolean busyAnd = false;
     private boolean rampUp = true;
     private boolean rampDown = false;
     private boolean stopIndividualMotorWhenNotBusy = false;
 
-    private int tickRate = 10;
+    private final int tickRate = 10;
     private static final int DEF_BUSYTHRESH = 16;
     public  static final int TURN_BUSYTHRESH = 30;
     private static int BUSYTHRESH = DEF_BUSYTHRESH;
 
-    private ElapsedTime busyTimer = new ElapsedTime();
-    private double busyTimeOut = 20;
+    private final ElapsedTime busyTimer = new ElapsedTime();
+    private final double busyTimeOut = 20;
     private double lBusyTime = 0;
     private double rBusyTime = 0;
 
@@ -1473,7 +1464,7 @@ public class Drivetrain
 
     private boolean lFirst = true;
 
-    private double turnTimeLimit = 3;
+    private final double turnTimeLimit = 3;
 
     private static final String TAG = "SJH_DTRN";
 }

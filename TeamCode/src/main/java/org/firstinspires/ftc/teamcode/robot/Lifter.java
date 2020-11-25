@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
+
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_TO_POSITION;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
 
@@ -124,6 +126,7 @@ public class Lifter
         if(liftMotor != null) lftCnts = liftMotor.getCurrentPosition();
     }
 
+    @NonNull
     public String toString()
     {
         return String.format(Locale.US,

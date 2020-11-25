@@ -23,8 +23,8 @@ public class TilerunnerMecanumBot extends TilerunnerGtoBot
     public Intake intake = null;
     public Loader loader = null;
 
-    private int[] cnts = {0,0,0,0};
-    private double[] vels = {0,0,0,0};
+    private final int[] cnts = {0,0,0,0};
+    private final double[] vels = {0,0,0,0};
     private double hdg = 0;
 
     private static final String TAG = "SJH_MEC";
@@ -33,21 +33,11 @@ public class TilerunnerMecanumBot extends TilerunnerGtoBot
     {
         super();
 
-        name= "MEC";
+        name= "MEC2";
 
-        COUNTS_PER_MOTOR_REV = 28;
-        DRIVE_GEARS = new double[]{19.2, 1.0};
+        DRIVE_GEARS = new double[]{RobotConstants.DT_MOTOR.getGear(), RobotConstants.DT_EXT_GEAR_RATIO};
 
-        WHEEL_DIAMETER_INCHES = 96.0/25.4; //4.0
-        if(name == "MEC1") WHEEL_DIAMETER_INCHES = 4.0;
-        TUNE = 1.00;
-
-        BOT_WIDTH = 16.33f;
-        if(name == "MEC1" ) BOT_WIDTH  = 14.9f; //Wheel width
-        BOT_LENGTH = 18.0f;
-
-        REAR_OFFSET = 9.0f;
-        FRNT_OFFSET = BOT_LENGTH - REAR_OFFSET;
+        WHEEL_DIAMETER_INCHES = RobotConstants.DT_WHEEL_DIAM;
 
         CAMERA_X_IN_BOT = 0.0f * (float)Units.MM_PER_INCH;
         CAMERA_Y_IN_BOT = 0.0f * (float)Units.MM_PER_INCH;
@@ -137,8 +127,12 @@ public class TilerunnerMecanumBot extends TilerunnerGtoBot
     @Override
     protected void initCollectorLifter()
     {
+        //Lifter is wobblyBoi Arm - has rotational lift and gripper
         liftyBoi = new Lifter(hwMap);
         liftyBoi.init();
+
+        //Collector is combo of intake and loader
+        initIntake();
     }
 
     @Override
@@ -178,37 +172,16 @@ public class TilerunnerMecanumBot extends TilerunnerGtoBot
 
         hdg = getGyroFhdg();
 
-        if(liftyBoi != null)
-        {
-            liftyBoi.update();
-            // Display the current value
-        }
-        if(burr != null)
-        {
-            burr.update();
-        }
-        if(intake != null)
-        {
-           intake.update();
-        }
-        if(loader != null)
-        {
-           loader.update();
-        }
+        if(liftyBoi != null) { liftyBoi.update(); }
+        if(burr != null)     { burr.update(); }
+        if(intake != null)   { intake.update(); }
+        if(loader != null)   { loader.update(); }
     }
 
-    public int[] getCnts()
-    {
-        return cnts;
-    }
-
+    public int[] getCnts()    { return cnts; }
     public double[] getVels()
     {
         return vels;
     }
-
-    public double getHdg()
-    {
-        return hdg;
-    }
+    public double getHdg()    { return hdg;  }
 }

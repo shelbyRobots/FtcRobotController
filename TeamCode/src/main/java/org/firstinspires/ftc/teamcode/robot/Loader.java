@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
+
 public class Loader {
 
     public Loader(HardwareMap map){
@@ -38,6 +40,7 @@ public class Loader {
         curSpd = loadMotor.getVelocity();
     }
 
+    @NonNull
     public String toString(){
         return String.format(Locale.US, "shoot %5d %4.2f",
                 encPos, curSpd);

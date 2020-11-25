@@ -6,8 +6,8 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.robot.Drivetrain;
 import org.firstinspires.ftc.teamcode.robot.Lifter;
+import org.firstinspires.ftc.teamcode.robot.RobotConstants;
 import org.firstinspires.ftc.teamcode.robot.ShelbyBot;
-import org.firstinspires.ftc.teamcode.robot.SkyBot;
 import org.firstinspires.ftc.teamcode.robot.TilerunnerMecanumBot;
 import org.firstinspires.ftc.teamcode.util.Input_Shaper;
 import org.firstinspires.ftc.teamcode.util.ManagedGamepad;
@@ -18,11 +18,10 @@ import java.util.Locale;
 //@Disabled
 public class MecanumTeleop extends InitLinearOpMode
 {
-
-    
-    private void initPreStart() {
+    private void initPreStart()
+    {
         robot.setName(pmgr.getBotName());
-        ShelbyBot.OpModeType prevOpModeType = SkyBot.curOpModeType;
+        ShelbyBot.OpModeType prevOpModeType = ShelbyBot.curOpModeType;
         ShelbyBot.curOpModeType = ShelbyBot.OpModeType.TELE;
 
         /* Initialize the hardware variables. */
@@ -223,18 +222,13 @@ public class MecanumTeleop extends InitLinearOpMode
 
         if (useSetVel)
         {
-            double ips = maxIPS;
-            if(hspd) ips = sprMaxIPS;
-            calcMaxCpsDps(ips);
+            double maxCPS = RobotConstants.DT_SAF_CPS;
+            if(hspd) maxCPS = RobotConstants.DT_MAX_CPS;
 
             robot.lfMotor.setVelocity(lf * maxCPS);
             robot.rfMotor.setVelocity(rf * maxCPS);
             robot.lrMotor.setVelocity(lr * maxCPS);
             robot.rrMotor.setVelocity(rr * maxCPS);
-//            robot.lfMotor.setVelocity(lf * maxDPS, AngleUnit.DEGREES);
-//            robot.rfMotor.setVelocity(rf * maxDPS, AngleUnit.DEGREES);
-//            robot.lrMotor.setVelocity(lr * maxDPS, AngleUnit.DEGREES);
-//            robot.rrMotor.setVelocity(rr * maxDPS, AngleUnit.DEGREES);
         } else
         {
             robot.lfMotor.setPower(lf);
@@ -293,28 +287,19 @@ public class MecanumTeleop extends InitLinearOpMode
         }
     }
 
-    void calcMaxCpsDps(double ips)
-    {
-        maxCPS = ips*robot.CPI;
-        maxDPS = 360.0 * ips/(robot.WHEEL_DIAMETER_INCHES*Math.PI);
-    }
-
     private boolean runLoader = false;
     double dSpd = 0.0;
     double dStp = 0.1;
-    final double maxIPS = 30.0;
-    final double sprMaxIPS = 60.0;
-    double maxCPS = 0.0;
-    double maxDPS = 0.0;
+
     static final double rlrAng = Math.PI/4.0;
     static final double spdScl = Math.sqrt(2.0);
     static final boolean trig = true;
     Input_Shaper ishaper = new Input_Shaper();
     @SuppressWarnings("FieldCanBeLocal")
-    private boolean fieldAlign = false;
+    private final boolean fieldAlign = false;
     private boolean useSetVel = true;
-    private TilerunnerMecanumBot robot = new TilerunnerMecanumBot();
-    private Drivetrain dtrn = new Drivetrain();
+    private final TilerunnerMecanumBot robot = new TilerunnerMecanumBot();
+    private final Drivetrain dtrn = new Drivetrain();
 
     double raw_lr_x;
     double raw_fb_y;

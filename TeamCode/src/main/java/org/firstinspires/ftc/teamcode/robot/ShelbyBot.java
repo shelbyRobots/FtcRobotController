@@ -50,6 +50,8 @@ public class ShelbyBot
 
     public static OpModeType curOpModeType = OpModeType.UNKNOWN;
 
+    public static RobotConstants rbc = new RobotConstants(RobotConstants.Chassis.MEC2);
+
     /* Public OpMode members. */
     public DcMotorEx  leftMotor   = null;
     public DcMotorEx  rightMotor  = null;
@@ -84,7 +86,7 @@ public class ShelbyBot
     protected static float CAMERA_Y_IN_BOT;
     protected static float CAMERA_Z_IN_BOT;
 
-    private int colorPort = 0;
+    private final int colorPort = 0;
     private final DriveDir defDriveDir = DriveDir.INTAKE;
     private DriveDir ddir = defDriveDir;
     public DriveDir calibrationDriveDir = DriveDir.UNKNOWN;
@@ -106,11 +108,6 @@ public class ShelbyBot
     public Field.Alliance getAlliance() {return alliance;}
     public void setAlliance(Field.Alliance alnc) {alliance = alnc;}
 
-    //The values below are for the 6 wheel 2016-2017 drop center bot
-    //with center wheels powered by Neverest 40 motors.
-    //NOTE:  Notes reference center of bot on ground as bot coord frame origin.
-    //However, it seems logical to use the center of the rear axis (pivot point)
-    public float BOT_WIDTH; //Vehicle width at rear wheels
     public float BOT_LENGTH;
 
     protected double COUNTS_PER_MOTOR_REV;
@@ -129,7 +126,7 @@ public class ShelbyBot
     Map<String, Boolean> capMap = new HashMap<>();
 
     /* local OpMode members. */
-    private ElapsedTime period  = new ElapsedTime();
+    private final ElapsedTime period  = new ElapsedTime();
 
     private static final String TAG = "SJH_BOT";
 
@@ -145,7 +142,6 @@ public class ShelbyBot
         WHEEL_DIAMETER_INCHES = 4.1875;
         TUNE = 1.00;
 
-        BOT_WIDTH  = 16.8f;
         BOT_LENGTH = 18.0f;
 
         REAR_OFFSET = 9.0f;
@@ -169,7 +165,7 @@ public class ShelbyBot
     public void init(LinearOpMode op, boolean initDirSensor)
     {
         RobotLog.dd(TAG, "ShelbyBot init");
-        computeCPI();
+        CPI = RobotConstants.DT_CPI;
 
         initOp(op);
         initDriveMotors();
@@ -189,6 +185,12 @@ public class ShelbyBot
     {
         this.name = name;
         init(op);
+    }
+
+    public void init(LinearOpMode op, RobotConstants.Chassis chassis)
+    {
+        init(op, chassis.name());
+        rbc = new RobotConstants(chassis);
     }
 
     protected void initOp(LinearOpMode op)
@@ -390,8 +392,7 @@ public class ShelbyBot
 
     protected void computeCPI()
     {
-        CPI = (COUNTS_PER_MOTOR_REV * getTotalGearRatio())/
-                      (WHEEL_DIAMETER_INCHES * TUNE * Math.PI);
+        CPI = RobotConstants.DT_CPI;
     }
 
     public void setDriveDir (DriveDir ddir)

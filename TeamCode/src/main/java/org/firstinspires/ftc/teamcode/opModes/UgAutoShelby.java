@@ -19,6 +19,7 @@ import org.firstinspires.ftc.teamcode.image.Detector;
 import org.firstinspires.ftc.teamcode.image.ImageTracker;
 import org.firstinspires.ftc.teamcode.image.RingDetector;
 import org.firstinspires.ftc.teamcode.robot.Drivetrain;
+import org.firstinspires.ftc.teamcode.robot.RobotConstants;
 import org.firstinspires.ftc.teamcode.robot.ShelbyBot;
 import org.firstinspires.ftc.teamcode.robot.TilerunnerMecanumBot;
 import org.firstinspires.ftc.teamcode.util.AutoTransitioner;
@@ -66,13 +67,12 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         RobotLog.dd(TAG, "initCommon");
         initCommon(this, true, true, false, false);
 
-        RobotLog.dd(TAG, "getBotName");
-        robotName = pmgr.getBotName();
-
-        RobotLog.dd(TAG, "logPrefs");
+        RobotLog.dd(TAG, "robotname before pmgr: " + robotName);
         pmgr.logPrefs();
 
+        robotName = pmgr.getBotName();
         alliance = Field.Alliance.valueOf(pmgr.getAllianceColor());
+        delay    = pmgr.getDelay();
         startPos = Route.StartPos.valueOf(pmgr.getStartPosition());
         try
         {
@@ -83,8 +83,6 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
             RobotLog.ee(TAG, "ParkPosition %s invalid.", pmgr.getParkPosition());
             parkPos = Route.ParkPos.CENTER_PARK;
         }
-
-        delay    = pmgr.getDelay();
 
         dashboard.displayPrintf(2, "Pref BOT: %s", robotName);
         dashboard.displayPrintf(3, "Pref Alliance: %s", alliance);
@@ -204,38 +202,22 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
         dashboard.displayPrintf(1, "AutoTrans setup");
 
-        //Add wait for gamepad button press to indicate start of gyro init
-        //Drive team aligns bot with field
-        //Drive team hits another button to lock in gyro init
-
-//        dashboard.displayPrintf(6, "ALIGN TO FIELD THEN HIT X TO START GYRO INIT");
-//        dashboard.displayPrintf(7, "OR ALIGN TO FIRST SEG THEN HIT Y TO SKIP");
-//        ElapsedTime gyroTimer = new ElapsedTime();
-        boolean gyroSetToField = false;
-//        boolean gyroSetToSeg   = false;
-//        while(gyroTimer.seconds() < 10.0)
-//        {
-//            gpad1.update();
-//            if(gpad1.just_pressed(ManagedGamepad.Button.X))
-//            {
-//                gyroSetToField = true;
-//                break;
-//            }
-//            if(gpad1.just_pressed(ManagedGamepad.Button.Y))
-//            {
-//                gyroSetToSeg = true;
-//                break;
-//            }
-//        }
-
-//        if(gyroSetToField)
-//            RobotLog.ii(TAG,"X pressed: gyroSetToField");
-//        if(gyroSetToSeg)
-//            RobotLog.ii(TAG,"Y pressed: gyroSetToSeg");
-
-        dashboard.displayPrintf(0, "GYRO CALIBRATING DO NOT TOUCH OR START");
         ShelbyBot.curOpModeType = ShelbyBot.OpModeType.AUTO;
+
+        RobotConstants.Chassis chas = RobotConstants.Chassis.MEC2;
+        try
+        {
+            chas = RobotConstants.Chassis.valueOf(robotName);
+        }
+        catch (Exception e)
+        {
+            RobotLog.ee(TAG, "Robotname %s invalid. Defaulting to %s", robotName, chas);
+            chas = RobotConstants.Chassis.MEC2;
+        }
         robot.init(this, robotName);
+
+        boolean gyroSetToField = false;
+        dashboard.displayPrintf(0, "GYRO CALIBRATING DO NOT TOUCH OR START");
 
         if (robot.imu != null || robot.gyro  != null)
         {
@@ -251,7 +233,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
         dashboard.displayPrintf(1, "Robot Inited");
 
-        RobotLog.dd(TAG, "Robot CPI " + robot.CPI);
+        RobotLog.dd(TAG, "Robot CPI " + RobotConstants.DT_CPI);
 
         drvTrn.init(robot);
         drvTrn.setRampUp(false);
@@ -291,9 +273,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         Point2d currPoint = pathSegs.get(0).getStrtPt();
         drvTrn.setCurrPt(currPoint);
 
-        //noinspection ConstantConditions
         drvTrn.setStartHdg(gyroSetToField ? 0 : initHdg);
-        //noinspection ConstantConditions
         robot.setInitHdg(gyroSetToField   ? 0 : initHdg);
 
         RobotLog.ii(TAG, "Start %s.", currPoint);
@@ -359,7 +339,6 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
                     startTimer.seconds());
             RobotLog.ii(TAG, prntSeg.toString());
 
-            //noinspection ConstantConditions
             if (SkipNextSegment)
             {
                 SkipNextSegment = false;
@@ -548,12 +527,12 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         tracker.setActive(false);
     }
 
-
     private void update()
     {
         TilerunnerMecanumBot trmRobot = (TilerunnerMecanumBot)robot;
         trmRobot.update();
     }
+
     private void doScan(int segIdx)
     {
         RobotLog.dd(TAG, "doScan" + " segIdx:" + segIdx);
@@ -640,7 +619,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
     private void doShoot(int segIdx)
     {
-        Segment shootSeg = pathSegs .get(i);
+        Segment shootSeg = pathSegs .get(segIdx);
         Point2d shootPoint = shootSeg.getTgtPt();
         double shotdist = shootPoint.distance(UgField.RRG1);
         RobotLog.dd(TAG, "Shooting");
@@ -924,15 +903,15 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
     private final static double DEF_ENCTRN_PWR  = 0.8;
     private final static double DEF_GYRTRN_PWR  = 0.5;
 
-    private List<Segment> pathSegs = new ArrayList<>();
+    private final List<Segment> pathSegs = new ArrayList<>();
 
     private TilerunnerMecanumBot   robot;
 
     private Route pts;
 
-    private ElapsedTime timer = new ElapsedTime();
-    private ElapsedTime startTimer = new ElapsedTime();
-    private Drivetrain drvTrn = new Drivetrain();
+    private final ElapsedTime timer = new ElapsedTime();
+    private final ElapsedTime startTimer = new ElapsedTime();
+    private final Drivetrain drvTrn = new Drivetrain();
 
     private Detector det;
     private static ImageTracker tracker;
@@ -942,7 +921,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
     private double initHdg = 0.0;
     private boolean gyroReady;
     @SuppressWarnings("FieldCanBeLocal")
-    private boolean usePostTurn = true;
+    private final boolean usePostTurn = true;
 
     private final double DEF_SHT_DST = UgField.ROSA.distance(UgField.RRG1);
 
@@ -960,12 +939,12 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
     private double delay = 0.0;
 
     @SuppressWarnings("FieldCanBeLocal")
-    private boolean useImageLoc  = false;
+    private final boolean useImageLoc  = false;
 
     private int colSegNum = 0;
 
     @SuppressWarnings("FieldCanBeLocal")
-    private boolean useLight = true;
+    private final boolean useLight = true;
 
     private final ExecutorService es = Executors.newSingleThreadExecutor();
 

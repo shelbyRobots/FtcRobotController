@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
+
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
 
 public class Shooter {
@@ -44,6 +46,7 @@ public class Shooter {
         }
     }
 
+    @NonNull
     public String toString(){
         return String.format(Locale.US, "shoot %5d %4.2f %4.2f %4.2f",
                 encPos, curSpd, cps, dist);
