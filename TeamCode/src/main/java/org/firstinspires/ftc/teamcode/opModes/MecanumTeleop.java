@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.robot.Drivetrain;
 import org.firstinspires.ftc.teamcode.robot.Lifter;
+import org.firstinspires.ftc.teamcode.robot.Loader;
 import org.firstinspires.ftc.teamcode.robot.RobotConstants;
 import org.firstinspires.ftc.teamcode.robot.ShelbyBot;
 import org.firstinspires.ftc.teamcode.robot.TilerunnerMecanumBot;
@@ -76,23 +77,23 @@ public class MecanumTeleop extends InitLinearOpMode
     private void controlArmElev()
     {
         if(robot.liftyBoi == null) return;
-        double lftPwr = -gpad2.value(ManagedGamepad.AnalogInput.R_STICK_Y);
-        boolean stow = gpad2.just_pressed(ManagedGamepad.Button.A);
-        boolean grab = gpad2.just_pressed(ManagedGamepad.Button.B);
-        boolean hold = gpad2.just_pressed(ManagedGamepad.Button.X);
-        boolean drop = gpad2.just_pressed(ManagedGamepad.Button.Y);
+//        double lftPwr = -gpad1.value(ManagedGamepad.AnalogInput.R_STICK_Y);
+        boolean stow = gpad1.just_pressed(ManagedGamepad.Button.A);
+        boolean grab = gpad1.just_pressed(ManagedGamepad.Button.B);
+        boolean hold = gpad1.just_pressed(ManagedGamepad.Button.X);
+        boolean drop = gpad1.just_pressed(ManagedGamepad.Button.Y);
 
         if (stow) robot.liftyBoi.setLiftPos(Lifter.LiftPos.STOW);
         else if (grab) robot.liftyBoi.setLiftPos(Lifter.LiftPos.GRAB);
         else if (hold) robot.liftyBoi.setLiftPos(Lifter.LiftPos.HOLD);
         else if (drop) robot.liftyBoi.setLiftPos(Lifter.LiftPos.DROP);
-        else robot.liftyBoi.setLiftSpd(lftPwr);
+        else robot.liftyBoi.setLiftSpd(0.5);
     }
 
     private void controlGripper()
     {
         if(robot.liftyBoi == null) return;
-        boolean toggleGrp = gpad2.just_pressed(ManagedGamepad.Button.R_BUMP);
+        boolean toggleGrp = gpad1.just_pressed(ManagedGamepad.Button.L_TRIGGER);
         if(toggleGrp) robot.liftyBoi.toggleClampPos();
     }
     private void controlIntake()
@@ -100,31 +101,36 @@ public class MecanumTeleop extends InitLinearOpMode
         double intake = -gpad2.value(ManagedGamepad.AnalogInput.L_STICK_Y);
         //L Bump acts as a toggle to activate or deactivate the loader
         boolean loader  = gpad2.just_pressed(ManagedGamepad.Button.L_BUMP);
+        boolean shoot = gpad2.just_pressed(ManagedGamepad.Button.A);
         if(loader) runLoader = !runLoader;
         if(robot.intake != null) robot.intake.suck(intake);
         if(robot.loader != null && runLoader) robot.loader.load(intake);
+        if(robot.loader.ringGate != null && shoot) robot.loader.pass();
     }
     private void controlShooter()
     {
         if(robot.burr == null) return;
-        boolean step_up    = gpad2.just_pressed(ManagedGamepad.Button.D_UP);
-        boolean step_down  = gpad2.just_pressed(ManagedGamepad.Button.D_DOWN);
-        boolean zeroize    = gpad2.just_pressed(ManagedGamepad.Button.D_RIGHT);
-        boolean normal     = gpad2.just_pressed(ManagedGamepad.Button.D_LEFT);
+        boolean step_up    = gpad2.just_pressed(ManagedGamepad.Button.D_RIGHT);
+        boolean step_down  = gpad2.just_pressed(ManagedGamepad.Button.D_LEFT);
+        boolean zeroize    = gpad2.just_pressed(ManagedGamepad.Button.D_DOWN);
+        boolean normal     = gpad2.just_pressed(ManagedGamepad.Button.D_UP);
 
 
         if (step_up && distance < MAX_DIST) {
             distance += INCREMENT;
-            robot.burr.shoot(distance);
+            robot.burr.shotSpeed(distance);
         }
         if (step_down && distance > MIN_DIST) {
             distance -= INCREMENT;
-            robot.burr.shoot(distance);
+            robot.burr.shotSpeed(distance);
         }
-        if (zeroize) robot.burr.stop();
+        if (zeroize){
+            robot.burr.shotSpeed(FAV_DIST);
+            robot.burr.stop();
+        }
         if (normal){
             distance = FAV_DIST;
-            robot.burr.shoot(distance);
+            robot.burr.shotSpeed(distance);
         }
     }
 

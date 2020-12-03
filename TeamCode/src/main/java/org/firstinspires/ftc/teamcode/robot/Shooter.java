@@ -73,7 +73,7 @@ public class Shooter {
         return cps;
     }
 
-    public void shoot(double distance)
+    public void shotSpeed(double distance)
     {
         dist = distance;
         if(shooter != null) shooter.setVelocity(calcCps(distance));

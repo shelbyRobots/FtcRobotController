@@ -97,6 +97,8 @@ public class Intake {
         DropPos(double srvPos) { this.srvPos = srvPos; }
     }
 
+
+
     private DcMotorEx intaker;
     public Servo dropservo;
     private DropPos dropPos = DropPos.CLOSED;

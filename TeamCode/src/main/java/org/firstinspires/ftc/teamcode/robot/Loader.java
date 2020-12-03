@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.util.RobotLog;
 import java.util.Locale;
 
 import androidx.annotation.NonNull;
-
+import androidx.annotation.NonNull;
 public class Loader {
 
     public Loader(HardwareMap map){
@@ -68,6 +68,11 @@ public class Loader {
         curSpd = loadMotor.getVelocity();
     }
 
+    public void pass(){
+        if (curGatePos != gatePos.OPEN) setGatePos(gatePos.OPEN);
+        //TODO: add sleep to close ringGate
+    }
+
     @NonNull
     public String toString(){
         return String.format(Locale.US, "shoot %5d %4.2f",
@@ -82,7 +87,7 @@ public class Loader {
     private gatePos curGatePos;
     private DcMotorEx loadMotor;
     protected HardwareMap hwMap;
-    private Servo ringGate;
+    public Servo ringGate;
     private static final String TAG = "SJH_LDR";
     private int encPos;
     private double curSpd;
