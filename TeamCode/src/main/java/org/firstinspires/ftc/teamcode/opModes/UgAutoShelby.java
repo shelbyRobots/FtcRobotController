@@ -216,6 +216,8 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         }
         robot.init(this, robotName);
 
+        RobotConstants rbc = new RobotConstants(chas);
+
         boolean gyroSetToField = false;
         dashboard.displayPrintf(0, "GYRO CALIBRATING DO NOT TOUCH OR START");
 
@@ -599,7 +601,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
     private void doDrop(int segIdx)
     {
         RobotLog.dd(TAG, "Dropping wobblyBOI on seg %d at %f", segIdx, startTimer.seconds());
-        if(robot.burr != null) robot.burr.shoot(DEF_SHT_DST);
+        if(robot.burr != null) robot.burr.shotSpeed(DEF_SHT_DST);
     }
 
     private void doPlatch()
@@ -625,7 +627,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         RobotLog.dd(TAG, "Shooting");
         if(robot.burr == null)
             return;
-        robot.burr.shoot(shotdist);
+        robot.burr.shotSpeed(shotdist);
         sleep(500);
         // TODO add control of loader fire
         sleep(1000);
