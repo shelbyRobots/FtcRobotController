@@ -545,7 +545,9 @@ public class ShelbyBot
     {
         UNKNOWN,
         INTAKE,
-        PUSHER
+        PUSHER,
+        LEFT,
+        RIGHT
     }
 
     @SuppressWarnings("unused")

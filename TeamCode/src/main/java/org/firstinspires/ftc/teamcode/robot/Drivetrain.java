@@ -1338,7 +1338,7 @@ public class Drivetrain
     private static final double Kd_GyroTurn      = 0.001;
     private static final double THRESH = Math.toRadians(0.004);
 
-    public enum Direction {FORWARD, REVERSE}
+    public enum Direction {FORWARD, REVERSE,LEFT,RIGHT}
 
     private ShelbyBot robot;
 

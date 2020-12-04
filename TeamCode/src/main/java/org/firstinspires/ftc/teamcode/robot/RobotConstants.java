@@ -20,6 +20,8 @@ public class RobotConstants
   public static double DT_MAX_IPS;
   public static final double DT_SAF_CPS = DT_SAF_IPS * DT_CPI;
   public static double DT_MAX_CPS;
+  public static Chassis bot= Chassis.MEC2;
+  public static double strafeScale=1.09;
 
   public RobotConstants(Motors.MotorModel motorModel, double whlDiam, double trackWidth, double extGear)
   {
@@ -33,6 +35,7 @@ public class RobotConstants
 
   public RobotConstants(Chassis chassis)
   {
+    bot=chassis;
     switch (chassis)
     {
       case MEC1:
