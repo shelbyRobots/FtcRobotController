@@ -44,6 +44,7 @@ import static org.firstinspires.ftc.teamcode.field.Route.StartPos.START_1;
 //import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
+@SuppressWarnings("ConstantConditions")
 @Autonomous(name="UgAutoShelby", group="Auton")
 //@Disabled
 public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButtons
@@ -685,6 +686,12 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         else
         {
             double targetHdg = seg.getFieldHeading();
+            if(dir == ShelbyBot.DriveDir.RIGHT || dir == ShelbyBot.DriveDir.LEFT)
+            {
+                ddir = Drivetrain.Direction.RIGHT;
+                if(dir == ShelbyBot.DriveDir.LEFT) ddir = Drivetrain.Direction.LEFT;
+                drvTrn.strafe(spt.distance(ept), speed, ddir, targetHdg);
+            }
             drvTrn.driveToPointLinear(ept, speed, ddir, targetHdg);
         }
 

@@ -10,7 +10,7 @@ public class RobotConstants
   public static double DT_EXT_GEAR_RATIO = 1.0;
   public static double DT_GEAR_RATIO = DT_MOTOR.getGear() * DT_EXT_GEAR_RATIO;
   public static double DT_CPWR = DT_CPMR * DT_EXT_GEAR_RATIO; //counts per whl rev
-  public static double DT_WHEEL_DIAM = 4.0; //96.0 * MM2IN for gobilda
+  public static double DT_WHEEL_DIAM =  96.0 / MM2IN; //4.0 for tilerunner
   public static double DT_CIRCUM = DT_WHEEL_DIAM * Math.PI;
   public static double DT_CPI = DT_CPWR / DT_CIRCUM;
 

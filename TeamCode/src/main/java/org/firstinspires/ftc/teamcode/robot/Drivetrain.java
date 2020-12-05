@@ -139,12 +139,40 @@ public class Drivetrain
             setCurValues();
             logData();
 
+            //noinspection ConstantConditions
             if(tickRate > 0) waitForTick(tickRate);
             frame++;
         }
 
         stopMotion();
         setEndValues("DRIVE_TRGT");
+    }
+
+    public void strafeDistance(double dst, double pwr, Direction dir)
+    {
+        int counts = (int)(distanceToCounts(dst) * RobotConstants.strafeScale);
+        RobotLog.ii(TAG, "strafeDistance: %6.2f Counts %d", dst, counts);
+
+        if(dir == Direction.LEFT)
+        {
+            counts*=-1;
+        }
+
+        setInitValues();
+        tgtLpositions.set(0, begLpositions.get(0) + counts);
+        tgtLpositions.set(1, begLpositions.get(1) - counts);
+        tgtRpositions.set(0, begRpositions.get(0) - counts);
+        tgtRpositions.set(1, begRpositions.get(1) + counts);
+        String dDistStr = String.format(Locale.US, "STRAFE_DIST %4.2f", dst);
+        logStartValues(dDistStr);
+
+        setTargetPositions(robot.leftMotors, tgtLpositions);
+        setTargetPositions(robot.rightMotors, tgtRpositions);
+
+        setMode(robot.leftMotors, DcMotor.RunMode.RUN_TO_POSITION);
+        setMode(robot.rightMotors, DcMotor.RunMode.RUN_TO_POSITION);
+
+        moveInit(pwr, pwr);
     }
 
     public void driveDistance(double dst, double pwr, Direction dir)
@@ -171,6 +199,83 @@ public class Drivetrain
         setMode(robot.rightMotors, DcMotor.RunMode.RUN_TO_POSITION);
 
         moveInit(pwr, pwr);
+    }
+
+    public int strafe(double dst, double pwr, Direction dir, double targetHdg)
+    {
+        trgtHdg = targetHdg;
+        RobotLog.ii(TAG, "Starting strafe %s");
+        if(doStopAndReset) stopAndReset();
+        logData(true, "STRAFE");
+
+        boolean ramping = rampUp;
+        double startPwr = 0.1;
+        initLpower = startPwr;
+        int pwrSteps = 5;
+        double pwrIncr = (pwr - startPwr)/pwrSteps;
+
+        RobotLog.dd(TAG, "Strafe %4.2f %4.2f %4.2f %4.2f %s %s %s",
+            dst, pwr, pwrIncr, targetHdg, dir, rampUp, rampDown);
+
+        strafeDistance(dst, startPwr, dir);
+
+        //TODO FIGURE OUT isBusy for strafe
+        while(op.opModeIsActive()    &&
+              !op.isStopRequested()  &&
+              isBusy())
+        {
+            setCurValues();
+            logData();
+
+            double ppwr = pwr;
+
+            StringBuilder sb = new StringBuilder("curPos:");
+            for (Integer c : curLpositions)
+            {
+                sb.append(" ");
+                sb.append(c);
+            }
+            for (Integer c : curRpositions)
+            {
+                sb.append(" ");
+                sb.append(c);
+            }
+            sb.append(" tgtPos:");
+            for (Integer c : tgtLpositions)
+            {
+                sb.append(" ");
+                sb.append(c);
+            }
+            for (Integer c : tgtRpositions)
+            {
+                sb.append(" ");
+                sb.append(c);
+            }
+            RobotLog.ii(TAG, "%s ", sb.toString());
+
+            if((robot.gyro == null && robot.imu == null))
+            {
+                move(ppwr, ppwr);
+            }
+            else
+            {
+                //TODO FIGURE OUT gyro corrections for strafe?
+                //makeGyroCorrections(ppwr, trgtHdg, dir);
+                move(ppwr, ppwr);
+            }
+
+            if(!isBusy()) break;
+
+            //noinspection ConstantConditions
+            if(tickRate > 0) waitForTick(tickRate);
+            frame++;
+        }
+
+        setEndValues("STRAFE");
+        stopMotion();
+        if(logOverrun) logOverrun(overtime);
+
+        return 0;
     }
 
     public int driveDistanceLinear(double dst, double pwr, Direction dir,
@@ -288,12 +393,14 @@ public class Drivetrain
 
             if(!isBusy()) break;
 
+            //noinspection ConstantConditions
             if(tickRate > 0) waitForTick(tickRate);
             frame++;
         }
 
         boolean useOverKludge = false;
         int kludge = 160;
+        //noinspection ConstantConditions
         if(useCol && useOverKludge && !foundLine)
         {
             int overK = colOverCnt + kludge;
@@ -532,6 +639,7 @@ public class Drivetrain
 
             move(lpwr, rpwr);
 
+            //noinspection ConstantConditions
             if(tickRate > 0) waitForTick(tickRate);
             frame++;
         }
@@ -579,6 +687,7 @@ public class Drivetrain
             setCurValues();
             logData();
 
+            //noinspection ConstantConditions
             if(tickRate > 0) waitForTick(tickRate);
             frame++;
         }
@@ -638,6 +747,7 @@ public class Drivetrain
             setCurValues();
             logData();
 
+            //noinspection ConstantConditions
             if(tickRate > 0) waitForTick(tickRate);
             frame++;
         }
@@ -923,6 +1033,7 @@ public class Drivetrain
             }
             RobotLog.dd(TAG, "curLpos: %s", sb.toString());
 
+            //noinspection ConstantConditions
             if (sb != null) sb.delete(0, sb.length());
             for (int i = 0; i < curRpositions.size(); i++)
             {
@@ -1011,6 +1122,7 @@ public class Drivetrain
                break;
             }
 
+            //noinspection ConstantConditions
             if(tickRate > 0) waitForTick(tickRate);
             frame++;
             overCnt++;
