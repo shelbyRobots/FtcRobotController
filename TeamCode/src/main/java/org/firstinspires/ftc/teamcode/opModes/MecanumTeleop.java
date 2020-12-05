@@ -53,8 +53,8 @@ public class MecanumTeleop extends InitLinearOpMode
         vels=robot.getVels();
         hdg=robot.getHdg();
 
-        lStr = robot.liftyBoi.toString();
-        sStr = robot.burr.toString();
+        if(robot.liftyBoi != null) lStr = robot.liftyBoi.toString();
+        if(robot.burr != null)     sStr = robot.burr.toString();
     }
 
     private void printTelem()

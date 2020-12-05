@@ -25,6 +25,8 @@ public class UgRoute extends Route
         //convenience declarations to make call params shorter
         ShelbyBot.DriveDir fwd = ShelbyBot.DriveDir.INTAKE;
         ShelbyBot.DriveDir rev = ShelbyBot.DriveDir.PUSHER;
+        ShelbyBot.DriveDir rgt = ShelbyBot.DriveDir.RIGHT;
+        ShelbyBot.DriveDir lft = ShelbyBot.DriveDir.LEFT;
 
         Segment.Action none    = Segment.Action.NOTHING;
         Segment.Action scan    = Segment.Action.SCAN_IMAGE;
@@ -40,6 +42,9 @@ public class UgRoute extends Route
         Segment.TargetType colType = Segment.TargetType.COLOR;
 
         ShelbyBot.DriveDir sdr = fwd;
+
+        boolean runTest = true;
+
         if(robotName == "MEC1") sdr = rev;
 
         boolean goForTwo = true;
@@ -47,6 +52,12 @@ public class UgRoute extends Route
         if(startPos == StartPos.START_1)  //Wall Start
         {
             points.add(UgField.ROS1);
+            if(runTest)
+            {
+                addPoint(points, rgt, 0.40, 1.00, encType, none, UgField.RODP);
+                return points;
+            }
+
             addPoint(points, fwd, 0.60, 1.00, encType, scan, UgField.ROSP);
             addPoint(points, fwd, 0.60, 1.00, encType, none, UgField.ROTP);
             addPoint(points, fwd, 0.60, 1.00, encType, none, UgField.RODP);
@@ -80,8 +91,6 @@ public class UgRoute extends Route
                 addPoint(points, fwd, 0.60, 1.00, encType, drop, UgField.RIWA);
             }*/
             addPoint(points, rev, 0.50, 1.00, encType, park, UgField.RIPA);
-
-            return points;
         }
 
         return points;

@@ -52,18 +52,23 @@ public class Intake {
                 "intake %5d %4.2f",
                 encPos, curSpd);
     }
-    public void update(){
-        encPos = intaker.getCurrentPosition();
-        curSpd = intaker.getVelocity();
+
+    public void update()
+    {
+        if(intaker != null)
+        {
+            encPos = intaker.getCurrentPosition();
+            curSpd = intaker.getVelocity();
+        }
     }
 
     public void stop(){
         intaker.setPower(0);
     }
 
-    public void suck(double pwr){
-
-        intaker.setPower(pwr);
+    public void suck(double pwr)
+    {
+        if(intaker != null) intaker.setPower(pwr);
     }
 
 

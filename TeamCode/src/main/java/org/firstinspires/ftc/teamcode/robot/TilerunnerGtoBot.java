@@ -85,7 +85,7 @@ public class TilerunnerGtoBot extends ShelbyImuBot
         WHEEL_DIAMETER_INCHES = 4.0;
         TUNE = 1.00;
 
-        BOT_WIDTH  = 15.0f; //Wheel width
+        double BOT_WIDTH  = 15.0f; //Wheel width
         BOT_LENGTH = 18.0f;
 
         REAR_OFFSET = 9.0f;

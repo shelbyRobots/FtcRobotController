@@ -55,16 +55,16 @@ public class TestShooter extends InitLinearOpMode
 
             if (step_up && distance < MAX_DIST) {
                 distance += INCREMENT;
-                shooter.shoot(distance);
+                shooter.shotSpeed(distance);
             }
             if (step_down && distance > MIN_DIST) {
                 distance -= INCREMENT;
-                shooter.shoot(distance);
+                shooter.shotSpeed(distance);
             }
             if (zeroize) shooter.stop();
             if (normal){
                 distance = FAV_DIST;
-                shooter.shoot(distance);
+                shooter.shotSpeed(distance);
             }
 
             dashboard.displayPrintf(1, shooter.toString());

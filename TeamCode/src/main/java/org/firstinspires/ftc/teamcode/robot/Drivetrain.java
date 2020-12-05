@@ -151,7 +151,8 @@ public class Drivetrain
     public void strafeDistance(double dst, double pwr, Direction dir)
     {
         int counts = (int)(distanceToCounts(dst) * RobotConstants.strafeScale);
-        RobotLog.ii(TAG, "strafeDistance: %6.2f Counts %d", dst, counts);
+        RobotLog.ii(TAG, "strafeDistance: %6.2f Counts %d Dir %s",
+            dst, counts, dir);
 
         if(dir == Direction.LEFT)
         {

@@ -692,7 +692,10 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
                 if(dir == ShelbyBot.DriveDir.LEFT) ddir = Drivetrain.Direction.LEFT;
                 drvTrn.strafe(spt.distance(ept), speed, ddir, targetHdg);
             }
-            drvTrn.driveToPointLinear(ept, speed, ddir, targetHdg);
+            else
+            {
+                drvTrn.driveToPointLinear(ept, speed, ddir, targetHdg);
+            }
         }
 
         drvTrn.setCurrPt(ept);

@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.robot.Drivetrain;
+import org.firstinspires.ftc.teamcode.robot.RobotConstants;
 import org.firstinspires.ftc.teamcode.robot.ShelbyBot;
 
 public class DriveTestUtil
@@ -323,11 +324,11 @@ public class DriveTestUtil
 
     public void doDoubleCurveTurn(double sideDist, double spd)
     {
-        double theta = Math.toDegrees(Math.acos(1 - sideDist/robot.BOT_WIDTH));
+        double theta = Math.toDegrees(Math.acos(1 - sideDist/ RobotConstants.DT_TRACK_WIDTH));
         drvTrn.logData(true, "S turn " + theta + " " + spd + " " + sideDist);
-        drvTrn.turn(theta, spd,   robot.BOT_WIDTH/2);
-        drvTrn.turn(-theta,spd, -robot.BOT_WIDTH/2);
+        drvTrn.turn(theta, spd,   RobotConstants.DT_TRACK_WIDTH/2);
+        drvTrn.turn(-theta,spd, -RobotConstants.DT_TRACK_WIDTH/2);
         op.sleep(1000);
-        drvTrn.turn(90, spd, robot.BOT_WIDTH);
+        drvTrn.turn(90, spd, RobotConstants.DT_TRACK_WIDTH);
     }
 }

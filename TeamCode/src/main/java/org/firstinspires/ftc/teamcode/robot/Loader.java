@@ -63,9 +63,13 @@ public class Loader {
         }
     }
 
-    public void update(){
-        encPos = loadMotor.getCurrentPosition();
-        curSpd = loadMotor.getVelocity();
+    public void update()
+    {
+        if(loadMotor != null)
+        {
+            encPos = loadMotor.getCurrentPosition();
+            curSpd = loadMotor.getVelocity();
+        }
     }
 
     public void pass(){
@@ -81,7 +85,7 @@ public class Loader {
 
     public void load (double pwr)
     {
-        loadMotor.setPower(pwr);
+        if(loadMotor != null) loadMotor.setPower(pwr);
     }
 
     private gatePos curGatePos;

@@ -38,7 +38,8 @@ public class Shooter {
         return success;
     }
 
-    public void update(){
+    public void update()
+    {
         if(shooter != null)
         {
             encPos = shooter.getCurrentPosition();
@@ -47,7 +48,8 @@ public class Shooter {
     }
 
     @NonNull
-    public String toString(){
+    public String toString()
+    {
         return String.format(Locale.US, "shoot %5d %4.2f %4.2f %4.2f",
                 encPos, curSpd, cps, dist);
     }
