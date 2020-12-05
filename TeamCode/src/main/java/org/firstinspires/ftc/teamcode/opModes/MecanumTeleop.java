@@ -78,10 +78,10 @@ public class MecanumTeleop extends InitLinearOpMode
     {
         if(robot.liftyBoi == null) return;
 //        double lftPwr = -gpad1.value(ManagedGamepad.AnalogInput.R_STICK_Y);
-        boolean stow = gpad1.just_pressed(ManagedGamepad.Button.A);
-        boolean grab = gpad1.just_pressed(ManagedGamepad.Button.B);
-        boolean hold = gpad1.just_pressed(ManagedGamepad.Button.X);
-        boolean drop = gpad1.just_pressed(ManagedGamepad.Button.Y);
+        boolean stow = gpad2.just_pressed(ManagedGamepad.Button.A);
+        boolean grab = gpad2.just_pressed(ManagedGamepad.Button.B);
+        boolean hold = gpad2.just_pressed(ManagedGamepad.Button.X);
+        boolean drop = gpad2.just_pressed(ManagedGamepad.Button.Y);
 
         if (stow) robot.liftyBoi.setLiftPos(Lifter.LiftPos.STOW);
         else if (grab) robot.liftyBoi.setLiftPos(Lifter.LiftPos.GRAB);
@@ -101,12 +101,12 @@ public class MecanumTeleop extends InitLinearOpMode
         double intake = -gpad2.value(ManagedGamepad.AnalogInput.L_STICK_Y);
         //L Bump acts as a toggle to activate or deactivate the loader
         boolean loader  = gpad2.just_pressed(ManagedGamepad.Button.L_BUMP);
-        boolean shoot = gpad2.pressed(ManagedGamepad.Button.A);
+        boolean shoot = gpad2.pressed(ManagedGamepad.Button.R_TRIGGER);
         if(loader) runLoader = !runLoader;
         if(robot.intake != null) robot.intake.suck(intake);
         if(robot.loader != null && runLoader) robot.loader.load(intake);
         if(robot.loader.ringGate != null && shoot) robot.loader.setGatePos(Loader.gatePos.OPEN);
-        else if (robot.loader.ringGate !=null && !shoot) robot.loader.setGatePos(Loader.gatePos.CLOSE);
+        else robot.loader.setGatePos(Loader.gatePos.CLOSE);
     }
     private void controlShooter()
     {
