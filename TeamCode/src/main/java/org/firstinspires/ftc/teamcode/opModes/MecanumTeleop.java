@@ -101,11 +101,12 @@ public class MecanumTeleop extends InitLinearOpMode
         double intake = -gpad2.value(ManagedGamepad.AnalogInput.L_STICK_Y);
         //L Bump acts as a toggle to activate or deactivate the loader
         boolean loader  = gpad2.just_pressed(ManagedGamepad.Button.L_BUMP);
-        boolean shoot = gpad2.just_pressed(ManagedGamepad.Button.A);
+        boolean shoot = gpad2.pressed(ManagedGamepad.Button.A);
         if(loader) runLoader = !runLoader;
         if(robot.intake != null) robot.intake.suck(intake);
         if(robot.loader != null && runLoader) robot.loader.load(intake);
-        if(robot.loader.ringGate != null && shoot) robot.loader.pass();
+        if(robot.loader.ringGate != null && shoot) robot.loader.setGatePos(Loader.gatePos.OPEN);
+        else if (robot.loader.ringGate !=null && !shoot) robot.loader.setGatePos(Loader.gatePos.CLOSE);
     }
     private void controlShooter()
     {
@@ -125,7 +126,6 @@ public class MecanumTeleop extends InitLinearOpMode
             robot.burr.shotSpeed(distance);
         }
         if (zeroize){
-            robot.burr.shotSpeed(FAV_DIST);
             robot.burr.stop();
         }
         if (normal){
