@@ -1,12 +1,13 @@
 package org.firstinspires.ftc.teamcode.opModes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.image.Detector;
 import org.firstinspires.ftc.teamcode.image.LedDetector;
 
 @Autonomous(name="OpenCvLedAuton", group ="Test")
-//Disabled
+@Disabled
 public class OpenCvLedAuton extends InitLinearOpMode
 {
     @Override
