@@ -205,7 +205,7 @@ public class Drivetrain
     public int strafe(double dst, double pwr, Direction dir, double targetHdg)
     {
         trgtHdg = targetHdg;
-        RobotLog.ii(TAG, "Starting strafe %s");
+        RobotLog.ii(TAG, "Starting strafe");
         if(doStopAndReset) stopAndReset();
         logData(true, "STRAFE");
 

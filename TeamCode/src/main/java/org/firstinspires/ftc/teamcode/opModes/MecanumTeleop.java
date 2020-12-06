@@ -78,17 +78,17 @@ public class MecanumTeleop extends InitLinearOpMode
     private void controlArmElev()
     {
         if(robot.liftyBoi == null) return;
-//        double lftPwr = -gpad1.value(ManagedGamepad.AnalogInput.R_STICK_Y);
+        double lftPwr = -gpad1.value(ManagedGamepad.AnalogInput.R_STICK_Y);
         boolean stow = gpad2.just_pressed(ManagedGamepad.Button.A);
         boolean grab = gpad2.just_pressed(ManagedGamepad.Button.B);
         boolean hold = gpad2.just_pressed(ManagedGamepad.Button.X);
         boolean drop = gpad2.just_pressed(ManagedGamepad.Button.Y);
 
-        if (stow) robot.liftyBoi.setLiftPos(Lifter.LiftPos.STOW);
+        if      (stow) robot.liftyBoi.setLiftPos(Lifter.LiftPos.STOW);
         else if (grab) robot.liftyBoi.setLiftPos(Lifter.LiftPos.GRAB);
         else if (hold) robot.liftyBoi.setLiftPos(Lifter.LiftPos.HOLD);
         else if (drop) robot.liftyBoi.setLiftPos(Lifter.LiftPos.DROP);
-        else robot.liftyBoi.setLiftSpd(0.5);
+        else robot.liftyBoi.setLiftSpd(lftPwr);
     }
 
     private void controlGripper()
@@ -97,6 +97,7 @@ public class MecanumTeleop extends InitLinearOpMode
         boolean toggleGrp = gpad1.just_pressed(ManagedGamepad.Button.L_TRIGGER);
         if(toggleGrp) robot.liftyBoi.toggleClampPos();
     }
+
     private void controlIntake()
     {
         double intake = -gpad2.value(ManagedGamepad.AnalogInput.L_STICK_Y);
@@ -106,9 +107,13 @@ public class MecanumTeleop extends InitLinearOpMode
         if(loader) runLoader = !runLoader;
         if(robot.intake != null) robot.intake.suck(intake);
         if(robot.loader != null && runLoader) robot.loader.load(intake);
-        if(robot.loader.ringGate != null && shoot) robot.loader.setGatePos(Loader.gatePos.OPEN);
-        else robot.loader.setGatePos(Loader.gatePos.CLOSE);
+        if(robot.loader != null)
+        {
+            if(shoot) robot.loader.setGatePos(Loader.gatePos.OPEN);
+            else      robot.loader.setGatePos(Loader.gatePos.CLOSE);
+        }
     }
+
     private void controlShooter()
     {
         if(robot.burr == null) return;
@@ -140,8 +145,6 @@ public class MecanumTeleop extends InitLinearOpMode
         controlArmElev();
         controlGripper();
     }
-
-
 
     private void controlDrive()
     {
@@ -246,7 +249,7 @@ public class MecanumTeleop extends InitLinearOpMode
 
         dashboard.displayPrintf(l++, "SPD %4.2f DIR %4.2f DSPD: %3.1f FALGN %s USEVEL %s",
                 speed, direction, dSpd, fieldAlign, useSetVel);
-        dashboard.displayPrintf(l, "OUT: lf %4.2f rf %4.2f lr %4.2f rr %4.2f",
+        dashboard.displayPrintf(l++, "OUT: lf %4.2f rf %4.2f lr %4.2f rr %4.2f",
                 lf, rf, lr, rr);
     }
 

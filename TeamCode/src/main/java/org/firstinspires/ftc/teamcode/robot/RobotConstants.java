@@ -3,14 +3,14 @@ package org.firstinspires.ftc.teamcode.robot;
 @SuppressWarnings("unused")
 public class RobotConstants
 {
-  public static final double MM2IN = 1.0/25.4;
+  public static final double MMPERIN = 25.4;
   public static Motors.MotorModel DT_MOTOR = Motors.MotorModel.GOBILDA_5202_19_2;
   public static double DT_CPMR = DT_MOTOR.getCpr(); //counts per motor output shaft rev
   public static double DT_MAX_RPM = DT_MOTOR.getRpm();
   public static double DT_EXT_GEAR_RATIO = 1.0;
   public static double DT_GEAR_RATIO = DT_MOTOR.getGear() * DT_EXT_GEAR_RATIO;
   public static double DT_CPWR = DT_CPMR * DT_EXT_GEAR_RATIO; //counts per whl rev
-  public static double DT_WHEEL_DIAM =  96.0 / MM2IN; //4.0 for tilerunner
+  public static double DT_WHEEL_DIAM =  96.0 / MMPERIN; //4.0 for tilerunner
   public static double DT_CIRCUM = DT_WHEEL_DIAM * Math.PI;
   public static double DT_CPI = DT_CPWR / DT_CIRCUM;
 
@@ -23,6 +23,8 @@ public class RobotConstants
   public static Chassis bot= Chassis.MEC2;
   public static double strafeScale=1.09;
 
+  public static final String TAG = "SJH_RBC";
+
   public RobotConstants(Motors.MotorModel motorModel, double whlDiam, double trackWidth, double extGear)
   {
     init(motorModel, whlDiam, trackWidth, extGear);
@@ -30,7 +32,7 @@ public class RobotConstants
 
   public RobotConstants()
   {
-    this(Motors.MotorModel.GOBILDA_5202_19_2, 96/MM2IN, 16.34, 1.0);
+    this(Motors.MotorModel.GOBILDA_5202_19_2, 96/MMPERIN, 16.34, 1.0);
   }
 
   public RobotConstants(Chassis chassis)
@@ -44,7 +46,7 @@ public class RobotConstants
       case MEC2:
       case MEC3:
       default:
-        init(Motors.MotorModel.GOBILDA_5202_19_2, 96/MM2IN,16.34, 1.0);
+        init(Motors.MotorModel.GOBILDA_5202_19_2, 96/MMPERIN,16.34, 1.0);
         break;
     }
   }

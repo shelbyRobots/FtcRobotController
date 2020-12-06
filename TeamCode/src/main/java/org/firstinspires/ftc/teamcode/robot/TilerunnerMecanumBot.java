@@ -45,6 +45,13 @@ public class TilerunnerMecanumBot extends TilerunnerGtoBot
         LEFT_DIR  = DcMotorSimple.Direction.REVERSE;
         RIGHT_DIR = DcMotorSimple.Direction.FORWARD;
 
+        if(RobotConstants.bot == RobotConstants.Chassis.MEC2 ||
+           RobotConstants.bot == RobotConstants.Chassis.MEC3)
+        {
+            LEFT_DIR  = DcMotorSimple.Direction.FORWARD;
+            RIGHT_DIR = DcMotorSimple.Direction.REVERSE;
+        }
+
         gyroInverted = false;
     }
 

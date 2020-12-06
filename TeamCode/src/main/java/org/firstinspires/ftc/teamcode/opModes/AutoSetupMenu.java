@@ -16,7 +16,7 @@ public class AutoSetupMenu extends InitLinearOpMode implements FtcMenu.MenuButto
     private final String TAG = "Auton Menu";
 
     //The autonomous menu settings using sharedpreferences
-    private PreferenceMgr prfMgr = new PreferenceMgr();
+    private final PreferenceMgr prfMgr = new PreferenceMgr();
     private String club;
     private String bot;
     private String allianceColor;
@@ -87,10 +87,10 @@ public class AutoSetupMenu extends InitLinearOpMode implements FtcMenu.MenuButto
         RobotLog.dd(TAG, "delay:    %d", delay);
     }
 
-    private String[] botNames = {"GTO1", "GTO2", "MEC"};
-    private String[] alliances = {"RED", "BLUE"};
-    private String[] startPositions = {"START_1", "START_2"};
-    private String[] parkPositions = {"CENTER_PARK", "DEFEND_PARK"};
+    private final String[] botNames = {"GTO1", "MEC1", "MEC2", "MEC3"};
+    private final String[] alliances = {"RED", "BLUE"};
+    private final String[] startPositions = {"START_1", "START_2"};
+    private final String[] parkPositions = {"CENTER_PARK", "DEFEND_PARK"};
 
     //
     // Implements FtcMenu.MenuButtons interface.
