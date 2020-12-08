@@ -87,7 +87,7 @@ public class ShelbyBot
     protected static float CAMERA_Z_IN_BOT;
 
     private final int colorPort = 0;
-    private final DriveDir defDriveDir = DriveDir.INTAKE;
+    private final DriveDir defDriveDir = DriveDir.PUSHER;
     private DriveDir ddir = defDriveDir;
     public DriveDir calibrationDriveDir = DriveDir.UNKNOWN;
     protected HardwareMap hwMap = null;
@@ -165,13 +165,13 @@ public class ShelbyBot
     public void init(LinearOpMode op, boolean initDirSensor)
     {
         RobotLog.dd(TAG, "ShelbyBot init");
-        CPI = RobotConstants.DT_CPI;
+        computeCPI();
 
         initOp(op);
         initDriveMotors();
         initCollectorLifter();
-        initShooters();
         initPushers();
+        initShooters();
         initSensors();
         initCapabilities();
     }
@@ -397,9 +397,18 @@ public class ShelbyBot
 
     public void setDriveDir (DriveDir ddir)
     {
+        RobotLog.ii(TAG, "setDriveDir to " + ddir + " from " + this.ddir);
         if(ddir == DriveDir.UNKNOWN)
         {
             RobotLog.ee(TAG, "setDriveDir called with UNKNOWN");
+            return;
+        }
+
+        if(ddir == DriveDir.RIGHT || ddir == DriveDir.LEFT)
+        {
+            RobotLog.dd(TAG, "setDriveDir called with R/L");
+            if(calibrationDriveDir == DriveDir.UNKNOWN) calibrationDriveDir =
+                RobotConstants.DT_DIR;
             return;
         }
 
@@ -408,21 +417,23 @@ public class ShelbyBot
         if(this.ddir == ddir)
             return;
 
+        RobotLog.ii(TAG, "Setting Drive Direction to " + ddir + " from " + this.ddir);
+        RobotLog.ii(TAG, "Calibration Drive Direction: " + calibrationDriveDir);
+
         this.ddir = ddir;
 
-        RobotLog.ii(TAG, "Setting Drive Direction to " + ddir);
         RobotLog.ii(TAG, " #LM %d #RM %d", numLmotors, numRmotors);
 
         int n = numLmotors - 1;
         for(int m = 0; m < numRmotors; m++)
         {
-            DcMotorEx lMotor = leftMotors.get(m);
-            lMotor.setDirection(RIGHT_DIR);
-            DcMotorEx rMotor = rightMotors.get(n);
-            rMotor.setDirection(LEFT_DIR);
             RobotLog.dd(TAG, "Setting l(%d) to r(%d)", m, n);
-            leftMotors.set(m, rMotor);
             RobotLog.dd(TAG, "Setting r(%d) to l(%d)", n, m);
+            DcMotorEx lMotor = leftMotors.get(m);
+            DcMotorEx rMotor = rightMotors.get(n);
+            lMotor.setDirection(RIGHT_DIR);
+            rMotor.setDirection(LEFT_DIR);
+            leftMotors.set(m, rMotor);
             rightMotors.set(n, lMotor);
             n--;
         }
@@ -460,8 +471,8 @@ public class ShelbyBot
         if(calibrationDriveDir == DriveDir.UNKNOWN)
         {
             RobotLog.ii(TAG, "calibrateGyro called without having set a drive Direction. " +
-                       "Defaulting to INTAKE.");
-            setDriveDir(DriveDir.INTAKE);
+                       "Defaulting to  " + RobotConstants.DT_DIR);
+            setDriveDir(RobotConstants.DT_DIR);
         }
 
         RobotLog.ii(TAG, "Starting gyro calibration");

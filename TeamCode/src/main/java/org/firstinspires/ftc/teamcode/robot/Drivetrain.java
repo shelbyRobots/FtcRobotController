@@ -45,8 +45,8 @@ public class Drivetrain
         curLpower = lPwr;
         curRpower = rPwr;
 
-        if(setL || setR) RobotLog.dd(TAG, "MOVE: " +
-                                          " lpwr " + lPwr + " rpwr " + rPwr );
+        if(setL || setR)
+            RobotLog.dd(TAG, "MOVE: " + " lpwr " + lPwr + " rpwr " + rPwr );
 
         if(lFirst)
         {
@@ -220,7 +220,6 @@ public class Drivetrain
 
         strafeDistance(dst, startPwr, dir);
 
-        //TODO FIGURE OUT isBusy for strafe
         while(op.opModeIsActive()    &&
               !op.isStopRequested()  &&
               isBusy())
@@ -229,29 +228,21 @@ public class Drivetrain
             logData();
 
             double ppwr = pwr;
+            double tmpPwr = (curLpower + curRpower)/2;
+            rampUp = true;
+
+            if(rampUp  && tmpPwr < pwr)
+            {
+                ppwr = Range.clip(tmpPwr + pwrIncr, startPwr, pwr);
+                RobotLog.dd(TAG, "Ramping up %4.2f", ppwr);
+            }
 
             StringBuilder sb = new StringBuilder("curPos:");
-            for (Integer c : curLpositions)
-            {
-                sb.append(" ");
-                sb.append(c);
-            }
-            for (Integer c : curRpositions)
-            {
-                sb.append(" ");
-                sb.append(c);
-            }
+            for (Integer c : curLpositions) { sb.append(" "); sb.append(c); }
+            for (Integer c : curRpositions) { sb.append(" "); sb.append(c);  }
             sb.append(" tgtPos:");
-            for (Integer c : tgtLpositions)
-            {
-                sb.append(" ");
-                sb.append(c);
-            }
-            for (Integer c : tgtRpositions)
-            {
-                sb.append(" ");
-                sb.append(c);
-            }
+            for (Integer c : tgtLpositions) { sb.append(" "); sb.append(c); }
+            for (Integer c : tgtRpositions)  { sb.append(" "); sb.append(c);  }
             RobotLog.ii(TAG, "%s ", sb.toString());
 
             if((robot.gyro == null && robot.imu == null))
@@ -877,6 +868,7 @@ public class Drivetrain
         RobotLog.dd(TAG, "Drivetrain.init");
         RobotLog.dd(TAG, " numLmotors %d", robot.numLmotors);
         RobotLog.dd(TAG, " numRmotors %d", robot.numRmotors);
+        RobotLog.dd(TAG, " curDriveDir %s", curDriveDir);
 
         datalogtimer.reset();
 
@@ -1360,8 +1352,18 @@ public class Drivetrain
     }
     private void  setPower (List<DcMotorEx> motors, double power)
     {
-        for (DcMotor m : motors)
-            m.setPower(power);
+        boolean useSpd = true;
+
+        if(useSpd)
+        {
+            for (DcMotorEx m : motors)
+                m.setVelocity(power * RobotConstants.DT_MAX_CPS);
+        }
+        else
+        {
+            for (DcMotorEx m : motors)
+                m.setPower(power);
+        }
     }
 
     private void setPos(List<Integer> positions, List<DcMotorEx> motors)

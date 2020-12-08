@@ -32,7 +32,7 @@ public class MecanumTeleop extends InitLinearOpMode
         robot.init(this, initSensors);
 
         RobotLog.dd(TAG, "Initialize drivetrain");
-        //robot.setDriveDir(ShelbyBot.DriveDir.INTAKE);
+        robot.setDriveDir(RobotConstants.DT_DIR);
         dtrn.init(robot);
         dtrn.setRampUp(false);
         dtrn.setRampDown(false);
@@ -94,7 +94,7 @@ public class MecanumTeleop extends InitLinearOpMode
     private void controlGripper()
     {
         if(robot.liftyBoi == null) return;
-        boolean toggleGrp = gpad1.just_pressed(ManagedGamepad.Button.L_TRIGGER);
+        boolean toggleGrp = gpad2.just_pressed(ManagedGamepad.Button.L_TRIGGER);
         if(toggleGrp) robot.liftyBoi.toggleClampPos();
     }
 
@@ -161,6 +161,7 @@ public class MecanumTeleop extends InitLinearOpMode
         boolean incr = gpad1.just_pressed(ManagedGamepad.Button.R_BUMP);
         boolean decr = gpad1.just_pressed(ManagedGamepad.Button.L_BUMP);
         boolean hspd = gpad1.pressed(ManagedGamepad.Button.R_TRIGGER);
+        boolean dtrn = gpad1.pressed(ManagedGamepad.Button.L_TRIGGER);
         boolean tglV = gpad1.just_pressed(ManagedGamepad.Button.Y);
         //boolean step_driveType = gpad1.just_pressed(ManagedGamepad.Button.A);
 
@@ -177,12 +178,19 @@ public class MecanumTeleop extends InitLinearOpMode
 
         if (lft || rgt || fwd || bak)
         {
-            lr_x = lft ? -dSpd : rgt ?  dSpd : 0.0;
-            fb_y = bak ? -dSpd : fwd ?  dSpd : 0.0;
-            if((lft || rgt)  && (fwd || bak))
+            if((lft || rgt) && dtrn)
             {
-                lr_x /= spdScl;
-                fb_y /= spdScl;
+                turn = lft ? -dSpd : dSpd;
+            }
+            else
+            {
+                lr_x = lft ? -dSpd : rgt ? dSpd : 0.0;
+                fb_y = bak ? -dSpd : fwd ? dSpd : 0.0;
+                if ((lft || rgt) && (fwd || bak))
+                {
+                    lr_x /= spdScl;
+                    fb_y /= spdScl;
+                }
             }
         }
 
@@ -193,6 +201,9 @@ public class MecanumTeleop extends InitLinearOpMode
         double rr = -turn;
         double speed = 0.0;
         double direction = 0.0;
+
+        dashboard.displayPrintf(l++, "PT: lf %4.2f rf %4.2f lr %4.2f rr %4.2f",
+            lf, rf, lr, rr);
 
         if(trig)
         {
@@ -229,6 +240,8 @@ public class MecanumTeleop extends InitLinearOpMode
             lr /= max;
             rr /= max;
         }
+        dashboard.displayPrintf(l++, "PS: lf %4.2f rf %4.2f lr %4.2f rr %4.2f",
+            lf, rf, lr, rr);
 
         if (useSetVel)
         {

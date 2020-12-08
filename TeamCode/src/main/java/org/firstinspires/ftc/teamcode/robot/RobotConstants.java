@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
 @SuppressWarnings("unused")
 public class RobotConstants
 {
@@ -23,36 +25,39 @@ public class RobotConstants
   public static Chassis bot= Chassis.MEC2;
   public static double strafeScale=1.09;
 
-  public static final String TAG = "SJH_RBC";
+  public static ShelbyBot.DriveDir  DT_DIR = ShelbyBot.DriveDir.PUSHER;
+  public static DcMotorSimple.Direction DT_LDIR = DcMotorSimple.Direction.REVERSE;
+  public static DcMotorSimple.Direction DT_RDIR = DcMotorSimple.Direction.FORWARD;
 
-  public RobotConstants(Motors.MotorModel motorModel, double whlDiam, double trackWidth, double extGear)
-  {
-    init(motorModel, whlDiam, trackWidth, extGear);
-  }
+  public static final String TAG = "SJH_RBC";
 
   public RobotConstants()
   {
-    this(Motors.MotorModel.GOBILDA_5202_19_2, 96/MMPERIN, 16.34, 1.0);
+    this(Chassis.MEC2);
   }
 
   public RobotConstants(Chassis chassis)
   {
-    bot=chassis;
     switch (chassis)
     {
       case MEC1:
-        init(Motors.MotorModel.AM_NEVEREST_ORBITAL_20, 4.0,14.9, 1.0);
+        init(chassis, Motors.MotorModel.AM_NEVEREST_ORBITAL_20, 4.0,14.9, 1.0,
+            ShelbyBot.DriveDir.PUSHER, DcMotorSimple.Direction.REVERSE, DcMotorSimple.Direction.FORWARD);
         break;
       case MEC2:
       case MEC3:
       default:
-        init(Motors.MotorModel.GOBILDA_5202_19_2, 96/MMPERIN,16.34, 1.0);
+        init(chassis, Motors.MotorModel.GOBILDA_5202_19_2, 96/MMPERIN,16.34, 1.0,
+            ShelbyBot.DriveDir.PUSHER, DcMotorSimple.Direction.REVERSE, DcMotorSimple.Direction.FORWARD);
         break;
     }
   }
 
-  private void init(Motors.MotorModel motorModel, double whlDiam, double trackWidth, double extGear)
+  public void init(Chassis chas, Motors.MotorModel motorModel, double whlDiam, double trackWidth,
+                    double extGear, ShelbyBot.DriveDir dir,
+                    DcMotorSimple.Direction ldir, DcMotorSimple.Direction rdir)
   {
+    bot = chas;
     DT_MOTOR = motorModel;
     DT_CPMR = DT_MOTOR.getCpr();
     DT_MAX_RPM = DT_MOTOR.getRpm();

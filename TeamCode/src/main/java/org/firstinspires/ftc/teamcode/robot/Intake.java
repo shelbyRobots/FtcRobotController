@@ -33,13 +33,13 @@ public class Intake {
 
         try
         {
-            dropservo = hwMap.get(Servo.class, "clamp");
+            dropservo = hwMap.get(Servo.class, "drop");
             dropPos = DropPos.CLOSED;
             setDropPos(dropPos);
         }
         catch (Exception e)
         {
-            RobotLog.ee(TAG, "ERROR lifter - no clampServo clamp\n" + e.toString());
+            RobotLog.ee(TAG, "ERROR lifter - no dropservo drop\n" + e.toString());
             success = false;
         }
 

@@ -42,16 +42,6 @@ public class TilerunnerMecanumBot extends TilerunnerGtoBot
         CAMERA_Y_IN_BOT = 0.0f * (float)Units.MM_PER_INCH;
         CAMERA_Z_IN_BOT = 0.0f * (float)Units.MM_PER_INCH;
 
-        LEFT_DIR  = DcMotorSimple.Direction.REVERSE;
-        RIGHT_DIR = DcMotorSimple.Direction.FORWARD;
-
-        if(RobotConstants.bot == RobotConstants.Chassis.MEC2 ||
-           RobotConstants.bot == RobotConstants.Chassis.MEC3)
-        {
-            LEFT_DIR  = DcMotorSimple.Direction.FORWARD;
-            RIGHT_DIR = DcMotorSimple.Direction.REVERSE;
-        }
-
         gyroInverted = false;
     }
 
@@ -74,6 +64,12 @@ public class TilerunnerMecanumBot extends TilerunnerGtoBot
             leftMotors.add(numLmotors++, lrMotor);
             rightMotors.add(numRmotors++, rfMotor);
             rightMotors.add(numRmotors++, rrMotor);
+
+            lfMotor.setDirection(RobotConstants.DT_LDIR);
+            rfMotor.setDirection(RobotConstants.DT_RDIR);
+            lrMotor.setDirection(RobotConstants.DT_LDIR);
+            rrMotor.setDirection(RobotConstants.DT_RDIR);
+
             capMap.put("drivetrain", true);
 
             List<LynxModule> allHubs = hwMap.getAll(LynxModule.class);
@@ -113,15 +109,6 @@ public class TilerunnerMecanumBot extends TilerunnerGtoBot
                 }
             }
             mnum++;
-        }
-
-        for (DcMotor mot : leftMotors)
-        {
-            mot.setDirection(LEFT_DIR);
-        }
-        for (DcMotor mot : rightMotors)
-        {
-            mot.setDirection(RIGHT_DIR);
         }
     }
 

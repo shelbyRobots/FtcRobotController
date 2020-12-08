@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.field;
 
 import com.qualcomm.robotcore.util.RobotLog;
 
+import org.firstinspires.ftc.teamcode.robot.RobotConstants;
 import org.firstinspires.ftc.teamcode.robot.ShelbyBot;
 import org.firstinspires.ftc.teamcode.util.Point2d;
 import org.firstinspires.ftc.teamcode.util.Segment;
@@ -13,8 +14,6 @@ public class UgRoute extends Route
 {
     private static final String TAG = "SJH_RRP";
 
-    private final String robotName;
-
     @Override
     protected Vector<Point2d> initPoints()
     {
@@ -23,8 +22,9 @@ public class UgRoute extends Route
         Vector<Point2d> points = new Vector<>(MAX_SEGMENTS);
 
         //convenience declarations to make call params shorter
-        ShelbyBot.DriveDir fwd = ShelbyBot.DriveDir.INTAKE;
-        ShelbyBot.DriveDir rev = ShelbyBot.DriveDir.PUSHER;
+        ShelbyBot.DriveDir fwd = RobotConstants.DT_DIR;
+        ShelbyBot.DriveDir rev = ShelbyBot.DriveDir.INTAKE;
+        if(fwd == ShelbyBot.DriveDir.INTAKE) rev = ShelbyBot.DriveDir.PUSHER;
         ShelbyBot.DriveDir rgt = ShelbyBot.DriveDir.RIGHT;
         ShelbyBot.DriveDir lft = ShelbyBot.DriveDir.LEFT;
 
@@ -43,21 +43,28 @@ public class UgRoute extends Route
 
         ShelbyBot.DriveDir sdr = fwd;
 
-        boolean runTest = true;
+        boolean runTest = false;
+        boolean useStrafe = true;
 
-        if(robotName == "MEC1") sdr = rev;
+        if(RobotConstants.bot == RobotConstants.Chassis.MEC1) sdr = rev;
 
         boolean goForTwo = true;
 
         if(startPos == StartPos.START_1)  //Wall Start
         {
-            points.add(UgField.ROS1);
             if(runTest)
             {
-                addPoint(points, rgt, 0.40, 1.00, encType, none, UgField.RODP);
+                Point2d tp1 = new Point2d("TP1", 0.0,  0.0);
+                Point2d tp2 = new Point2d("TP2", 0.05, 0.0);
+                Point2d tp3 = new Point2d("TP2", 0.0, 48.0);
+                points.add(tp1);
+                addPoint(points, fwd, 0.30, 1.00, encType, none, tp2);
+                addPoint(points, lft, 0.30, 1.00, encType, none, tp3);
+                //addPoint(points, lft, 0.40, 1.00, encType, none, tp1);
                 return points;
             }
 
+            points.add(UgField.ROS1);
             addPoint(points, fwd, 0.60, 1.00, encType, scan, UgField.ROSP);
             addPoint(points, fwd, 0.60, 1.00, encType, none, UgField.ROTP);
             addPoint(points, fwd, 0.60, 1.00, encType, none, UgField.RODP);
@@ -66,11 +73,21 @@ public class UgRoute extends Route
             addPoint(points, sdr, 0.50, 1.00, encType, shot, UgField.ROSA);
             if (goForTwo)
             {
-                //TODO - If we can strafe in auton, this can become much simpler
-                addPoint(points, fwd, 0.60, 1.00, encType, none, UgField.ROT1);
-                addPoint(points, rev, 0.60, 1.00, encType, none, UgField.ROT2);
-                addPoint(points, fwd, 0.60, 1.00, encType, none, UgField.ROT3);
-                addPoint(points, fwd, 0.60, 1.00, encType, none, UgField.RODP);
+                if(useStrafe)
+                {
+                    addPoint(points, rev, 0.60, 1.00, encType, none, UgField.RODP);
+                    addPoint(points, rev, 0.60, 1.00, encType, none, UgField.ROSS);
+                    addPoint(points, rgt, 0.30, 1.00, encType, none, UgField.ROSE);
+                    addPoint(points, fwd, 0.60, 1.00, encType, none, UgField.ROW2);
+                }
+                else
+                {
+                    addPoint(points, fwd, 0.60, 1.00, encType, none, UgField.ROT1);
+                    addPoint(points, rev, 0.60, 1.00, encType, none, UgField.ROT2);
+                    addPoint(points, fwd, 0.60, 1.00, encType, none, UgField.ROT3);
+                    addPoint(points, fwd, 0.60, 1.00, encType, none, UgField.RODP);
+                }
+
                 addPoint(points, fwd, 0.60, 1.00, encType, drop, UgField.ROWA);
             }
                 addPoint(points, rev, 0.50, 1.00, encType, park, UgField.ROPA);
@@ -97,11 +114,9 @@ public class UgRoute extends Route
     }
 
     public UgRoute(PositionOption startPos,
-                   Field.Alliance alliance,
-                   String robotName)
+                   Field.Alliance alliance)
     {
         super(startPos, alliance);
-        this.robotName = robotName;
     }
 //Alex was here
     private boolean goForTwo = false;

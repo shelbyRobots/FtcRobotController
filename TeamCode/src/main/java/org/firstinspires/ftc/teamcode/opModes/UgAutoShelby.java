@@ -68,46 +68,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         RobotLog.dd(TAG, "initCommon");
         initCommon(this, true, true, false, false);
 
-        RobotLog.dd(TAG, "robotname before pmgr: " + robotName);
-        pmgr.logPrefs();
-
-        robotName = pmgr.getBotName();
-        alliance = Field.Alliance.valueOf(pmgr.getAllianceColor());
-        delay    = pmgr.getDelay();
-        startPos = Route.StartPos.valueOf(pmgr.getStartPosition());
-        try
-        {
-            parkPos  = Route.ParkPos.valueOf(pmgr.getParkPosition());
-        }
-        catch (Exception e)
-        {
-            RobotLog.ee(TAG, "ParkPosition %s invalid.", pmgr.getParkPosition());
-            parkPos = Route.ParkPos.CENTER_PARK;
-        }
-
-        dashboard.displayPrintf(2, "Pref BOT: %s", robotName);
-        dashboard.displayPrintf(3, "Pref Alliance: %s", alliance);
-        dashboard.displayPrintf(4, "Pref StartPos: %s %s", startPos, parkPos);
-        dashboard.displayPrintf(5, "Pref Delay: %.2f", delay);
-
         setup();
-
-        com.vuforia.CameraCalibration camCal = com.vuforia.CameraDevice.getInstance().getCameraCalibration();
-        Vec4F distParam = camCal.getDistortionParameters();
-        Vec2F camFov    = camCal.getFieldOfViewRads();
-        Vec2F camFlen   = camCal.getFocalLength();
-        Vec2F camPpt    = camCal.getPrincipalPoint();
-        Vec2F camSize   = camCal.getSize();
-
-        RobotLog.dd(TAG, "DistortionParams %f %f %f %f",
-                distParam.getData()[0],
-                distParam.getData()[1],
-                distParam.getData()[2],
-                distParam.getData()[3]);
-        RobotLog.dd(TAG, "CamFOV %f %f", camFov.getData()[0], camFov.getData()[1]);
-        RobotLog.dd(TAG, "CamFlen %f %f", camFlen.getData()[0], camFlen.getData()[1]);
-        RobotLog.dd(TAG, "CamPpt %f %f", camPpt.getData()[0], camPpt.getData()[1]);
-        RobotLog.dd(TAG, "CamSize %f %f", camSize.getData()[0], camSize.getData()[1]);
 
         int initCycle = 0;
         int initSleep = 10;
@@ -160,8 +121,34 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         if(det != null) det.cleanupCamera();
     }
 
+    private void getPrefs()
+    {
+        RobotLog.dd(TAG, "robotname before pmgr: " + robotName);
+        pmgr.logPrefs();
+
+        robotName = pmgr.getBotName();
+        alliance = Field.Alliance.valueOf(pmgr.getAllianceColor());
+        delay    = pmgr.getDelay();
+        startPos = Route.StartPos.valueOf(pmgr.getStartPosition());
+        try
+        {
+            parkPos  = Route.ParkPos.valueOf(pmgr.getParkPosition());
+        }
+        catch (Exception e)
+        {
+            RobotLog.ee(TAG, "ParkPosition %s invalid.", pmgr.getParkPosition());
+            parkPos = Route.ParkPos.CENTER_PARK;
+        }
+
+        dashboard.displayPrintf(2, "Pref BOT: %s", robotName);
+        dashboard.displayPrintf(3, "Pref Alliance: %s", alliance);
+        dashboard.displayPrintf(4, "Pref StartPos: %s %s", startPos, parkPos);
+        dashboard.displayPrintf(5, "Pref Delay: %.2f", delay);
+    }
+
     private void setup()
     {
+        getPrefs();
         dashboard.displayPrintf(0, "PLEASE WAIT - STARTING - CHECK DEFAULTS");
         logData = true;
 
@@ -190,17 +177,17 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         if(doMen) doMenus();
 
         dashboard.displayPrintf(0, "INITIALIZING");
+        dashboard.displayPrintf(1, "Prefs/Menu Done");
+        dashboard.displayPrintf(6, "");
+        dashboard.displayPrintf(7, "");
 
         final String teleopName = "Mecanum";
         robot = new TilerunnerMecanumBot();
-
-        dashboard.displayPrintf(1, "Prefs Done");
 
         //Since we only have 5 seconds between Auton and Teleop, automatically load
         //teleop opmode
         RobotLog.dd(TAG, "Setting up auto tele loader : %s", teleopName);
         AutoTransitioner.transitionOnStop(this, teleopName);
-
         dashboard.displayPrintf(1, "AutoTrans setup");
 
         ShelbyBot.curOpModeType = ShelbyBot.OpModeType.AUTO;
@@ -215,42 +202,43 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
             RobotLog.ee(TAG, "Robotname %s invalid. Defaulting to %s", robotName, chas);
             chas = RobotConstants.Chassis.MEC2;
         }
+
+        @SuppressWarnings("unused") RobotConstants rbc = new RobotConstants(chas);
+
+        pts = new UgRoute(startPos, alliance);
+        pathSegs.addAll(Arrays.asList(pts.getSegments()));
+
         robot.init(this, robotName);
 
-        RobotConstants rbc = new RobotConstants(chas);
+        ShelbyBot.DriveDir startDdir = pathSegs.get(0).getDir();
+        robot.setDriveDir(startDdir);
 
-        boolean gyroSetToField = false;
+        initHdg = pathSegs.get(0).getFieldHeading();
+        robot.setInitHdg(initHdg);
+        robot.setAlliance(alliance);
+
         dashboard.displayPrintf(0, "GYRO CALIBRATING DO NOT TOUCH OR START");
-
         if (robot.imu != null || robot.gyro  != null)
         {
             gyroReady = robot.calibrateGyro();
         }
         dashboard.displayPrintf(0, "GYRO CALIBATED: %s", gyroReady);
-
-//        dashboard.displayPrintf(6, gyroSetToField ? "Field" : "1stSeg" +"Init done");
-        dashboard.displayPrintf(6, "");
-        dashboard.displayPrintf(7, "");
-
-        robot.setAlliance(alliance);
-
         dashboard.displayPrintf(1, "Robot Inited");
 
-        RobotLog.dd(TAG, "Robot CPI " + RobotConstants.DT_CPI);
-
         drvTrn.init(robot);
+        drvTrn.setStartHdg(initHdg);
         drvTrn.setRampUp(false);
         int colThresh = 450;
         drvTrn.setColorThresh(colThresh);
 
-        dashboard.displayPrintf(1, "DrvTrn Inited");
+        dashboard.displayPrintf(1, "Robot & DrvTrn Inited");
 
         det = new RingDetector(robotName);
         RobotLog.dd(TAG, "Setting up vuforia");
         tracker = new ImageTracker(new UgField());
+        det.setTelemetry(telemetry);
 
         setupLogger();
-
         dl.addField("Start: " + startPos.toString());
         dl.addField("Alliance: " + alliance.toString());
         dl.addField("Park: "     + parkPos.toString());
@@ -260,31 +248,33 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         RobotLog.ii(TAG, "DELAY    %4.2f", delay);
         RobotLog.ii(TAG, "BOT      %s", robotName);
 
-        pts = new UgRoute(startPos, alliance, robotName);
-
-        pathSegs.addAll(Arrays.asList(pts.getSegments()));
-
-        initHdg = pathSegs.get(0).getFieldHeading();
-
-        ShelbyBot.DriveDir startDdir = pathSegs.get(0).getDir();
-        robot.setDriveDir(startDdir);
-
-        RobotLog.dd(TAG, "START DRIVEDIR =%s", startDdir);
-
-        RobotLog.ii(TAG, "ROUTE: \n" + pts.toString());
+        RobotLog.dd(TAG, "Robot CPI " + RobotConstants.DT_CPI);
 
         Point2d currPoint = pathSegs.get(0).getStrtPt();
         drvTrn.setCurrPt(currPoint);
 
-        drvTrn.setStartHdg(gyroSetToField ? 0 : initHdg);
-        robot.setInitHdg(gyroSetToField   ? 0 : initHdg);
-
-        RobotLog.ii(TAG, "Start %s.", currPoint);
+        RobotLog.dd(TAG, "BOTDIR=%s START_DDIR =%s",
+            RobotConstants.DT_DIR, startDdir);
+        RobotLog.ii(TAG, "ROUTE: \n" + pts.toString());
+        RobotLog.ii(TAG, "Start %s IHDG %4.2f", currPoint, initHdg);
         dashboard.displayPrintf(8, "PATH: Start at %s", currPoint);
 
-        RobotLog.ii(TAG, "IHDG %4.2f", initHdg);
+        com.vuforia.CameraCalibration camCal = com.vuforia.CameraDevice.getInstance().getCameraCalibration();
+        Vec4F distParam = camCal.getDistortionParameters();
+        Vec2F camFov    = camCal.getFieldOfViewRads();
+        Vec2F camFlen   = camCal.getFocalLength();
+        Vec2F camPpt    = camCal.getPrincipalPoint();
+        Vec2F camSize   = camCal.getSize();
 
-        det.setTelemetry(telemetry);
+        RobotLog.dd(TAG, "DistortionParams %f %f %f %f",
+            distParam.getData()[0],
+            distParam.getData()[1],
+            distParam.getData()[2],
+            distParam.getData()[3]);
+        RobotLog.dd(TAG, "CamFOV %f %f", camFov.getData()[0], camFov.getData()[1]);
+        RobotLog.dd(TAG, "CamFlen %f %f", camFlen.getData()[0], camFlen.getData()[1]);
+        RobotLog.dd(TAG, "CamPpt %f %f", camPpt.getData()[0], camPpt.getData()[1]);
+        RobotLog.dd(TAG, "CamSize %f %f", camSize.getData()[0], camSize.getData()[1]);
     }
 
     private void do_main_loop()
@@ -377,7 +367,9 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
                     curSeg.getFieldHeading());
             drvTrn.logData(true, segName + " " + segLogStr);
 
-            if (curSeg.getLength() >= 0.01)
+            if (curSeg.getLength() >= 0.01 &&
+                (curSeg.getDir() != ShelbyBot.DriveDir.LEFT &&
+                 curSeg.getDir() != ShelbyBot.DriveDir.RIGHT))
             {
                 RobotLog.ii(TAG, "ENCODER TURN %s t=%6.4f", curSeg.getName(),
                         startTimer.seconds());
@@ -532,7 +524,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
     private void update()
     {
-        TilerunnerMecanumBot trmRobot = (TilerunnerMecanumBot)robot;
+        TilerunnerMecanumBot trmRobot = robot;
         trmRobot.update();
     }
 

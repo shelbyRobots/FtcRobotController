@@ -2,7 +2,13 @@ package org.firstinspires.ftc.teamcode.robot;
 
 public class Motors
 {
-  enum MotorModel
+  //RevHD, Gobilda, Neverest classic/orbital have 7 rising edges of Channel A per revolution
+  //with a quadrature encoder (4 total edges - A rise, B rise, A fall, B fall) for a total
+  //of 28 counts per pre-gear box encoder/pre-geared motor internal shaft revolution (CPER).
+  //Counts per post-geared motor output shaft revolution (CPOR or just CPR) is CPER * motorGearing
+  //This is already included in CPRs in enum below.
+  //For example: GOBILDA_5202_19_2 has CPER=28 and GEAR=19.2.  So CPR=28*19.2=537.6
+  public enum MotorModel
   {
     REV_CORE_HEX(288, 72, 125), //90deg motor, 4 CPER
     REV_HD_HEX_SPUR_40(1120, 40, 150),

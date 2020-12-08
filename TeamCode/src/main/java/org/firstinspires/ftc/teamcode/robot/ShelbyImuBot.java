@@ -80,6 +80,12 @@ class ShelbyImuBot extends ShelbyBot
                 imu.getCalibrationStatus(),
                 imu.getSystemStatus());
 
+        if(calibrationDriveDir == DriveDir.UNKNOWN)
+        {
+            RobotLog.ii(TAG, "calibrateGyro called without having set a drive Direction. " +
+                "Defaulting to " + RobotConstants.DT_DIR);
+            setDriveDir(RobotConstants.DT_DIR);
+        }
         RobotLog.ii(TAG, "Calibration drive dir = %s", calibrationDriveDir);
         gyroReady = true;
         return true;
