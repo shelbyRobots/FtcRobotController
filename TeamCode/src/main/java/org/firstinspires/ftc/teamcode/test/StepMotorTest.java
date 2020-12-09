@@ -110,10 +110,16 @@ public class StepMotorTest extends InitLinearOpMode
         ElapsedTime timer = new ElapsedTime();
         double t1;
         double t2;
+        double t3;
         double dt;
+        double dtg;
+        double dts;
+        double ttg = 0.0;
+        double tts = 0.0;
         double tt = 0.0;
         double at;
         int encPos;
+        double motVel;
         int numCycles = 0;
         while(!isStarted())
         {
@@ -135,8 +141,11 @@ public class StepMotorTest extends InitLinearOpMode
                 }
                 for (LynxModule module : allHubs)
                 {
-                    module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+                    module.setBulkCachingMode(bcm);
                 }
+
+                numCycles = 0;
+                tt = 0;
             }
 
             for(int m = 0; m < MAX_MOTORS; m++)
@@ -149,26 +158,39 @@ public class StepMotorTest extends InitLinearOpMode
                     t2 = timer.milliseconds();
                     dt = t2 - t1;
                     dashboard.displayPrintf(m, "CNT_%d %d encTime=%4.3f", m, encPos, dt);
-                    dt = t2 - t1;
                     tt += dt;
                 }
             }
             at = tt / ++numCycles;
-            dashboard.displayPrintf(MAX_MOTORS + p, "AvgEncTime %4.3f", at);
+            dashboard.displayPrintf(MAX_MOTORS + p++, "AvgEncTime %4.3f", at);
+            dashboard.displayPrintf(MAX_MOTORS + p, "Tgl Blk mode: L plunge");
+
             sleep(10);
         }
         waitForStart();
 
+        boolean tact = false;
+        boolean strtTmr;
+        int e0 = 0;
+        int denc = 0;
+        int ntc = 0;
+        double tv = 0.0;
+        double av = 0.0;
+        double t0 = 0.0;
+        double dtt = 0.0;
+        double cps = 0.0;
+
         while(opModeIsActive())
         {
             p=0;
-            tt = 0.0;
             numCycles = 0;
             gpad1.update();
             boolean fwd        = gpad1.pressed(ManagedGamepad.Button.D_UP);
             boolean rev        = gpad1.pressed(ManagedGamepad.Button.D_DOWN);
             boolean ltrn       = gpad1.pressed(ManagedGamepad.Button.D_LEFT);
             boolean rtrn       = gpad1.pressed(ManagedGamepad.Button.D_RIGHT);
+            boolean lstr       = gpad1.value(ManagedGamepad.AnalogInput.L_STICK_X) < -0.5;
+            boolean rstr       = gpad1.value(ManagedGamepad.AnalogInput.L_STICK_X) > 0.5;
 
             boolean tglAct0    = gpad1.just_pressed(ManagedGamepad.Button.A);
             boolean tglAct1    = gpad1.just_pressed(ManagedGamepad.Button.B);
@@ -177,27 +199,16 @@ public class StepMotorTest extends InitLinearOpMode
 
             boolean incrPwr    = gpad1.just_pressed(ManagedGamepad.Button.R_BUMP);
             boolean decrPwr    = gpad1.just_pressed(ManagedGamepad.Button.L_BUMP);
-            boolean toggle_bcm = gpad1.just_pressed(ManagedGamepad.Button.L_STICK_BUTTON);
+            boolean toggle_tmr = gpad1.just_pressed(ManagedGamepad.Button.L_STICK_BUTTON);
             boolean toggle_dir = gpad1.just_pressed(ManagedGamepad.Button.R_STICK_BUTTON);
             boolean toggle_mod = gpad1.just_pressed(ManagedGamepad.Button.L_TRIGGER);
             boolean toggle_spd = gpad1.just_pressed(ManagedGamepad.Button.R_TRIGGER);
 
-            if(toggle_bcm)
+            strtTmr = false;
+            if(toggle_tmr)
             {
-                if(bcm == LynxModule.BulkCachingMode.AUTO)
-                {
-                    bcm = LynxModule.BulkCachingMode.OFF;
-                    bcmStr = "O";
-                }
-                else
-                {
-                    bcm = LynxModule.BulkCachingMode.AUTO;
-                    bcmStr = "A";
-                }
-                for (LynxModule module : allHubs)
-                {
-                    module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
-                }
+                tact = !tact;
+                strtTmr = tact;
             }
 
             if(toggle_mod)
@@ -239,7 +250,7 @@ public class StepMotorTest extends InitLinearOpMode
             int lScl = 0;
             int rScl = 0;
             if(fwd)        { lScl =  1; rScl =  1; }
-            else if(rev)   { lScl = -1; rScl = -1; }
+            else if (rev)  { lScl = -1; rScl = -1; }
             else if (rtrn) { lScl =  1; rScl = -1; }
             else if (ltrn) { lScl = -1; rScl =  1; }
 
@@ -248,63 +259,108 @@ public class StepMotorTest extends InitLinearOpMode
             if(tglAct2) actLst.put(2, !actLst.get(2));
             if(tglAct3) actLst.put(3, !actLst.get(3));
 
+            int sScl = 1;
+            if(lstr) sScl = -1;
+
             for(int m = 0; m < MAX_MOTORS; m++)
             {
-                if(m%2 == 0) motPwrs.set(m, lScl * power);
-                else         motPwrs.set(m, rScl * power);
+                if(lstr || rstr)
+                {
+                    if(m == 0 || m == 3) motPwrs.set(m,  sScl * power);
+                    else                 motPwrs.set(m, -sScl * power);
+                }
+                else
+                {
+                    if (m % 2 == 0) motPwrs.set(m, lScl * power);
+                    else            motPwrs.set(m, rScl * power);
+                }
                 DcMotorEx mot = motors.get(m);
                 if(mot != null)
                 {
                     t1 = timer.milliseconds();
                     encPos = mot.getCurrentPosition();
-                    if(actLst.get(m))
-                    {
-                        if(useSpd)
-                        {
-                            mot.setVelocity(MAX_CPS * motPwrs.get(m));
-                        }
-                        else
-                        {
-                            mot.setPower(motPwrs.get(m));
-                        }
-                    }
+                    motVel = mot.getVelocity();
                     t2 = timer.milliseconds();
-                    dt = t2 - t1;
-                    tt += dt;
-                    String rMode;
-                    switch (mot.getMode())
+                    if (actLst.get(m))
                     {
-                        case RUN_USING_ENCODER:   rMode = "U"; break;
-                        case RUN_WITHOUT_ENCODER: rMode = "W"; break;
-                        default:                  rMode = "X"; break;
+                        if (useSpd) mot.setVelocity(MAX_CPS * motPwrs.get(m));
+                        else mot.setPower(motPwrs.get(m));
+
+                        t3 = timer.milliseconds();
+                        dtg = t2 - t1;
+                        dts = t3 - t2;
+                        ttg += dtg;
+                        tts += dts;
+
+                        if (strtTmr)
+                        {
+                            ntc = 0;
+                            e0 = encPos;
+                            tv = 0.0;
+                            t0 = timer.milliseconds();
+                        }
+
+                        if (tact)
+                        {
+                            denc = encPos - e0;
+                            dtt = (timer.milliseconds() - t0) / 1000.0;
+                            cps = (double) denc / dtt;
+                            ntc++;
+                            tv += motVel;
+                            av = tv / ntc;
+                        }
+
+                        String rMode;
+                        switch (mot.getMode())
+                        {
+                            case RUN_USING_ENCODER:
+                                rMode = "U";
+                                break;
+                            case RUN_WITHOUT_ENCODER:
+                                rMode = "W";
+                                break;
+                            default:
+                                rMode = "X";
+                                break;
+                        }
+                        String dirStr = "U";
+                        switch (mot.getDirection())
+                        {
+                            case FORWARD:
+                                dirStr = "F";
+                                break;
+                            case REVERSE:
+                                dirStr = "R";
+                                break;
+                        }
+                        dashboard.displayPrintf(m, "C:%5d P:%.2f V:%.1f RM:%s D:%s",
+                            encPos, motPwrs.get(m), motVel, rMode, dirStr);
                     }
-                    String dirStr = "U";
-                    switch (mot.getDirection())
+                    else
                     {
-                        case FORWARD: dirStr = "F"; break;
-                        case REVERSE: dirStr = "R"; break;
+                        dashboard.displayPrintf(m, "");
                     }
-                    dashboard.displayPrintf(m, "C:%5d P:%.2f RM:%s D:%s",
-                        encPos, motPwrs.get(m), rMode, dirStr);
                 }
             }
+            numCycles++;
+
             dashboard.displayPrintf(MAX_MOTORS + p++, "Pwr %4.2f BM:%s SM:%s",
                 power, bcmStr, useSpd);
 
-            at = tt / ++numCycles;
-            dashboard.displayPrintf(MAX_MOTORS + p++, "AvgGetSetTime %4.3f", at);
+            dashboard.displayPrintf(MAX_MOTORS + p++, "Avg G/S Time %.1f %.1f",
+                ttg / numCycles, tts / numCycles);
+
+            dashboard.displayPrintf(MAX_MOTORS + p++, "T: %.1f C: %d CPS: %.1f AV: %.1f",
+                dtt, denc, cps, av);
 
             dashboard.displayPrintf(MAX_MOTORS + p++, "Press Stop to end test.");
-            dashboard.displayPrintf(MAX_MOTORS + p++, "Incr power : R bump");
-            dashboard.displayPrintf(MAX_MOTORS + p++, "Decr power : L bump");
+            dashboard.displayPrintf(MAX_MOTORS + p++, "Decr/Incr pwr : L/R bump");
             dashboard.displayPrintf(MAX_MOTORS + p++, "TglAct 0,1,2,3 : A,B,X,Y");
-            dashboard.displayPrintf(MAX_MOTORS + p++, "FWD      : Dpad Up");
-            dashboard.displayPrintf(MAX_MOTORS + p++, "REV      : Dpad Down");
-            dashboard.displayPrintf(MAX_MOTORS + p++, "LFT Turn : Dpad Left");
-            dashboard.displayPrintf(MAX_MOTORS + p++, "RGT Turn : Dpad Right");
-            dashboard.displayPrintf(MAX_MOTORS + p,   "Tgl Blk mode: L plunge");
-            dashboard.displayPrintf(MAX_MOTORS + p,   "Tgl Dirs    : R plunge");
-            dashboard.displayPrintf(MAX_MOTORS + p,   "Tgl Run mode: L trig");
+            dashboard.displayPrintf(MAX_MOTORS + p++, "FWD/Rev : Dpad Up/Down");
+            dashboard.displayPrintf(MAX_MOTORS + p++, "L/R Turn : Dpad Left/Right");
+            dashboard.displayPrintf(MAX_MOTORS + p++, "Tgl Tmr     : L plunge");
+            dashboard.displayPrintf(MAX_MOTORS + p++, "Tgl Dirs    : R plunge");
+            dashboard.displayPrintf(MAX_MOTORS + p++, "Tgl Run mode: L trig");
             dashboard.displayPrintf(MAX_MOTORS + p,   "Tgl Spd mode: R trig");
 
             sleep(CYCLE_MS);

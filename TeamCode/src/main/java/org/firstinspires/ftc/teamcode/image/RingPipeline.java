@@ -56,8 +56,8 @@ public class RingPipeline
 
 		final double TOP = 0.35;
 		final double BOT = 0.75;
-		final double LFT = 0.25;
-		final double RGT = 0.75;
+		final double LFT = 0.0; //0.25
+		final double RGT = 1.0; //0.75
 
 		int roiX = (int)(LFT * source0.width());
 		int roiY = (int)(TOP * source0.height());
