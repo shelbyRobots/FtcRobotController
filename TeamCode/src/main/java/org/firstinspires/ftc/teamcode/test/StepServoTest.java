@@ -4,6 +4,7 @@ import android.util.SparseArray;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoControllerEx;
@@ -14,13 +15,12 @@ import org.firstinspires.ftc.teamcode.util.ManagedGamepad;
 
 /**
  * This OpMode steps n servos positions up and down based on D-Pad user inputs.
- * This code assumes a DC motor configured with the name "testmotor#".
- * If motors are on a bot, left side motors should be odd and right side even
+ * This code assumes a Servo configured with the name "testservo#".
  *
  * INCREMENT sets how much to increase/decrease the power each cycle
  * CYCLE_MS sets the update period.
  */
-@Autonomous(name = "Concept: Step Servo Position", group = "Test")
+@TeleOp(name = "TestServo", group = "Test")
 //@Disabled
 public class StepServoTest extends InitLinearOpMode
 {
