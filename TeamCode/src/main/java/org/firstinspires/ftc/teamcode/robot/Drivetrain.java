@@ -210,9 +210,9 @@ public class Drivetrain
         logData(true, "STRAFE");
 
         boolean ramping = rampUp;
-        double startPwr = 0.1;
+        double startPwr = 0.01;
         initLpower = startPwr;
-        int pwrSteps = 5;
+        int pwrSteps = 15;
         double pwrIncr = (pwr - startPwr)/pwrSteps;
 
         RobotLog.dd(TAG, "Strafe %4.2f %4.2f %4.2f %4.2f %s %s %s",

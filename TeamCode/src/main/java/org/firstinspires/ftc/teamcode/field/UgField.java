@@ -44,16 +44,16 @@ public class UgField extends Field
     public static final Point2d RIDP = new Point2d("RIDP", -12.0, -18);
 
     //Red (Left/Right) Strafe start Points
-    public static final Point2d ROSS = new Point2d("ROSS", -59.0, -54);
+    public static final Point2d ROSS = new Point2d("ROSS", -60.5, -54);
     //Red (Left/Right) Strafe end Points
-    public static final Point2d ROSE = new Point2d("ROSE", -59.0, -24);
+    public static final Point2d ROSE = new Point2d("ROSE", -60.5, -24);
 
     public static final Point2d ROW2 = new Point2d("ROW2", -12.0, -24);
     
     //Red Right Wobble (A/B/C)
     public static final Point2d ROWA = new Point2d("ROWA",  4.0,-57);
     public static final Point2d ROWB = new Point2d("ROWB",  26.0,-46);
-    public static final Point2d ROWC = new Point2d("ROWC",  4.0,-57);
+    public static final Point2d ROWC = new Point2d("ROWC",  48.0,-54);
 
     //Red Left Wobble (A/B/C)
     public static final Point2d RIWA = new Point2d("RIWA",  12,-53);
@@ -61,7 +61,7 @@ public class UgField extends Field
     public static final Point2d RIWC = new Point2d("RIWC",  48,-53);
     //includes offset for veh center. actual
 
-    public static final Point2d ROPA = new Point2d("ROPA",  0,-56);
+    public static final Point2d ROPA = new Point2d("ROPA",  3,-40);
     public static final Point2d ROPB = new Point2d("ROPB",  0,-56);
     public static final Point2d ROPC = new Point2d("ROPC",  0,-56);
 

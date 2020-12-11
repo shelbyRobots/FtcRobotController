@@ -618,13 +618,11 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         Point2d shootPoint = shootSeg.getTgtPt();
         double shotdist = shootPoint.distance(UgField.RRG1);
         RobotLog.dd(TAG, "Shooting");
-        if(robot.burr == null)
-            return;
-        robot.burr.shotSpeed(shotdist);
+        if(robot.burr != null) robot.burr.shotSpeed(shotdist);
         sleep(500);
         // TODO add control of loader fire
         sleep(1000);
-        robot.burr.stop();
+        if(robot.burr != null) robot.burr.stop();
     }
 
     private void doMove(Segment seg)

@@ -59,8 +59,8 @@ public class UgRoute extends Route
                 Point2d tp3 = new Point2d("TP2", 0.0, 48.0);
                 points.add(tp1);
                 addPoint(points, fwd, 0.30, 1.00, encType, none, tp2);
-                addPoint(points, lft, 0.30, 1.00, encType, none, tp3);
-                //addPoint(points, lft, 0.40, 1.00, encType, none, tp1);
+                addPoint(points, lft, 0.30, 1.00, encType, shot, tp3);
+                addPoint(points, rgt, 0.40, 1.00, encType, none, tp1);
                 return points;
             }
 
