@@ -48,7 +48,7 @@ public class UgField extends Field
     //Red (Left/Right) Strafe end Points
     public static final Point2d ROSE = new Point2d("ROSE", -60.5, -24);
 
-    public static final Point2d ROW2 = new Point2d("ROW2", -12.0, -24);
+    public static final Point2d ROW2 = new Point2d("ROW2", -16.0, -24);
     
     //Red Right Wobble (A/B/C)
     public static final Point2d ROWA = new Point2d("ROWA",  4.0,-57);
