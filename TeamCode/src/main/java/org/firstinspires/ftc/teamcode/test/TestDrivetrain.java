@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.test;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -8,8 +9,6 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.robot.ShelbyBot;
 import org.firstinspires.ftc.teamcode.util.Point2d;
-
-import ftclib.FtcOpMode;
 
 class TestDrivetrain
 {
@@ -390,7 +389,7 @@ class TestDrivetrain
         this.initHdg = initHdg;
     }
 
-    void setOpMode(FtcOpMode op)
+    void setOpMode(LinearOpMode op)
     {
         this.op = op;
     }
@@ -664,7 +663,7 @@ class TestDrivetrain
 
     private double minSpeed = 0.04;
 
-    private FtcOpMode op = null;
+    private LinearOpMode op = null;
 
     private boolean usePosStop = true;
 

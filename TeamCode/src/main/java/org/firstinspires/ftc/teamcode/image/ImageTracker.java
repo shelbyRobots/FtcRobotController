@@ -32,7 +32,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import hallib.HalDashboard;
+import org.firstinspires.ftc.teamcode.util.HalDashboard;
 
 @SuppressWarnings({"WeakerAccess, unused", "FieldCanBeLocal"})
 public class ImageTracker

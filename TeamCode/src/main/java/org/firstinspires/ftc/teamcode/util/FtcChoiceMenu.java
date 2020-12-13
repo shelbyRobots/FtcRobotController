@@ -1,30 +1,6 @@
-/*
- * Copyright (c) 2016 Titan Robotics Club (http://www.titanrobotics.com)
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
-package ftclib;
+package org.firstinspires.ftc.teamcode.util;
 
 import java.util.ArrayList;
-
-import trclib.TrcDbgTrace;
 
 /**
  * This class implements a choice menu where a number of choices are presented to the user. The user can press the
@@ -38,9 +14,9 @@ public class FtcChoiceMenu<T> extends FtcMenu
      */
     private class ChoiceItem
     {
-        private String choiceText;
-        private T choiceObject;
-        private FtcMenu childMenu;
+        private final String choiceText;
+        private final T choiceObject;
+        private final FtcMenu childMenu;
 
         /**
          * Constructor: Creates an instance of the object.
@@ -89,10 +65,10 @@ public class FtcChoiceMenu<T> extends FtcMenu
 
     }   //class ChoiceItem
 
-    private ArrayList<ChoiceItem> choiceItems = new ArrayList<>();
+    private final ArrayList<ChoiceItem> choiceItems = new ArrayList<>();
     private int currChoice = -1;
     private int firstDisplayedChoice = 0;
-    private int numDashboardLines;
+    private final int numDashboardLines;
 
     /**
      * Constructor: Creates an instance of the object.
@@ -119,15 +95,6 @@ public class FtcChoiceMenu<T> extends FtcMenu
      */
     public void addChoice(String choiceText, T choiceObject, boolean defChoice, FtcMenu childMenu)
     {
-        final String funcName = "addChoice";
-
-        if (debugEnabled)
-        {
-            dbgTrace.traceEnter(funcName, TrcDbgTrace.TraceLevel.API, "text=%s,obj=%s,default=%s,child=%s",
-                                choiceText, choiceObject.toString(), Boolean.toString(defChoice),
-                                childMenu == null? "null": childMenu.getTitle());
-        }
-
         choiceItems.add(new ChoiceItem(choiceText, choiceObject, childMenu));
         if (defChoice || currChoice == -1)
         {
@@ -136,11 +103,6 @@ public class FtcChoiceMenu<T> extends FtcMenu
             // choice.
             //
             currChoice = choiceItems.size() - 1;
-        }
-
-        if (debugEnabled)
-        {
-            dbgTrace.traceExit(funcName, TrcDbgTrace.TraceLevel.API);
         }
     }   //addChoice
 
@@ -165,14 +127,6 @@ public class FtcChoiceMenu<T> extends FtcMenu
      */
     public ChoiceItem getCurrentChoice()
     {
-        final String funcName = "getCurrentChoice";
-
-        if (debugEnabled)
-        {
-            dbgTrace.traceEnter(funcName, TrcDbgTrace.TraceLevel.API);
-            dbgTrace.traceExit(funcName, TrcDbgTrace.TraceLevel.API, "=%d", currChoice);
-        }
-
         return currChoice >= 0 && currChoice < choiceItems.size()? choiceItems.get(currChoice): null;
     }   //getCurrentChoice
 
@@ -213,13 +167,6 @@ public class FtcChoiceMenu<T> extends FtcMenu
     @Override
     public void menuUp()
     {
-        final String funcName = "menuUp";
-
-        if (debugEnabled)
-        {
-            dbgTrace.traceEnter(funcName, TrcDbgTrace.TraceLevel.API);
-        }
-
         if (choiceItems.size() == 0)
         {
             currChoice = -1;
@@ -241,10 +188,6 @@ public class FtcChoiceMenu<T> extends FtcMenu
             }
         }
 
-        if (debugEnabled)
-        {
-            dbgTrace.traceExit(funcName, TrcDbgTrace.TraceLevel.API, "! (choice=%d)", currChoice);
-        }
     }   //menuUp
 
     /**
@@ -254,13 +197,6 @@ public class FtcChoiceMenu<T> extends FtcMenu
     @Override
     public void menuDown()
     {
-        final String funcName = "menuDown";
-
-        if (debugEnabled)
-        {
-            dbgTrace.traceEnter(funcName, TrcDbgTrace.TraceLevel.API);
-        }
-
         if (choiceItems.size() == 0)
         {
             currChoice = -1;
@@ -283,10 +219,6 @@ public class FtcChoiceMenu<T> extends FtcMenu
             }
         }
 
-        if (debugEnabled)
-        {
-            dbgTrace.traceExit(funcName, TrcDbgTrace.TraceLevel.API, "! (choice=%d)", currChoice);
-        }
     }   //menuDown
 
     /**
@@ -312,16 +244,8 @@ public class FtcChoiceMenu<T> extends FtcMenu
      */
     public FtcMenu getChildMenu()
     {
-        final String funcName = "getChildMenu";
         ChoiceItem choiceItem = getCurrentChoice();
         FtcMenu childMenu = choiceItem != null? choiceItem.getChildMenu(): null;
-
-        if (debugEnabled)
-        {
-            dbgTrace.traceEnter(funcName, TrcDbgTrace.TraceLevel.API);
-            dbgTrace.traceExit(funcName, TrcDbgTrace.TraceLevel.API,
-                               "=%s", childMenu != null? childMenu.getTitle(): "null");
-        }
 
         return childMenu;
     }   //getChildMenu
@@ -334,14 +258,6 @@ public class FtcChoiceMenu<T> extends FtcMenu
      */
     public void displayMenu()
     {
-        final String funcName = "displayMenu";
-
-        if (debugEnabled)
-        {
-            dbgTrace.traceEnter(funcName, TrcDbgTrace.TraceLevel.API);
-            dbgTrace.traceExit(funcName, TrcDbgTrace.TraceLevel.API);
-        }
-
         //
         // Determine the choice of the last display line on the dashboard.
         //

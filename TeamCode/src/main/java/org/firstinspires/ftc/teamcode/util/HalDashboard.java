@@ -1,26 +1,4 @@
-/*
- * Copyright (c) 2015 Titan Robotics Club (http://www.titanrobotics.com)
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
-package hallib;
+package org.firstinspires.ftc.teamcode.util;
 
 import android.graphics.Paint;
 import android.widget.TextView;
@@ -29,8 +7,6 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import java.util.Locale;
 import java.util.NoSuchElementException;
-
-import trclib.TrcDbgTrace;
 
 /**
  * This class is a wrapper for the Telemetry class. In addition to providing a way to send named data to the Driver
@@ -44,11 +20,6 @@ import trclib.TrcDbgTrace;
 public class HalDashboard
 {
     private static final String moduleName = "HalDashboard";
-    private static final boolean debugEnabled = false;
-    private static final boolean tracingEnabled = false;
-    private static final TrcDbgTrace.TraceLevel traceLevel = TrcDbgTrace.TraceLevel.API;
-    private static final TrcDbgTrace.MsgLevel msgLevel = TrcDbgTrace.MsgLevel.INFO;
-    private TrcDbgTrace dbgTrace = null;
 
     public static final int DEF_NUM_TEXTLINES = 16;
 
@@ -57,7 +28,7 @@ public class HalDashboard
     private Telemetry telemetry = null;
     private int numLines = DEF_NUM_TEXTLINES;
     private Paint paint = null;
-    private Telemetry.Item[] display;
+    private final Telemetry.Item[] display;
 
     /**
      * This static methods creates an instance of the object if none already exist. If the object exists previously,
@@ -109,11 +80,6 @@ public class HalDashboard
      */
     private HalDashboard(Telemetry telemetry, int numLines)
     {
-        if (debugEnabled)
-        {
-            dbgTrace = new TrcDbgTrace(moduleName, tracingEnabled, traceLevel, msgLevel);
-        }
-
         this.telemetry = telemetry;
         this.numLines = numLines;
         telemetry.clearAll();
@@ -161,16 +127,6 @@ public class HalDashboard
      */
     public void displayText(int lineNum, String text, int fieldWidth, boolean rightJustified)
     {
-        final String funcName = "displayText";
-
-        if (debugEnabled)
-        {
-            dbgTrace.traceEnter(funcName, TrcDbgTrace.TraceLevel.FUNC,
-                                "lineNum=%d,text=%s,width=%d,rightJust=%s",
-                                lineNum, text, fieldWidth, Boolean.toString(rightJustified));
-            dbgTrace.traceExit(funcName, TrcDbgTrace.TraceLevel.FUNC);
-        }
-
         if (lineNum >= 0 && lineNum < numLines)
         {
             if (fieldWidth > 0)
@@ -278,14 +234,6 @@ public class HalDashboard
      */
     public void clearDisplay()
     {
-        final String funcName = "clearDisplay";
-
-        if (debugEnabled)
-        {
-            dbgTrace.traceEnter(funcName, TrcDbgTrace.TraceLevel.API);
-            dbgTrace.traceExit(funcName, TrcDbgTrace.TraceLevel.API);
-        }
-
         for (int i = 0; i < numLines; i++)
         {
             display[i].setValue("");
@@ -298,14 +246,6 @@ public class HalDashboard
      */
     public void refreshDisplay()
     {
-        final String funcName = "refreshDisplay";
-
-        if (debugEnabled)
-        {
-            dbgTrace.traceEnter(funcName, TrcDbgTrace.TraceLevel.API);
-            dbgTrace.traceExit(funcName, TrcDbgTrace.TraceLevel.API);
-        }
-
         telemetry.update();
     }   //refreshDisplay
 
@@ -317,13 +257,7 @@ public class HalDashboard
      */
     public boolean getBoolean(String key)
     {
-        final String funcName = "getBoolean";
         boolean value;
-
-        if (debugEnabled)
-        {
-            dbgTrace.traceEnter(funcName, TrcDbgTrace.TraceLevel.API, "key=%s", key);
-        }
 
         String strValue = getValue(key);
         if (strValue.equals("true"))
@@ -339,11 +273,6 @@ public class HalDashboard
             throw new IllegalArgumentException("object is not boolean");
         }
 
-        if (debugEnabled)
-        {
-            dbgTrace.traceExit(funcName, TrcDbgTrace.TraceLevel.API, "=%s", Boolean.toString(value));
-        }
-
         return value;
     }   //getBoolean
 
@@ -357,14 +286,7 @@ public class HalDashboard
      */
     public boolean getBoolean(String key, boolean defaultValue)
     {
-        final String funcName = "getBoolean";
         boolean value;
-
-        if (debugEnabled)
-        {
-            dbgTrace.traceEnter(funcName, TrcDbgTrace.TraceLevel.API,
-                                "key=%s,defValue=%s", key, Boolean.toString(defaultValue));
-        }
 
         try
         {
@@ -374,11 +296,6 @@ public class HalDashboard
         {
             putBoolean(key, defaultValue);
             value = defaultValue;
-        }
-
-        if (debugEnabled)
-        {
-            dbgTrace.traceExit(funcName, TrcDbgTrace.TraceLevel.API, "=%s", Boolean.toString(value));
         }
 
         return value;
@@ -392,14 +309,6 @@ public class HalDashboard
      */
     public void putBoolean(String key, boolean value)
     {
-        final String funcName = "putBoolean";
-
-        if (debugEnabled)
-        {
-            dbgTrace.traceEnter(funcName, TrcDbgTrace.TraceLevel.API, "key=%s,value=%s", key, Boolean.toString(value));
-            dbgTrace.traceExit(funcName, TrcDbgTrace.TraceLevel.API);
-        }
-
         telemetry.addData(key, Boolean.toString(value));
     }   //putBoolean
 
@@ -411,13 +320,7 @@ public class HalDashboard
      */
     public double getNumber(String key)
     {
-        final String funcName = "getNumber";
         double value;
-
-        if (debugEnabled)
-        {
-            dbgTrace.traceEnter(funcName, TrcDbgTrace.TraceLevel.API, "key=%s", key);
-        }
 
         try
         {
@@ -426,11 +329,6 @@ public class HalDashboard
         catch (NumberFormatException e)
         {
             throw new IllegalArgumentException("object is not a number");
-        }
-
-        if (debugEnabled)
-        {
-            dbgTrace.traceExit(funcName, TrcDbgTrace.TraceLevel.API, "=%f", value);
         }
 
         return value;
@@ -446,13 +344,7 @@ public class HalDashboard
      */
     public double getNumber(String key, double defaultValue)
     {
-        final String funcName = "getNumber";
         double value;
-
-        if (debugEnabled)
-        {
-            dbgTrace.traceEnter(funcName, TrcDbgTrace.TraceLevel.API, "key=%s,defValue=%f", key, defaultValue);
-        }
 
         try
         {
@@ -462,11 +354,6 @@ public class HalDashboard
         {
             putNumber(key, defaultValue);
             value = defaultValue;
-        }
-
-        if (debugEnabled)
-        {
-            dbgTrace.traceExit(funcName, TrcDbgTrace.TraceLevel.API, "=%f", value);
         }
 
         return value;
@@ -480,14 +367,6 @@ public class HalDashboard
      */
     public void putNumber(String key, double value)
     {
-        final String funcName = "putNumber";
-
-        if (debugEnabled)
-        {
-            dbgTrace.traceEnter(funcName, TrcDbgTrace.TraceLevel.API, "key=%s,value=%f", key, value);
-            dbgTrace.traceExit(funcName, TrcDbgTrace.TraceLevel.API);
-        }
-
         telemetry.addData(key, Double.toString(value));
     }   //putNumber
 
@@ -499,16 +378,7 @@ public class HalDashboard
      */
     public String getString(String key)
     {
-        final String funcName = "getString";
-        String value = getValue(key);
-
-        if (debugEnabled)
-        {
-            dbgTrace.traceEnter(funcName, TrcDbgTrace.TraceLevel.API, "key=%s", key);
-            dbgTrace.traceExit(funcName, TrcDbgTrace.TraceLevel.API, "=%s", value);
-        }
-
-        return value;
+        return getValue(key);
     }   //getString
 
     /**
@@ -521,13 +391,7 @@ public class HalDashboard
      */
     public String getString(String key, String defaultValue)
     {
-        final String funcName = "getString";
         String value;
-
-        if (debugEnabled)
-        {
-            dbgTrace.traceEnter(funcName, TrcDbgTrace.TraceLevel.API, "key=%s,defValue=%s", key, defaultValue);
-        }
 
         try
         {
@@ -537,11 +401,6 @@ public class HalDashboard
         {
             putString(key, defaultValue);
             value = defaultValue;
-        }
-
-        if (debugEnabled)
-        {
-            dbgTrace.traceExit(funcName, TrcDbgTrace.TraceLevel.API, "=%s", value);
         }
 
         return value;
@@ -555,14 +414,6 @@ public class HalDashboard
      */
     public void putString(String key, String value)
     {
-        final String funcName = "putString";
-
-        if (debugEnabled)
-        {
-            dbgTrace.traceEnter(funcName, TrcDbgTrace.TraceLevel.API, "key=%s,value=%s", key, value);
-            dbgTrace.traceExit(funcName, TrcDbgTrace.TraceLevel.API);
-        }
-
         telemetry.addData(key, value);
     }   //putString
 

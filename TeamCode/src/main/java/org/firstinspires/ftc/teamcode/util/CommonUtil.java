@@ -21,8 +21,6 @@ import org.firstinspires.ftc.teamcode.R;
 import org.firstinspires.ftc.teamcode.image.OpenCvInitializer;
 import org.firstinspires.ftc.teamcode.image.VuforiaInitializer;
 
-import hallib.HalDashboard;
-
 @SuppressWarnings({"unused", "FieldCanBeLocal", "Convert2Lambda"})
 public class CommonUtil
 {

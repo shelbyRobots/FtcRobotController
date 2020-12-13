@@ -5,8 +5,6 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import java.util.EnumMap;
 
-import hallib.HalDashboard;
-
 public class ManagedGamepad
 {
     private static final String TAG = "SJH_MGP";

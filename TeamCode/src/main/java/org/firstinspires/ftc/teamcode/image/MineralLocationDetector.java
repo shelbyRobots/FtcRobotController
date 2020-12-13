@@ -7,7 +7,7 @@ import org.opencv.core.Mat;
 
 import java.util.Random;
 
-import hallib.HalDashboard;
+import org.firstinspires.ftc.teamcode.util.HalDashboard;
 
 /**
  * Created by crazy on 9/27/2017.

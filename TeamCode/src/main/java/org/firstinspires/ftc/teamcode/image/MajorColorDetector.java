@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import hallib.HalDashboard;
+import org.firstinspires.ftc.teamcode.util.HalDashboard;
 
 /**
  * Created by crazy on 9/27/2017.

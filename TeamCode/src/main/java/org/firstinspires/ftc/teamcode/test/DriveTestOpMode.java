@@ -21,9 +21,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import ftclib.FtcChoiceMenu;
-import ftclib.FtcMenu;
-import hallib.HalDashboard;
+import org.firstinspires.ftc.teamcode.util.FtcChoiceMenu;
+import org.firstinspires.ftc.teamcode.util.FtcMenu;
+import org.firstinspires.ftc.teamcode.util.HalDashboard;
 
 @Autonomous(name="DriveTestOpMode", group="Auton")
 @Disabled

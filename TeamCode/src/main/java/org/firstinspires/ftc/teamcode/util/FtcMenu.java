@@ -1,32 +1,6 @@
-/*
- * Copyright (c) 2015 Titan Robotics Club (http://www.titanrobotics.com)
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
-package ftclib;
+package org.firstinspires.ftc.teamcode.util;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
-import hallib.HalDashboard;
-import trclib.TrcDbgTrace;
-import trclib.TrcUtil;
 
 /**
  * This class is intended to be inherited by a specific menu class such as FtcChoiceMenu or FtcValueMenu. Therefore,
@@ -43,13 +17,6 @@ import trclib.TrcUtil;
  */
 public abstract class FtcMenu
 {
-    protected static final String moduleName = "FtcMenu";
-    protected static final boolean debugEnabled = false;
-    private static final boolean tracingEnabled = false;
-    private static final TrcDbgTrace.TraceLevel traceLevel = TrcDbgTrace.TraceLevel.API;
-    private static final TrcDbgTrace.MsgLevel msgLevel = TrcDbgTrace.MsgLevel.INFO;
-    protected TrcDbgTrace dbgTrace = null;
-
     /**
      * This method allows this class to displays the menu on the Driver Station.
      */
@@ -140,7 +107,7 @@ public abstract class FtcMenu
 
     private static final long LOOP_INTERVAL             = 20;       //in msec.
 
-    private static final int MENUBUTTON_BACK            = (1 << 0);
+    private static final int MENUBUTTON_BACK            = (1);
     private static final int MENUBUTTON_ENTER           = (1 << 1);
     private static final int MENUBUTTON_UP              = (1 << 2);
     private static final int MENUBUTTON_DOWN            = (1 << 3);
@@ -148,13 +115,12 @@ public abstract class FtcMenu
     private static final int MENUBUTTON_ALT_DOWN        = (1 << 5);
 
     protected HalDashboard dashboard;
-    private String menuTitle;
-    private FtcMenu parent;
-    private MenuButtons menuButtons;
+    private final String menuTitle;
+    private final FtcMenu parent;
+    private final MenuButtons menuButtons;
 
     private static int prevButtonStates = 0;
     private static FtcMenu currMenu = null;
-
     /**
      * Constructor: Creates an instance of the object.
      *
@@ -165,17 +131,13 @@ public abstract class FtcMenu
      */
     protected FtcMenu(String menuTitle, FtcMenu parent, MenuButtons menuButtons)
     {
-        if (debugEnabled)
-        {
-            dbgTrace = new TrcDbgTrace(moduleName + "." + menuTitle, tracingEnabled, traceLevel, msgLevel);
-        }
-
         if (menuButtons == null || menuTitle == null)
         {
             throw new NullPointerException("menuTitle/menuButtons cannot be null.");
         }
 
-        dashboard = HalDashboard.getInstance();
+        CommonUtil cmu = CommonUtil.getInstance();
+        dashboard = cmu.getDashboard();
         this.menuTitle = menuTitle;
         this.parent = parent;
         this.menuButtons = menuButtons;
@@ -188,14 +150,6 @@ public abstract class FtcMenu
      */
     public FtcMenu getParentMenu()
     {
-        final String funcName = "getParentMenu";
-
-        if (debugEnabled)
-        {
-            dbgTrace.traceEnter(funcName, TrcDbgTrace.TraceLevel.API);
-            dbgTrace.traceExit(funcName, TrcDbgTrace.TraceLevel.API, "=%s", parent.getTitle());
-        }
-
         return parent;
     }   //getParentMenu
 
@@ -206,14 +160,6 @@ public abstract class FtcMenu
      */
     public String getTitle()
     {
-        final String funcName = "getTitle";
-
-        if (debugEnabled)
-        {
-            dbgTrace.traceEnter(funcName, TrcDbgTrace.TraceLevel.API);
-            dbgTrace.traceExit(funcName, TrcDbgTrace.TraceLevel.API, "=%s", menuTitle);
-        }
-
         return menuTitle;
     }   //getTitle
 
@@ -244,12 +190,13 @@ public abstract class FtcMenu
         rootMenu.displayMenu();
         while (!runMenus() && !opmode.isStopRequested())
         {
-            TrcUtil.sleep(LOOP_INTERVAL);
+            opmode.sleep(LOOP_INTERVAL);
+
         }
     }
     public static void walkMenuTree(FtcMenu rootMenu)
     {
-        LinearOpMode opmode = FtcOpMode.getInstance();
+        LinearOpMode opmode = CommonUtil.getInstance().getLinearOpMode();
 
         walkMenuTree(rootMenu, opmode);
     }   //walkMenuTree
@@ -344,8 +291,6 @@ public abstract class FtcMenu
      */
     private int getMenuButtons()
     {
-        final String funcName = "getMenuButtons";
-
         int buttons = 0;
 
         if (menuButtons.isMenuBackButton()) buttons |= MENUBUTTON_BACK;
@@ -354,12 +299,6 @@ public abstract class FtcMenu
         if (menuButtons.isMenuDownButton()) buttons |= MENUBUTTON_DOWN;
         if (menuButtons.isMenuAltUpButton()) buttons |= MENUBUTTON_ALT_UP;
         if (menuButtons.isMenuAltDownButton()) buttons |= MENUBUTTON_ALT_DOWN;
-
-        if (debugEnabled)
-        {
-            dbgTrace.traceEnter(funcName, TrcDbgTrace.TraceLevel.FUNC);
-            dbgTrace.traceExit(funcName, TrcDbgTrace.TraceLevel.FUNC, "=%x", buttons);
-        }
 
         return buttons;
     }   //getMenuButtons

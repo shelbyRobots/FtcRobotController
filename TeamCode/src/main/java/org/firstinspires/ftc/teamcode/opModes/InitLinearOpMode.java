@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.util.DataLogger;
 import org.firstinspires.ftc.teamcode.util.ManagedGamepad;
 import org.firstinspires.ftc.teamcode.util.PreferenceMgr;
 
-import hallib.HalDashboard;
+import org.firstinspires.ftc.teamcode.util.HalDashboard;
 
 public abstract class InitLinearOpMode extends LinearOpMode
 {

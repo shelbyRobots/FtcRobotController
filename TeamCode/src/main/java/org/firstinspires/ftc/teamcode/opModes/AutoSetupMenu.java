@@ -6,9 +6,9 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.util.PreferenceMgr;
 
-import ftclib.FtcChoiceMenu;
-import ftclib.FtcMenu;
-import ftclib.FtcValueMenu;
+import org.firstinspires.ftc.teamcode.util.FtcChoiceMenu;
+import org.firstinspires.ftc.teamcode.util.FtcMenu;
+import org.firstinspires.ftc.teamcode.util.FtcValueMenu;
 
 @Autonomous(name = "Auton Config", group = "0")
 public class AutoSetupMenu extends InitLinearOpMode implements FtcMenu.MenuButtons {

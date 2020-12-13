@@ -13,7 +13,7 @@ import org.opencv.imgproc.Imgproc;
 import java.util.ArrayList;
 import java.util.List;
 
-import hallib.HalDashboard;
+import org.firstinspires.ftc.teamcode.util.HalDashboard;
 
 
 public class LedDetector extends Detector implements ImageProcessor

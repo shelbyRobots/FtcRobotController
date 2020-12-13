@@ -11,7 +11,7 @@ import org.opencv.imgproc.Imgproc;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import hallib.HalDashboard;
+import org.firstinspires.ftc.teamcode.util.HalDashboard;
 
 @SuppressWarnings("unused")
 public class StoneDetector extends Detector {
