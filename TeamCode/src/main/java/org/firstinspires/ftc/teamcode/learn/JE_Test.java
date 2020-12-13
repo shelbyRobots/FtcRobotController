@@ -62,7 +62,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 
 @Autonomous(name="JE_TEST", group="Pushbot")
-@Disabled
+//@Disabled
 public class JE_Test extends  LinearOpMode{
     /* Declare OpMode members. */
     JE_bot robot   = new JE_bot();   // Use a Pushbot's hardware
