@@ -84,7 +84,7 @@ public class TilerunnerMecanumBot extends TilerunnerGtoBot
         }
 
         int mnum = 0;
-        for(DcMotor mot : motors.values())
+        for(DcMotorEx mot : motors.values())
         {
             if(mot != null)
             {
@@ -93,20 +93,13 @@ public class TilerunnerMecanumBot extends TilerunnerGtoBot
                 mot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 mot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-                if (mot instanceof DcMotorEx)
-                {
-                    DcMotorEx lex = (DcMotorEx) mot;
-                    PIDFCoefficients pid;
-                    pid = lex.getPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION);
-                    RobotLog.dd(TAG, "RUN_TO_POS Motor %d PIDs. P:%.2f I:%.2f D:%.2f",
-                            mnum, pid.p, pid.i, pid.d);
-                    pid = lex.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
-                    RobotLog.dd(TAG, "RUN_USING_ENC Motor %d PIDs. P:%.2f I:%.2f D:%.2f",
-                            mnum, pid.p, pid.i, pid.d);
-                    //pid = lex.getPIDCoefficients(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                    //RobotLog.dd(TAG, "RUN_WITHOUT_ENC Motor %d PIDs. P:%.2f I:%.2f D:%.2f",
-                    //        mnum, pid.p, pid.i, pid.d);
-                }
+                PIDFCoefficients pid;
+                pid = mot.getPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION);
+                RobotLog.dd(TAG, "RUN_TO_POS Motor %d PIDs. P:%.2f I:%.2f D:%.2f",
+                        mnum, pid.p, pid.i, pid.d);
+                pid = mot.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+                RobotLog.dd(TAG, "RUN_USING_ENC Motor %d PIDs. P:%.2f I:%.2f D:%.2f",
+                        mnum, pid.p, pid.i, pid.d);
             }
             mnum++;
         }
