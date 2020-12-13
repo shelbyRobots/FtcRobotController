@@ -295,7 +295,7 @@ public class MecanumTeleop extends InitLinearOpMode
         {
             update();
             printTelem();
-            idle();
+            robot.waitForTick(10);
         }
 
         RobotLog.dd(TAG, "Mecanum_Driver starting");
@@ -307,6 +307,7 @@ public class MecanumTeleop extends InitLinearOpMode
             processDriverInputs();
 
             printTelem();
+            robot.waitForTick(10);
         }
     }
 
