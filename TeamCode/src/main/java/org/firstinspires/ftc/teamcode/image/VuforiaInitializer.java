@@ -9,6 +9,7 @@ import com.vuforia.PIXEL_FORMAT;
 import com.vuforia.Vuforia;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -94,6 +95,22 @@ public class VuforiaInitializer
                 "9Q6DZmhz4FCT49shA+4PyNOzqsjhRC";
 
         parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
+
+        WebcamName webcamName = null;
+        boolean useWebCam = true;
+        if(useWebCam)
+        {
+            try
+            {
+                webcamName = hardwareMap.get(WebcamName.class, "webcam");
+            }
+            catch (Exception e)
+            {
+                RobotLog.ee(TAG, "ERROR get hardware map vufInit webcam\n" + e.toString());
+            }
+            if (webcamName != null) parameters.cameraName = webcamName;
+            //parameters.useExtendedTracking = false;
+        }
     }
 
     private void setupTrackables(String assetName,

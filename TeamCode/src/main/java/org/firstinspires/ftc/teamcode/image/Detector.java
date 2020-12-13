@@ -27,11 +27,11 @@ public abstract class Detector implements ImageProcessor
 
     /* package-private */ Mat showImg;
     private Mat cvImage;
-    private OpenCvInitializer ocvInit;
+    private final OpenCvInitializer ocvInit;
     protected Telemetry telemetry = null;
     private static String dateStr;
 
-    private static String TAG = "SJH_Detector";
+    private final static String TAG = "SJH_Detector";
 
     private static int imgNum = 0;
 
