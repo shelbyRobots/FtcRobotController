@@ -103,7 +103,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
             initCycle++;
 
-            sleep(initSleep);
+            robot.waitForTick(initSleep);
         }
 
         if(!isStopRequested()) startMode();
@@ -532,13 +532,13 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
     {
         RobotLog.dd(TAG, "doScan" + " segIdx:" + segIdx);
 
-        if(useLight)
+        if(useLight && usePhone)
             CameraDevice.getInstance().setFlashTorchMode(true) ;
 
         ringPos =  getRingPos();
         RobotLog.dd(TAG, "doScan RingPos = %s", ringPos);
 
-        if(useLight)
+        if(useLight && usePhone)
             CameraDevice.getInstance().setFlashTorchMode(false);
 
         setRingPoint(segIdx);
@@ -767,7 +767,9 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
               ringPos == RingDetector.Position.NONE &&
               mtimer.seconds() < ringTimeout)
         {
+            RobotLog.dd(TAG, "getringPos - loop calling tracker.updateImages");
             tracker.updateImages();
+            RobotLog.dd(TAG, "getringPos - loop calling tracker.getLastImage");
             Bitmap rgbImage = tracker.getLastImage();
 
             boolean tempTest = false;
@@ -776,9 +778,13 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
                 RobotLog.dd(TAG, "getringPos - image from tracker is null");
                 if(!tempTest) continue;
             }
+            RobotLog.dd(TAG, "getringPos - loop calling det.setBitmap");
             det.setBitmap(rgbImage);
+            RobotLog.dd(TAG, "getringPos - loop calling det.logDebug");
             det.logDebug();
+            RobotLog.dd(TAG, "getringPos - loop calling det.logTelemetry");
             det.logTelemetry();
+            RobotLog.dd(TAG, "getringPos - loop calling det.getRingPos");
             if(det instanceof RingDetector)
                 ringPos = ((RingDetector) det).getRingPos();
 
@@ -945,8 +951,8 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
     private int colSegNum = 0;
 
-    @SuppressWarnings("FieldCanBeLocal")
-    private final boolean useLight = true;
+    private static final boolean useLight = true;
+    private static final boolean usePhone = false;
 
     private final ExecutorService es = Executors.newSingleThreadExecutor();
 
