@@ -102,7 +102,9 @@ public class StepMotorTest extends InitLinearOpMode
 
             if(m%2 == 0) mot.setDirection(LFT_DIR);
             else         mot.setDirection(RGT_DIR);
+            mot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             mot.setMode(RUN_USING_ENCODER);
+            mot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
 
         // Wait for the start button
@@ -179,6 +181,8 @@ public class StepMotorTest extends InitLinearOpMode
         double t0 = 0.0;
         double dtt = 0.0;
         double cps = 0.0;
+        ElapsedTime bumpTimer = new ElapsedTime();
+        double lastBumpTime = 0.0;
 
         while(opModeIsActive())
         {
@@ -243,8 +247,21 @@ public class StepMotorTest extends InitLinearOpMode
 
             if(toggle_spd) useSpd = !useSpd;
 
-            if     (incrPwr)  power += INCREMENT;
-            else if(decrPwr)  power -= INCREMENT;
+            double incDecScl = 1.0;
+            if (incrPwr)
+            {
+                double timeNow = bumpTimer.seconds();
+                if (timeNow - lastBumpTime < 0.5) incDecScl = 10.0;
+                lastBumpTime = timeNow;
+                power += INCREMENT * incDecScl;
+            }
+            else if(decrPwr)
+            {
+                double timeNow = bumpTimer.seconds();
+                if (timeNow - lastBumpTime < 0.5) incDecScl = 10.0;
+                lastBumpTime = timeNow;
+                power -= INCREMENT * incDecScl;
+            }
             power = Range.clip(power, MAX_REV, MAX_FWD);
 
             int lScl = 0;
