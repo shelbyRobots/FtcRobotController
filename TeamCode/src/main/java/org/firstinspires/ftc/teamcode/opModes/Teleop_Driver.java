@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opModes;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -18,7 +19,7 @@ import java.util.concurrent.Executors;
 
 @SuppressWarnings("unused")
 @TeleOp(name="TeleopDriver", group="Tele")
-//@Disabled
+@Disabled
 public class Teleop_Driver extends InitLinearOpMode
 {
     private void initPreStart()
