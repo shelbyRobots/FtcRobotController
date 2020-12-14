@@ -49,7 +49,7 @@
 // - avoid using of "OpenCVLoader.initAsync()" approach - it is deprecated
 //   It may load library with different version (from OpenCV Android Manager, which is installed separatelly on device)
 //
-// - use "System.loadLibrary("opencv_java3")" or "OpenCVLoader.initDebug()"
+// - use "System.loadLibrary("opencv_java4")" or "OpenCVLoader.initDebug()"
 //   TODO: Add accurate API to load OpenCV native library
 //
 //
@@ -81,28 +81,49 @@
 //   splits {
 //       abi {
 //           enable true
+//           universalApk false
 //           reset()
 //           include 'armeabi-v7a' // , 'x86', 'x86_64', 'arm64-v8a'
-//           universalApk false
 //       }
 //   }
 //
 
 apply plugin: 'com.android.library'
 
-println "OpenCV: " + project.buildscript.sourceFile
+def openCVersionName = "4.5.0"
+def openCVersionCode = ((4 * 100 + 5) * 100 + 0) * 10 + 0
+
+println "OpenCV: " +openCVersionName + " " + project.buildscript.sourceFile
 
 android {
     compileSdkVersion 28
 
     defaultConfig {
-        minSdkVersion 19
+        minSdkVersion 21
         //targetSdkVersion 21
-        targetSdkVersion 19
+        targetSdkVersion 26
+
+        versionCode openCVersionCode
+        versionName openCVersionName
+
+//      externalNativeBuild {
+//          cmake {
+//              arguments "-DANDROID_STL=c++_shared"
+//              targets "opencv_jni_shared"
+//          }
+//      }
     }
 
     buildTypes {
+//      debug {
+//          packagingOptions {
+//              doNotStrip '**/*.so'  // controlled by OpenCV CMake scripts
+//          }
+//      }
         release {
+            packagingOptions {
+                doNotStrip '**/*.so'  // controlled by OpenCV CMake scripts
+            }
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
@@ -121,6 +142,12 @@ android {
             manifest.srcFile 'java/AndroidManifest.xml'
         }
     }
+
+//  externalNativeBuild {
+//      cmake {
+//          path (project.projectDir.toString() + '/libcxx_helper/CMakeLists.txt')
+//      }
+//  }
 }
 
 repositories {

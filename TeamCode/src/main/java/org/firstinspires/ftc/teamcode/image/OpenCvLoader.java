@@ -16,7 +16,8 @@ public class OpenCvLoader
     {
         try
         {
-            System.loadLibrary("opencv_java3");
+            //System.loadLibrary("opencv_java3");
+            System.loadLibrary("opencv_java4");
             RobotLog.dd(TAG, "opencv library loaded.\n");
         }
         catch (UnsatisfiedLinkError e)
