@@ -6,7 +6,6 @@ import android.widget.TextView;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import java.util.Locale;
-import java.util.NoSuchElementException;
 
 /**
  * This class is a wrapper for the Telemetry class. In addition to providing a way to send named data to the Driver
@@ -19,14 +18,12 @@ import java.util.NoSuchElementException;
  */
 public class HalDashboard
 {
-    private static final String moduleName = "HalDashboard";
-
     public static final int DEF_NUM_TEXTLINES = 16;
 
     private static final String displayKeyFormat = "%02d";
     private static HalDashboard instance = null;
-    private Telemetry telemetry = null;
-    private int numLines = DEF_NUM_TEXTLINES;
+    private final Telemetry telemetry;
+    private final int numLines;
     private Paint paint = null;
     private final Telemetry.Item[] display;
 
@@ -156,6 +153,7 @@ public class HalDashboard
      * @param text specifies the text message.
      * @param fieldWidth specified the field width in pixel units that the message will be centered in.
      */
+    @SuppressWarnings("unused")
     public void displayCenterText(int lineNum, String text, int fieldWidth)
     {
         displayText(lineNum, text, fieldWidth, false);
@@ -168,6 +166,7 @@ public class HalDashboard
      * @param text specifies the text message.
      * @param fieldWidth specified the field width in pixel units that the message will be right justified in.
      */
+    @SuppressWarnings("unused")
     public void displayRightText(int lineNum, String text, int fieldWidth)
     {
         displayText(lineNum, text, fieldWidth, true);
@@ -209,6 +208,7 @@ public class HalDashboard
      * @param format specifies the format string.
      * @param args specifies variable number of substitution arguments.
      */
+    @SuppressWarnings("unused")
     public void displayCenterPrintf(int lineNum, int fieldWidth, String format, Object... args)
     {
         String text = String.format(format, args);
@@ -223,6 +223,7 @@ public class HalDashboard
      * @param format specifies the format string.
      * @param args specifies variable number of substitution arguments.
      */
+    @SuppressWarnings("unused")
     public void displayRightPrintf(int lineNum, int fieldWidth, String format, Object... args)
     {
         String text = String.format(format, args);
@@ -244,189 +245,11 @@ public class HalDashboard
     /**
      * This method refresh the display lines to the Driver Station.
      */
+    @SuppressWarnings("unused")
     public void refreshDisplay()
     {
         telemetry.update();
     }   //refreshDisplay
-
-    /**
-     * This method returns the value of the named boolean data read from the Telemetry class.
-     *
-     * @param key specifies the name associated with the boolean data.
-     * @return boolean data value.
-     */
-    public boolean getBoolean(String key)
-    {
-        boolean value;
-
-        String strValue = getValue(key);
-        if (strValue.equals("true"))
-        {
-            value = true;
-        }
-        else if (strValue.equals("false"))
-        {
-            value = false;
-        }
-        else
-        {
-            throw new IllegalArgumentException("object is not boolean");
-        }
-
-        return value;
-    }   //getBoolean
-
-    /**
-     * This method returns the value of the named boolean data read from the Telemetry class. If the named data does
-     * not exist, it is created and assigned the given default value. Then it is sent to the Driver Station.
-     *
-     * @param key specifies the name associated with the boolean data.
-     * @param defaultValue specifies the default value if it does not exist.
-     * @return boolean data value.
-     */
-    public boolean getBoolean(String key, boolean defaultValue)
-    {
-        boolean value;
-
-        try
-        {
-            value = getBoolean(key);
-        }
-        catch (NoSuchElementException e)
-        {
-            putBoolean(key, defaultValue);
-            value = defaultValue;
-        }
-
-        return value;
-    }   //getBoolean
-
-    /**
-     * This method sets the named boolean data with the given value and also sends it to the Driver Station.
-     *
-     * @param key specifies the name associated with the boolean data.
-     * @param value specifies the data value.
-     */
-    public void putBoolean(String key, boolean value)
-    {
-        telemetry.addData(key, Boolean.toString(value));
-    }   //putBoolean
-
-    /**
-     * This method returns the value of the named double data read from the Telemetry class.
-     *
-     * @param key specifies the name associated with the double data.
-     * @return double data value.
-     */
-    public double getNumber(String key)
-    {
-        double value;
-
-        try
-        {
-            value = Double.parseDouble(getValue(key));
-        }
-        catch (NumberFormatException e)
-        {
-            throw new IllegalArgumentException("object is not a number");
-        }
-
-        return value;
-    }   //getNumber
-
-    /**
-     * This method returns the value of the named double data read from the Telemetry class. If the named data does
-     * not exist, it is created and assigned the given default value. Then it is sent to the Driver Station.
-     *
-     * @param key specifies the name associated with the double data.
-     * @param defaultValue specifies the default value if it does not exist.
-     * @return double data value.
-     */
-    public double getNumber(String key, double defaultValue)
-    {
-        double value;
-
-        try
-        {
-            value = getNumber(key);
-        }
-        catch (NoSuchElementException e)
-        {
-            putNumber(key, defaultValue);
-            value = defaultValue;
-        }
-
-        return value;
-    }   //getNumber
-
-    /**
-     * This method sets the named double data with the given value and also sends it to the Driver Station.
-     *
-     * @param key specifies the name associated with the double data.
-     * @param value specifies the data value.
-     */
-    public void putNumber(String key, double value)
-    {
-        telemetry.addData(key, Double.toString(value));
-    }   //putNumber
-
-    /**
-     * This method returns the value of the named string data read from the Telemetry class.
-     *
-     * @param key specifies the name associated with the string data.
-     * @return string data value.
-     */
-    public String getString(String key)
-    {
-        return getValue(key);
-    }   //getString
-
-    /**
-     * This method returns the value of the named string data read from the Telemetry class. If the named data does
-     * not exist, it is created and assigned the given default value. Then it is sent to the Driver Station.
-     *
-     * @param key specifies the name associated with the string data.
-     * @param defaultValue specifies the default value if it does not exist.
-     * @return string data value.
-     */
-    public String getString(String key, String defaultValue)
-    {
-        String value;
-
-        try
-        {
-            value = getString(key);
-        }
-        catch (NoSuchElementException e)
-        {
-            putString(key, defaultValue);
-            value = defaultValue;
-        }
-
-        return value;
-    }   //getString
-
-    /**
-     * This method sets the named string data with the given value and also sends it to the Driver Station.
-     *
-     * @param key specifies the name associated with the string data.
-     * @param value specifies the data value.
-     */
-    public void putString(String key, String value)
-    {
-        telemetry.addData(key, value);
-    }   //putString
-
-    /**
-     * This method calls Telemetry class to retrieve the named data item.
-     *
-     * @param key specifies the name associated with the string data.
-     * @return string data associated with the given name.
-     */
-    private String getValue(String key)
-    {
-        throw new UnsupportedOperationException("Not support in FTC.");
-    }   //getValue
 
     /**
      * This method calculates the number of padding spaces to be inserted in front of the original text so that the
