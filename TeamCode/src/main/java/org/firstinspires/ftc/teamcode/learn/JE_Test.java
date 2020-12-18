@@ -29,7 +29,6 @@ package org.firstinspires.ftc.teamcode.learn;
  */
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -68,11 +67,12 @@ public class JE_Test extends  LinearOpMode{
     JE_bot robot   = new JE_bot();   // Use a Pushbot's hardware
     private final ElapsedTime     runtime = new ElapsedTime();
 
+    static final double     WHEEL_BASE              = 15.96;
     static final double     COUNTS_PER_MOTOR_REV    = 537.6;    // eg: TETRIX Motor Encoder
     static final double     DRIVE_GEAR_REDUCTION    = 1.0;     // This is < 1.0 if geared UP
     static final double     WHEEL_DIAMETER_INCHES   = 96.0 / 25.4;     // For figuring circumference
-    static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
-            (WHEEL_DIAMETER_INCHES * Math.PI);
+    static final double     COUNTS_PER_INCH         =
+        (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
     static final double     DRIVE_SPEED             = 0.5;
     static final double     TURN_SPEED              = 0.5;
 
@@ -100,7 +100,7 @@ public class JE_Test extends  LinearOpMode{
         robot.rrMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Send telemetry message to indicate successful Encoder reset
-        telemetry.addData("Path0",  "Starting at %7d %7d %7d %7d",
+        telemetry.addData("Start",  "Starting at %7d %7d %7d %7d",
                 robot.lfMotor.getCurrentPosition(),
                 robot.lrMotor.getCurrentPosition(),
                 robot.rfMotor.getCurrentPosition(),
@@ -112,15 +112,14 @@ public class JE_Test extends  LinearOpMode{
 
         // Step through each leg of the path,
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
-        double turnDist = 15.96 * Math.PI;// * (180.0/360.0);
+        double turnDist = WHEEL_BASE * Math.PI * (180.0/360.0);
         encoderDrive(DRIVE_SPEED,  24,  24, 8.0);
         encoderDrive(TURN_SPEED,   turnDist, -turnDist, 8.0);
         encoderDrive(DRIVE_SPEED, -24, -24, 8.0);
-
-        telemetry.addData("Path", "Complete");
-        telemetry.update();
+        encoderDrive(TURN_SPEED,   -turnDist, turnDist, 8.0);
     }
 
+    private int pth = 0;
     /*
      *  Method to perform a relative move, based on encoder counts.
      *  Encoders are not reset as the move is based on the current position.
@@ -132,35 +131,32 @@ public class JE_Test extends  LinearOpMode{
     public void encoderDrive(double speed,
                              double leftInches, double rightInches,
                              double timeoutS) {
-        int newLeftFrontTarget;
-        int newLeftRearTarget;
-        int newRightFrontTarget;
-        int newRightRearTarget;
+        int tgtLfPos;
+        int tgtLrPos;
+        int tgtRfPos;
+        int tgtRrPos;
         int curLfPos;
         int curLrPos;
         int curRfPos;
         int curRrPos;
 
         // Ensure that the opmode is still active
-        if (opModeIsActive()) {
-
-            telemetry.addData("seg",  "Driving %.2f %.2f %.2f %.2f",
-            speed, leftInches, rightInches, timeoutS);
-
+        if (opModeIsActive())
+        {
             curLfPos = robot.lfMotor.getCurrentPosition();
             curLrPos = robot.lrMotor.getCurrentPosition();
             curRfPos = robot.rfMotor.getCurrentPosition();
             curRrPos = robot.rrMotor.getCurrentPosition();
             // Determine new target position, and pass to motor controller
-            newLeftFrontTarget = curLfPos + (int)(leftInches * COUNTS_PER_INCH);
-            newLeftRearTarget = curLrPos + (int)(leftInches * COUNTS_PER_INCH);
-            newRightFrontTarget = curRfPos + (int)(rightInches * COUNTS_PER_INCH);
-            newRightRearTarget = curRrPos + (int)(rightInches * COUNTS_PER_INCH);
+            tgtLfPos = curLfPos + (int)(leftInches  * COUNTS_PER_INCH);
+            tgtLrPos = curLrPos + (int)(leftInches  * COUNTS_PER_INCH);
+            tgtRfPos = curRfPos + (int)(rightInches * COUNTS_PER_INCH);
+            tgtRrPos = curRrPos + (int)(rightInches * COUNTS_PER_INCH);
 
-            robot.lfMotor.setTargetPosition(newLeftFrontTarget);
-            robot.lrMotor.setTargetPosition(newLeftRearTarget);
-            robot.rfMotor.setTargetPosition(newRightFrontTarget);
-            robot.rrMotor.setTargetPosition(newRightRearTarget);
+            robot.lfMotor.setTargetPosition(tgtLfPos);
+            robot.lrMotor.setTargetPosition(tgtLrPos);
+            robot.rfMotor.setTargetPosition(tgtRfPos);
+            robot.rrMotor.setTargetPosition(tgtRrPos);
 
 
             // Turn On RUN_TO_POSITION
@@ -195,9 +191,11 @@ public class JE_Test extends  LinearOpMode{
                 curRrPos = robot.rrMotor.getCurrentPosition();
 
                 // Display it for the driver.
-                telemetry.addData("Path1",  "Running to %7d %7d %7d %7d",
-                    newLeftFrontTarget,newLeftRearTarget,newRightFrontTarget,newRightRearTarget);
-                telemetry.addData("Path2",  "Running at %7d %7d  %7d %7d",
+                telemetry.addData("seg" + pth++,  "Driving %.2f %.2f %.2f %.2f",
+                    speed, leftInches, rightInches, timeoutS);
+                telemetry.addData("Tgt",  "%7d %7d %7d %7d",
+                    tgtLfPos,tgtLrPos,tgtRfPos,tgtRrPos);
+                telemetry.addData("Cur",  "%7d %7d  %7d %7d",
                         curLfPos,
                         curLrPos,
                         curRfPos,
@@ -217,7 +215,7 @@ public class JE_Test extends  LinearOpMode{
             robot.rfMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             robot.rrMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-            //  sleep(250);   // optional pause after each move
+            sleep(250);   // optional pause after each move
         }
     }
 }
