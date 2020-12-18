@@ -69,12 +69,12 @@ public class JE_Test extends  LinearOpMode{
     private final ElapsedTime     runtime = new ElapsedTime();
 
     static final double     COUNTS_PER_MOTOR_REV    = 537.6;    // eg: TETRIX Motor Encoder
-    static final double     DRIVE_GEAR_REDUCTION    = 2.0;     // This is < 1.0 if geared UP
+    static final double     DRIVE_GEAR_REDUCTION    = 1.0;     // This is < 1.0 if geared UP
     static final double     WHEEL_DIAMETER_INCHES   = 96.0 / 25.4;     // For figuring circumference
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (WHEEL_DIAMETER_INCHES * Math.PI);
-    static final double     DRIVE_SPEED             = 0.3;
-    static final double     TURN_SPEED              = 0.3;
+    static final double     DRIVE_SPEED             = 0.5;
+    static final double     TURN_SPEED              = 0.5;
 
     @Override
     public void runOpMode() {
@@ -112,10 +112,10 @@ public class JE_Test extends  LinearOpMode{
 
         // Step through each leg of the path,
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
-        double turnDist = 16.34 * Math.PI * (180.0/360.0);
-        encoderDrive(DRIVE_SPEED,  24,  24, 5.0);
-        encoderDrive(TURN_SPEED,   turnDist, -turnDist, 4.0);
-        encoderDrive(DRIVE_SPEED, -24, -24, 4.0);
+        double turnDist = 15.96 * Math.PI;// * (180.0/360.0);
+        encoderDrive(DRIVE_SPEED,  24,  24, 8.0);
+        encoderDrive(TURN_SPEED,   turnDist, -turnDist, 8.0);
+        encoderDrive(DRIVE_SPEED, -24, -24, 8.0);
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
@@ -143,6 +143,9 @@ public class JE_Test extends  LinearOpMode{
 
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
+
+            telemetry.addData("seg",  "Driving %.2f %.2f %.2f %.2f",
+            speed, leftInches, rightInches, timeoutS);
 
             curLfPos = robot.lfMotor.getCurrentPosition();
             curLrPos = robot.lrMotor.getCurrentPosition();
@@ -182,12 +185,18 @@ public class JE_Test extends  LinearOpMode{
             while (opModeIsActive() &&
                     (runtime.seconds() < timeoutS) &&
                     (robot.lfMotor.isBusy() &&
-                            robot.lrMotor.isBusy() &&
-                                robot.rfMotor.isBusy() &&
-                                    robot.rrMotor.isBusy())) {
+                     robot.lrMotor.isBusy() &&
+                     robot.rfMotor.isBusy() &&
+                     robot.rrMotor.isBusy()))
+            {
+                curLfPos = robot.lfMotor.getCurrentPosition();
+                curLrPos = robot.lrMotor.getCurrentPosition();
+                curRfPos = robot.rfMotor.getCurrentPosition();
+                curRrPos = robot.rrMotor.getCurrentPosition();
 
                 // Display it for the driver.
-                telemetry.addData("Path1",  "Running to %7d %7d %7d %7d", newLeftFrontTarget,newLeftRearTarget,newRightFrontTarget,newRightRearTarget);
+                telemetry.addData("Path1",  "Running to %7d %7d %7d %7d",
+                    newLeftFrontTarget,newLeftRearTarget,newRightFrontTarget,newRightRearTarget);
                 telemetry.addData("Path2",  "Running at %7d %7d  %7d %7d",
                         curLfPos,
                         curLrPos,
