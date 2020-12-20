@@ -10,7 +10,6 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -55,12 +54,6 @@ public class ShelbyBot
     /* Public OpMode members. */
     public DcMotorEx  leftMotor   = null;
     public DcMotorEx  rightMotor  = null;
-    public DcMotorEx  elevMotor   = null;
-    public DcMotorEx  sweepMotor  = null;
-    public DcMotorEx  shotmotor1  = null;
-    public DcMotorEx  shotmotor2  = null;
-    public Servo    lpusher     = null;
-    public Servo    rpusher     = null;
 
     public List<DcMotorEx> leftMotors  = new ArrayList<>(2);
     public List<DcMotorEx> rightMotors = new ArrayList<>(2);
@@ -265,64 +258,17 @@ public class ShelbyBot
 
     protected void initCollectorLifter()
     {
-        RobotLog.dd(TAG, "ShelbyBot collector/lifter");
-        try  //Collector
-        {
-            elevMotor = hwMap.get(DcMotorEx.class, "elevmotor");
-            sweepMotor = hwMap.get(DcMotorEx.class, "sweepmotor");
-            capMap.put("collector", true);
-        }
-        catch (Exception e)
-        {
-            RobotLog.ee(TAG, "ERROR get hardware map initCollector\n" + e.toString());
-        }
-
-        if(elevMotor  != null)  elevMotor.setDirection(DcMotor.Direction.REVERSE);
-        if(sweepMotor != null) sweepMotor.setDirection(DcMotor.Direction.FORWARD);
-        if(elevMotor  != null)  elevMotor.setPower(0);
-        if(sweepMotor != null) sweepMotor.setPower(0);
-        if(elevMotor  != null)  elevMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        if(sweepMotor != null) sweepMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        RobotLog.dd(TAG, "ShelbyBot collector/lifter - empty");
     }
 
     protected void initShooters()
     {
-        RobotLog.dd(TAG, "ShelbyBot init shooters");
-        try  //Shooters
-        {
-            shotmotor1 = hwMap.get(DcMotorEx.class, "leftshooter");
-            shotmotor2 = hwMap.get(DcMotorEx.class, "rightshooter");
-            capMap.put("shooter", true);
-        }
-        catch (Exception e)
-        {
-            RobotLog.ee(TAG, "ERROR get hardware map\n" + e.toString());
-        }
-
-        if(shotmotor1 != null) shotmotor1.setDirection(DcMotor.Direction.FORWARD);
-        if(shotmotor2 != null) shotmotor2.setDirection(DcMotor.Direction.REVERSE);
-        if(shotmotor1 != null) shotmotor1.setPower(0);
-        if(shotmotor2 != null) shotmotor2.setPower(0);
-        if(shotmotor1 != null) shotmotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        if(shotmotor2 != null) shotmotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        if(shotmotor1 != null) shotmotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        if(shotmotor2 != null) shotmotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
+        RobotLog.dd(TAG, "ShelbyBot init shooters - empty");
     }
 
     protected void initPushers()
     {
-        RobotLog.dd(TAG, "ShelbyBot pushers");
-        try  //Pushers
-        {
-            lpusher = hwMap.servo.get("lpusher");
-            rpusher = hwMap.servo.get("rpusher");
-            capMap.put("pusher", true);
-        }
-        catch (Exception e)
-        {
-            RobotLog.ee(TAG, "ERROR get hardware map\n" + e.toString());
-        }
+        RobotLog.dd(TAG, "ShelbyBot pushers - empty");
     }
 
     protected void initSensors(boolean initDirSensor)

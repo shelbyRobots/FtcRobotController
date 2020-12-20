@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.util.Units;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings("FieldCanBeLocal")
+@SuppressWarnings({"FieldCanBeLocal","unused"})
 public class TilerunnerGtoBot extends ShelbyImuBot
 {
     Servo    gpitch     = null;
@@ -25,6 +25,8 @@ public class TilerunnerGtoBot extends ShelbyImuBot
     private Servo    holder     = null;
 
     private  Servo    elevServo  = null;
+
+    public DcMotorEx  elevMotor   = null;
 
     private DigitalChannel elevIndexSensor = null;
 

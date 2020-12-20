@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode.robot;
 
 import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.util.Units;
 
 import java.util.List;
 
-public class TilerunnerMecanumBot extends TilerunnerGtoBot
+public class TilerunnerMecanumBot extends ShelbyImuBot
 {
     public DcMotorEx lfMotor = null;
     public DcMotorEx lrMotor = null;
@@ -43,6 +43,20 @@ public class TilerunnerMecanumBot extends TilerunnerGtoBot
         CAMERA_Z_IN_BOT = 0.0f * (float)Units.MM_PER_INCH;
 
         gyroInverted = false;
+    }
+
+    @Override
+    public void init(LinearOpMode op, boolean initDirSensor)
+    {
+        computeCPI();
+
+        initOp(op);
+        initDriveMotors();
+        initCollectorLifter();
+        initPushers();
+        initShooters();
+        initSensors(initDirSensor);
+        initCapabilities();
     }
 
     @Override
@@ -103,11 +117,6 @@ public class TilerunnerMecanumBot extends TilerunnerGtoBot
             }
             mnum++;
         }
-    }
-
-    @Override
-    protected void initArm()
-    {
     }
 
     @Override
