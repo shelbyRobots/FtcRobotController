@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.util.ManagedGamepad;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "FieldCanBeLocal", "FieldMayBeFinal"})
 @TeleOp(name="TeleopDriver", group="Tele")
 @Disabled
 public class Teleop_Driver extends InitLinearOpMode
@@ -37,7 +37,6 @@ public class Teleop_Driver extends InitLinearOpMode
             robot.numRmotors  > 0)
         {
             RobotLog.dd(TAG, "Initialize drivetrain");
-            robot.setDriveDir(ShelbyBot.DriveDir.INTAKE);
             dtrn.init(robot);
 
             dtrn.setRampUp(false);
@@ -283,6 +282,11 @@ public class Teleop_Driver extends InitLinearOpMode
             drvScale = 1.25;
         }
 
+        if(invert_drive_dir)
+        {
+            invert = !invert;
+        }
+
         double maxIPS = 50.0 * drvScale;
         double maxRPS = maxIPS/(4.0*Math.PI);
         double maxDPS = maxRPS*360.0;
@@ -368,6 +372,12 @@ public class Teleop_Driver extends InitLinearOpMode
         @SuppressWarnings("UnusedAssignment")
         double out_right = right;
 
+        if(invert)
+        {
+            double tmpr = left;
+            left = right;
+            right = tmpr;
+        }
         if(useSetVel)
         {
             out_left  = maxDPS*left;
@@ -392,11 +402,6 @@ public class Teleop_Driver extends InitLinearOpMode
                 zeroPwr = DcMotor.ZeroPowerBehavior.BRAKE;
             if(robot.leftMotor  != null) robot.leftMotor.setZeroPowerBehavior(zeroPwr);
             if(robot.rightMotor != null) robot.rightMotor.setZeroPowerBehavior(zeroPwr);
-        }
-
-        if(invert_drive_dir)
-        {
-            robot.invertDriveDir();
         }
 
         if(toggle_run_mode && robot.leftMotor != null && robot.rightMotor != null)
@@ -571,6 +576,8 @@ public class Teleop_Driver extends InitLinearOpMode
     private boolean estimatePos = true;
 
     private int prevRpitch = 0;
+
+    private boolean invert = false;
 
     private ShelbyBot.OpModeType prevOpModeType = ShelbyBot.OpModeType.UNKNOWN;
 

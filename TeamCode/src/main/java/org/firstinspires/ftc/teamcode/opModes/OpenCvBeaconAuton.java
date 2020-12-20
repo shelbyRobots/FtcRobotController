@@ -90,7 +90,6 @@ public class OpenCvBeaconAuton extends InitLinearOpMode
         String beaconStep = "WAIT";
 
         if ( useMotor ) {
-            robot.setDriveDir(ShelbyBot.DriveDir.PUSHER);
             robot.gyro.resetZAxisIntegrator();
         }
 

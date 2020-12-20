@@ -361,6 +361,13 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
             robot.setDriveDir(curSeg.getDir());
 
             drvTrn.setInitValues();
+
+            double tgtHdg = curSeg.getFieldHeading();
+            if(robot.getDriveDir() != RobotConstants.DT_DIR)
+            {
+                tgtHdg = angNormalize(tgtHdg + 180);
+            }
+
             String segLogStr = String.format(Locale.US, "%s - %s H: %4.1f",
                     curSeg.getStrtPt().toString(),
                     curSeg.getTgtPt().toString(),
@@ -371,12 +378,12 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
                 (curSeg.getDir() != ShelbyBot.DriveDir.LEFT &&
                  curSeg.getDir() != ShelbyBot.DriveDir.RIGHT))
             {
-                RobotLog.ii(TAG, "ENCODER TURN %s t=%6.4f", curSeg.getName(),
-                        startTimer.seconds());
-                //doEncoderTurn(curSeg.getFieldHeading(), segName + " encoderTurn"); //quick but rough
+//                RobotLog.ii(TAG, "ENCODER TURN %s t=%6.4f", curSeg.getName(),
+//                        startTimer.seconds());
+//                doEncoderTurn(tgtHdg, segName + " encoderTurn"); //quick but rough
                 RobotLog.ii(TAG, "GYRO TURN %s t=%6.4f", curSeg.getName(),
                         startTimer.seconds());
-                doGyroTurn(curSeg.getFieldHeading(), segName + " gyroTurn");
+                doGyroTurn(tgtHdg, segName + " gyroTurn");
             }
 
             if (curSeg.getLength() >= 0.1)
@@ -386,9 +393,8 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
                 doMove(curSeg);
             }
 
-
-            Double pturn = curSeg.getPostTurn();
-            if (usePostTurn && pturn != null)
+            double pturn = curSeg.getPostTurn();
+            if (usePostTurn && pturn != curSeg.getFieldHeading())
             {
                 RobotLog.ii(TAG, "ENCODER POST TURN %s", curSeg.getName());
                 doEncoderTurn(pturn, segName + " postEncoderTurn");
@@ -404,9 +410,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
             }
 
             RobotLog.ii(TAG, "Planned pos: %s %s",
-                    pathSegs.get(i).getTgtPt(),
-                    pathSegs.get(i).getFieldHeading());
-
+                    pathSegs.get(i).getTgtPt(), tgtHdg);
 
             Segment.Action act = curSeg.getAction();
 
@@ -625,6 +629,14 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         if(robot.burr != null) robot.burr.stop();
     }
 
+    private double angNormalize(double ang)
+    {
+        double ret = ang;
+        while (ret >   180) ret -= 360;
+        while (ret <= -180) ret += 360;
+        return ret;
+    }
+
     private void doMove(Segment seg)
     {
         if(!opModeIsActive() || isStopRequested() || robot.motors.size() < 1) return;
@@ -641,13 +653,21 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         double fudge = seg.getDrvTuner();
         Segment.TargetType ttype = seg.getTgtType();
 
-        RobotLog.ii(TAG, "Drive %s %s %s %6.2f %3.2f %s tune: %4.2f %s",
-                snm, spt, ept, fhd, speed, dir, fudge, ttype);
+        Drivetrain.Direction ddir = Drivetrain.Direction.FORWARD;
+        switch (dir)
+        {
+            case LEFT:   ddir = Drivetrain.Direction.LEFT;    break;
+            case RIGHT:  ddir = Drivetrain.Direction.RIGHT;   break;
+            case INTAKE: ddir = Drivetrain.Direction.REVERSE; break;
+            case PUSHER: ddir = Drivetrain.Direction.FORWARD; break;
+        }
+
+        RobotLog.ii(TAG, "Drive %s %s %s %6.2f %3.2f %s:%s tune: %4.2f %s",
+                snm, spt, ept, fhd, speed, dir, ddir, fudge, ttype);
 
         dashboard.displayPrintf(2, "STATE: %s %s %s - %s %6.2f %3.2f %s",
                 "DRIVE", snm, spt, ept, fhd, speed, dir);
 
-        Drivetrain.Direction ddir = Drivetrain.Direction.FORWARD;
         drvTrn.logData(true, snm + " move");
         drvTrn.setDrvTuner(fudge);
 
@@ -675,11 +695,14 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         }
         else
         {
-            double targetHdg = seg.getFieldHeading();
+            double targetHdg = fhd;
+            if(dir != RobotConstants.DT_DIR)
+            {
+                targetHdg = angNormalize(targetHdg+ 180.0);
+            }
+
             if(dir == ShelbyBot.DriveDir.RIGHT || dir == ShelbyBot.DriveDir.LEFT)
             {
-                ddir = Drivetrain.Direction.RIGHT;
-                if(dir == ShelbyBot.DriveDir.LEFT) ddir = Drivetrain.Direction.LEFT;
                 drvTrn.strafe(spt.distance(ept), speed, ddir, targetHdg);
             }
             else

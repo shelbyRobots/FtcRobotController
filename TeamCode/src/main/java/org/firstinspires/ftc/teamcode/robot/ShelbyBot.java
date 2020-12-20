@@ -89,6 +89,7 @@ public class ShelbyBot
     private final int colorPort = 0;
     private final DriveDir defDriveDir = DriveDir.PUSHER;
     private DriveDir ddir = defDriveDir;
+    private boolean invertDrive = false;
     public DriveDir calibrationDriveDir = DriveDir.UNKNOWN;
     protected HardwareMap hwMap = null;
 
@@ -422,37 +423,7 @@ public class ShelbyBot
 
         this.ddir = ddir;
 
-        RobotLog.ii(TAG, " #LM %d #RM %d", numLmotors, numRmotors);
-
-        int n = numLmotors - 1;
-        for(int m = 0; m < numRmotors; m++)
-        {
-            RobotLog.dd(TAG, "Setting l(%d) to r(%d)", m, n);
-            RobotLog.dd(TAG, "Setting r(%d) to l(%d)", n, m);
-            DcMotorEx lMotor = leftMotors.get(m);
-            DcMotorEx rMotor = rightMotors.get(n);
-            lMotor.setDirection(RIGHT_DIR);
-            rMotor.setDirection(LEFT_DIR);
-            leftMotors.set(m, rMotor);
-            rightMotors.set(n, lMotor);
-            n--;
-        }
-    }
-
-    public DriveDir invertDriveDir()
-    {
-        DriveDir inDir  = getDriveDir();
-        DriveDir outDir = DriveDir.INTAKE;
-
-        switch(inDir)
-        {
-            case INTAKE: outDir = DriveDir.PUSHER; break;
-            case PUSHER: outDir = DriveDir.INTAKE; break;
-        }
-
-        RobotLog.ii(TAG, "Changing from %s FWD to %s FWD", inDir, outDir);
-        setDriveDir(outDir);
-        return outDir;
+        invertDrive = ddir != calibrationDriveDir;
     }
 
     public void setInitHdg(double initHdg)
@@ -519,7 +490,7 @@ public class ShelbyBot
     {
         if(imu == null && gyro == null) return 0;
         int dirHdgAdj = 0;
-        if(ddir != calibrationDriveDir) dirHdgAdj = 180;
+        //if(ddir != calibrationDriveDir) dirHdgAdj = 180;
 
         double rawGyroHdg = getGyroHdg();
         //There have been cases where gyro incorrectly returns 0 for a frame : needs filter
@@ -566,6 +537,8 @@ public class ShelbyBot
     {
         return colorPort;
     }
+
+    public boolean getInvertDrive() { return invertDrive; }
 
     public void turnColorOn()
     {

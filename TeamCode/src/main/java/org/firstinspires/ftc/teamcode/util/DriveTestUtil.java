@@ -41,8 +41,7 @@ public class DriveTestUtil
      */
     public void doMaxSpeedTest(DcMotor.RunMode runMode)
     {
-        robot.setDriveDir(ShelbyBot.DriveDir.INTAKE);
-        dl.addField("RUNNING MAX DRIVE SPEED TEST INTAKE " + runMode.toString()); dl.newLine();
+        dl.addField("RUNNING MAX DRIVE SPEED TEST FWD " + runMode.toString()); dl.newLine();
         drvTrn.stopAndReset();
         op.sleep(50);
         robot.leftMotor.setMode(runMode);
@@ -57,13 +56,12 @@ public class DriveTestUtil
         while(op.opModeIsActive() && et.seconds() < 3.0) { estAndLog(); drvTrn.waitForTick(10); }
         dl.addField("DONE MAX SPEED TEST " + runMode.toString()); dl.newLine();
         op.sleep(2000);
-        robot.setDriveDir(ShelbyBot.DriveDir.PUSHER);
-        dl.addField("RUNNING MAX DRIVE SPEED TEST PUSHER " + runMode.toString()); dl.newLine();
+        dl.addField("RUNNING MAX DRIVE SPEED TEST REV " + runMode.toString()); dl.newLine();
         robot.leftMotor.setMode(runMode);
         robot.rightMotor.setMode(runMode);
         et.reset();
-        dl.addField("SETTING POWER 1.0"); dl.newLine();
-        drvTrn.move(1.0);
+        dl.addField("SETTING POWER -1.0"); dl.newLine();
+        drvTrn.move(-1.0);
         while(op.opModeIsActive() && et.seconds() < 2.0) { estAndLog(); drvTrn.waitForTick(10);}
         dl.addField("SETTING POWER 0.0"); dl.newLine();
         drvTrn.move(0.0);
@@ -96,7 +94,6 @@ public class DriveTestUtil
         double spdStep = 0.01;
         double spdDur  = 1.0;
         int    MOVE_THRESH = 10;
-        robot.setDriveDir(ShelbyBot.DriveDir.INTAKE);
         dl.addField("RUNNING MIN SPEED TEST"); dl.newLine();
         robot.leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -124,7 +121,6 @@ public class DriveTestUtil
     public void doSpeedTest(DcMotor.RunMode runMode, double spd,
                             double atime, double rtime, double dtime)
     {
-        robot.setDriveDir(ShelbyBot.DriveDir.INTAKE);
         dl.addField("RUNNING MAX DRIVE SPEED TEST INTAKE " + runMode.toString());
         dl.newLine();
         drvTrn.logData(true, "SETTING POWER " + spd);
@@ -166,21 +162,16 @@ public class DriveTestUtil
         Point2d tgtPt = new Point2d(dist, 0);
         drvTrn.setCurrPt(strtPt);
         drvTrn.stopAndReset();
-        robot.setDriveDir(ShelbyBot.DriveDir.INTAKE);
         dl.addField("TEST DRIVE DISTANCE at power");
         dl.addField("", dist); dl.addField("", pwr); dl.newLine();
         op.sleep(200);
         dl.resetTime();
         drvTrn.driveToPointLinear(tgtPt, pwr, Drivetrain.Direction.FORWARD);
         et.reset();
-        op.sleep(2000);
-        robot.invertDriveDir();
-        drvTrn.driveToPointLinear(strtPt, pwr, Drivetrain.Direction.FORWARD);
     }
 
     public void findBestDriveSpeed()
     {
-        robot.setDriveDir(ShelbyBot.DriveDir.INTAKE);
         double distances[] = {48}; //{24, 43};
         double tHdg = 0.0;
         op.sleep(200);

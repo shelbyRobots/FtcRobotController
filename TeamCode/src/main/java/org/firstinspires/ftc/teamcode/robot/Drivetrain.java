@@ -42,6 +42,14 @@ public class Drivetrain
         if(lPwr == lastSetLpower) {setL = false;}
         if(rPwr == lastSetRpower) {setR = false;}
 
+        if(curDriveDir != robot.getDriveDir())
+        {
+            setL = true;
+            setR = true;
+            curDriveDir = robot.getDriveDir();
+            logData(true, "DDIR=" + curDriveDir.toString());
+        }
+
         curLpower = lPwr;
         curRpower = rPwr;
 
@@ -275,7 +283,6 @@ public class Drivetrain
     {
         trgtHdg = targetHdg;
 
-        RobotLog.ii(TAG, "Starting drive %s", useCol);
         if(doStopAndReset) stopAndReset();
         logData(true, "LINDST");
 
@@ -533,13 +540,13 @@ public class Drivetrain
             gyroGoodCount = 0;
             gyroFirstGood = false;
             gyroGoodTimer.reset();
-            double deltaErr = (error - lastGyroError)/gyroFrameTime.seconds();
-            double d = Kd_GyroTurn * deltaErr;
             gyroFrameTime.reset();
             steer = getTurnSteer(error);
             rightSpeed  = pwr * steer;
             if(useDterm)
             {
+                double deltaErr = (error - lastGyroError)/gyroFrameTime.seconds();
+                double d = Kd_GyroTurn * deltaErr;
                 rightSpeed += d;
             }
             rightSpeed = Range.clip(rightSpeed, -1, 1);
@@ -669,11 +676,12 @@ public class Drivetrain
         ElapsedTime tTimer = new ElapsedTime();
 
         RobotLog.ii(TAG, "Starting gyro turn");
+        lastGyroError = angNormalize(tgtHdg - curHdg);
         gyroFrameTime.reset();
         while(op.opModeIsActive()       &&
               !op.isStopRequested()     &&
               !ctrTurnGyro(tgtHdg, pwr) &&
-              !areTurnMotorsStuck()         &&
+              !areTurnMotorsStuck()     &&
               tTimer.seconds() < turnTimeLimit)
         {
             setCurValues();
@@ -794,14 +802,6 @@ public class Drivetrain
 
     public void estimatePosition()
     {
-        if(curDriveDir != robot.getDriveDir())
-        {
-            curDriveDir = robot.getDriveDir();
-            setPositions(lstLpositions, curLpositions, 0);
-            setPositions(lstRpositions, curRpositions, 0);
-            logData(true, "DDIR=" + curDriveDir.toString());
-        }
-
         int curLcnt = curLpositions.get(0);
         int curRcnt = curRpositions.get(0);
         double radHdg = Math.toRadians(curHdg);
@@ -916,7 +916,6 @@ public class Drivetrain
         double err = getGyroError(thdg);
 
         double steer = getSteer(err);
-        if (dir == Direction.REVERSE) steer *= -1;
 
         if     (pwr + steer >  1.0) steer =  1.0 - pwr;
         else if(pwr + steer < -1.0) steer = -1.0 - pwr;

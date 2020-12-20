@@ -32,7 +32,6 @@ public class MecanumTeleop extends InitLinearOpMode
         robot.init(this, initSensors);
 
         RobotLog.dd(TAG, "Initialize drivetrain");
-        robot.setDriveDir(RobotConstants.DT_DIR);
         dtrn.init(robot);
         dtrn.setRampUp(false);
         dtrn.setRampDown(false);

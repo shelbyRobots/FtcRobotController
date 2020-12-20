@@ -13,6 +13,7 @@ public class Segment
         this.strtPt = start;
         this.tgtPt  = end;
         this.fldHdg = angle();
+        this.postTurn = fldHdg;
         len = start.distance(end);
         this.dir = ShelbyBot.DriveDir.INTAKE;
         this.speed = DEF_SEG_SPD;
@@ -46,7 +47,7 @@ public class Segment
     public Action getAction() { return act; }
     public double getLength() { return len; }
     public double getDrvTuner() { return drvTuner; }
-    public Double getPostTurn() { return postTurn; }
+    public double getPostTurn() { return postTurn; }
     public TargetType getTgtType() { return tgtType; }
 
     public void setName(String name) {this.name = name;}
@@ -57,7 +58,7 @@ public class Segment
     }
     public void setSpeed(double spd) { this.speed = spd; }
     public void setDrvTuner(double drvTuner) { this.drvTuner = drvTuner; }
-    public void setPostTurn(double postTurn) { this.postTurn = Double.valueOf(postTurn); }
+    public void setPostTurn(double postTurn) { this.postTurn = postTurn; }
     public void setStrtPt(Point2d spt)
     {
         this.strtPt = spt;
@@ -83,12 +84,9 @@ public class Segment
 
     public String toString()
     {
-        double pturn = 0.0;
-        if(postTurn != null) pturn = postTurn;
-
         return String.format(Locale.US, "%s: %s - %s len: %5.2f %s hdg: %5.2f " +
                                         " spd: %.3f act: %s post: %5.2f",
-                name, strtPt, tgtPt, len, dir.toString(), fldHdg, speed, act.toString(), pturn);
+                name, strtPt, tgtPt, len, dir.toString(), fldHdg, speed, act.toString(), postTurn);
     }
 
     //enum SegDir {FORWARD, REVERSE}
@@ -105,6 +103,6 @@ public class Segment
     private double len;
     private Action act;
     private double drvTuner;
-    private Double postTurn = null;
+    private double postTurn;
     private TargetType tgtType;
 }

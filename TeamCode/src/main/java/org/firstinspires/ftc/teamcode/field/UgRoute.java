@@ -77,7 +77,7 @@ public class UgRoute extends Route
                 {
                     addPoint(points, rev, 0.60, 1.00, encType, none, UgField.RODP);
                     addPoint(points, rev, 0.60, 1.00, encType, none, UgField.ROSS);
-                    addPoint(points, rgt, 0.30, 1.00, encType, none, UgField.ROSE);
+                    addPoint(points, lft, 0.30, 1.00, encType, none, UgField.ROSE);
                     addPoint(points, fwd, 0.60, 1.00, encType, none, UgField.ROW2);
                 }
                 else
