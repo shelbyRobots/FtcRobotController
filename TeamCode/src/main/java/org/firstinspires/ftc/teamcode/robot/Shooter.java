@@ -55,7 +55,7 @@ public class Shooter {
     }
 
     public void stop(){
-        shooter.setVelocity(0);
+        if(shooter != null) shooter.setVelocity(0);
     }
 
     private double calcCps(double distance){

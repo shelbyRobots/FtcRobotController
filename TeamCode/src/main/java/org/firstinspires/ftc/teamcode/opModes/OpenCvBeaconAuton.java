@@ -134,8 +134,8 @@ public class OpenCvBeaconAuton extends InitLinearOpMode
                             redSide  = BeaconFinder.BeaconSide.UNKNOWN;
                             pushSide = BeaconFinder.BeaconSide.UNKNOWN;
 
-                            robot.rpusher.setPosition(R_DN_PUSH_POS);
-                            robot.lpusher.setPosition(L_DN_PUSH_POS);
+                            //robot.rpusher.setPosition(R_DN_PUSH_POS);
+                            //robot.lpusher.setPosition(L_DN_PUSH_POS);
 
                             curDistCount = 0.0;
                             drvTrn.stopAndReset();
@@ -248,13 +248,13 @@ public class OpenCvBeaconAuton extends InitLinearOpMode
                             switch (pushSide) {
 
                                 case LEFT:
-                                    robot.lpusher.setPosition(L_UP_PUSH_POS);
-                                    robot.rpusher.setPosition(R_DN_PUSH_POS);
+                                    //robot.lpusher.setPosition(L_UP_PUSH_POS);
+                                    //robot.rpusher.setPosition(R_DN_PUSH_POS);
                                     break;
 
                                 case RIGHT:
-                                    robot.rpusher.setPosition(R_UP_PUSH_POS);
-                                    robot.lpusher.setPosition(L_DN_PUSH_POS);
+                                    //robot.rpusher.setPosition(R_UP_PUSH_POS);
+                                    //robot.lpusher.setPosition(L_DN_PUSH_POS);
                                     break;
                             }
 
