@@ -11,10 +11,10 @@ import androidx.annotation.NonNull;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
 
-public class Shooter {
-
-    public Shooter(HardwareMap map){
-        super();
+public class Shooter
+{
+    public Shooter(HardwareMap map)
+    {
         this.hwMap = map;
     }
 

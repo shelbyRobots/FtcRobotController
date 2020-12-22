@@ -10,10 +10,10 @@ import java.util.Locale;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.NonNull;
-public class Loader {
-
-    public Loader(HardwareMap map){
-        super();
+public class Loader
+{
+    public Loader(HardwareMap map)
+    {
         this.hwMap = map;
     }
 

@@ -8,10 +8,10 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import java.util.Locale;
 
-public class Intake {
-
-    public Intake(HardwareMap map){
-        super();
+public class Intake
+{
+    public Intake(HardwareMap map)
+    {
         this.hwMap = map;
     }
 

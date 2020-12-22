@@ -18,7 +18,6 @@ public class Lifter
 {
     public Lifter(HardwareMap map)
     {
-        super();
         this.hwMap = map;
     }
 
