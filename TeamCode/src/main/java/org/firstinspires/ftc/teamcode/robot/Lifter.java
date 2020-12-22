@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.RobotLog;
@@ -27,7 +28,7 @@ public class Lifter
         try
         {
             liftMotor = hwMap.get(DcMotorEx.class, "lift");
-            liftMotor.setDirection(DcMotor.Direction.REVERSE); //bevel gear reverses
+            liftMotor.setDirection(DcMotor.Direction.FORWARD); //bevel gear reverses
             liftMotor.setPower(0);
             liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             liftMotor.setMode(RUN_USING_ENCODER);
