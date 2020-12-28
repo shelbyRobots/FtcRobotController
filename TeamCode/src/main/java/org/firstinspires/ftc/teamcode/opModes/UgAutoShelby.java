@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.opModes;
 
 import android.graphics.Bitmap;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -203,12 +205,12 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
             chas = RobotConstants.Chassis.MEC2;
         }
 
-        @SuppressWarnings("unused") RobotConstants rbc = new RobotConstants(chas);
+        robot.init(this, chas, true);
+
+        robot.setBcm(LynxModule.BulkCachingMode.MANUAL);
 
         pts = new UgRoute(startPos, alliance);
         pathSegs.addAll(Arrays.asList(pts.getSegments()));
-
-        robot.init(this, robotName);
 
         ShelbyBot.DriveDir startDdir = pathSegs.get(0).getDir();
         robot.setDriveDir(startDdir);
@@ -218,7 +220,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         robot.setAlliance(alliance);
 
         dashboard.displayPrintf(0, "GYRO CALIBRATING DO NOT TOUCH OR START");
-        if (robot.imu != null || robot.gyro  != null)
+        if (robot.imu != null)
         {
             gyroReady = robot.calibrateGyro();
         }
@@ -227,9 +229,13 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
         drvTrn.init(robot);
         drvTrn.setStartHdg(initHdg);
-        drvTrn.setRampUp(false);
+        drvTrn.setRampUp(true);
         int colThresh = 450;
         drvTrn.setColorThresh(colThresh);
+        Point2d currPoint = pathSegs.get(0).getStrtPt();
+        drvTrn.setCurrPt(currPoint);
+        drvTrn.setEstPose(currPoint, initHdg);
+        robot.drive.setPoseEstimate(new Pose2d(currPoint.getX(), currPoint.getY(), initHdg));
 
         dashboard.displayPrintf(1, "Robot & DrvTrn Inited");
 
@@ -247,12 +253,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         RobotLog.ii(TAG, "PARKPOS %s", parkPos);
         RobotLog.ii(TAG, "DELAY    %4.2f", delay);
         RobotLog.ii(TAG, "BOT      %s", robotName);
-
         RobotLog.dd(TAG, "Robot CPI " + RobotConstants.DT_CPI);
-
-        Point2d currPoint = pathSegs.get(0).getStrtPt();
-        drvTrn.setCurrPt(currPoint);
-
         RobotLog.dd(TAG, "BOTDIR=%s START_DDIR =%s",
             RobotConstants.DT_DIR, startDdir);
         RobotLog.ii(TAG, "ROUTE: \n" + pts.toString());
@@ -483,12 +484,20 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
                     break;
                 }
             }
+
+            Pose2d ePose = drvTrn.getEstPose();
+            robot.setAutonEndPos(new Point2d(ePose.getX(), ePose.getY()));
+            robot.setAutonEndHdg(ePose.getHeading());
+
+            RobotLog.dd(TAG, "Finished seg %d at X:%.2f Y:%.2f H:%.2f",
+                i, ePose.getX(), ePose.getY(), Math.toDegrees(ePose.getHeading()));
         }
 
-        RobotLog.dd(TAG, "Finished auton segments");
-        robot.setAutonEndHdg(robot.getGyroFhdg());
-        //robot.setAutonEndPos(drvTrn.getCurrPt());
-        robot.setAutonEndPos(drvTrn.getEstPos());
+        Pose2d ePose = drvTrn.getEstPose();
+        robot.setAutonEndPos(new Point2d(ePose.getX(), ePose.getY()));
+        robot.setAutonEndHdg(ePose.getHeading());
+        RobotLog.dd(TAG, "Finished auton segments at X:%.2f Y:%.2f H:%.2f",
+            ePose.getX(), ePose.getY(), Math.toDegrees(ePose.getHeading()));
 
         while(opModeIsActive() && !isStopRequested())
         {
@@ -528,8 +537,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
     private void update()
     {
-        TilerunnerMecanumBot trmRobot = robot;
-        trmRobot.update();
+        robot.update();
     }
 
     private void doScan(int segIdx)
@@ -667,6 +675,9 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
         dashboard.displayPrintf(2, "STATE: %s %s %s - %s %6.2f %3.2f %s",
                 "DRIVE", snm, spt, ept, fhd, speed, dir);
+        Pose2d curPose = drvTrn.getEstPose();
+        dashboard.displayPrintf(3, "X:%.2f Y:%.2f H:%.2f",
+            curPose.getX(), curPose.getY(), Math.toDegrees(curPose.getHeading()));
 
         drvTrn.logData(true, snm + " move");
         drvTrn.setDrvTuner(fudge);

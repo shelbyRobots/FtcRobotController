@@ -46,8 +46,6 @@ public class UgRoute extends Route
         boolean runTest = false;
         boolean useStrafe = true;
 
-        if(RobotConstants.bot == RobotConstants.Chassis.MEC1) sdr = rev;
-
         boolean goForTwo = true;
 
         if(startPos == StartPos.START_1)  //Wall Start

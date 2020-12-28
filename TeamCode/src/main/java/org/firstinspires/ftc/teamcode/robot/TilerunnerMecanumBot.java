@@ -9,9 +9,7 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.util.Units;
 
-import java.util.List;
-
-public class TilerunnerMecanumBot extends ShelbyImuBot
+public class TilerunnerMecanumBot extends ShelbyBot
 {
     public DcMotorEx lfMotor = null;
     public DcMotorEx lrMotor = null;
@@ -23,16 +21,13 @@ public class TilerunnerMecanumBot extends ShelbyImuBot
     public Intake intake = null;
     public Loader loader = null;
 
-    private final int[] cnts = {0,0,0,0};
-    private final double[] vels = {0,0,0,0};
-    private double hdg = 0;
-
     private static final String TAG = "SJH_MEC";
     public TilerunnerMecanumBot()
     {
         super();
 
         name= "MEC2";
+        bulkCachingMode =  LynxModule.BulkCachingMode.MANUAL;
 
         DRIVE_GEARS = new double[]{RobotConstants.DT_MOTOR.getGear(), RobotConstants.DT_EXT_GEAR_RATIO};
 
@@ -48,14 +43,16 @@ public class TilerunnerMecanumBot extends ShelbyImuBot
     @Override
     public void init(LinearOpMode op, boolean initDirSensor)
     {
-        computeCPI();
+        RobotLog.dd(TAG, "TileRunnerMecanumBot init");
+        initCore(op);
 
-        initOp(op);
+        this.initDirSensor = initDirSensor;
+        initSensors();
         initDriveMotors();
         initCollectorLifter();
         initPushers();
         initShooters();
-        initSensors(initDirSensor);
+
         initCapabilities();
     }
 
@@ -63,6 +60,7 @@ public class TilerunnerMecanumBot extends ShelbyImuBot
     protected void initDriveMotors()
     {
         RobotLog.dd(TAG, TAG + "Initializing drive motors");
+        drive = new MecanumDriveLRR(imu);
         try
         {
             lfMotor = hwMap.get(DcMotorEx.class, "FL");
@@ -70,8 +68,8 @@ public class TilerunnerMecanumBot extends ShelbyImuBot
             lrMotor = hwMap.get(DcMotorEx.class, "BL");
             rrMotor = hwMap.get(DcMotorEx.class, "BR");
             motors.put("FL", lfMotor);
-            motors.put("FR", rfMotor);
             motors.put("BL", lrMotor);
+            motors.put("FR", rfMotor);
             motors.put("BR", rrMotor);
 
             leftMotors.add(numLmotors++, lfMotor);
@@ -85,12 +83,6 @@ public class TilerunnerMecanumBot extends ShelbyImuBot
             rrMotor.setDirection(RobotConstants.DT_RDIR);
 
             capMap.put("drivetrain", true);
-
-            List<LynxModule> allHubs = hwMap.getAll(LynxModule.class);
-            for (LynxModule module : allHubs)
-            {
-                module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
-            }
         }
         catch (Exception e)
         {
@@ -153,26 +145,11 @@ public class TilerunnerMecanumBot extends ShelbyImuBot
 
     public void update()
     {
-        int c = 0;
-        for (DcMotorEx m : motors.values())
-        {
-            cnts[c] = m.getCurrentPosition();
-            vels[c++] = m.getVelocity();
-        }
-
-        hdg = getGyroFhdg();
+        super.update();
 
         if(liftyBoi != null) { liftyBoi.update(); }
         if(burr != null)     { burr.update(); }
         if(intake != null)   { intake.update(); }
         if(loader != null)   { loader.update(); }
     }
-
-    public int[] getCnts()    { return cnts; }
-    public double[] getVels()
-    {
-        return vels;
-    }
-    public double getHdg()    { return hdg;  }
-
 }

@@ -1,13 +1,13 @@
 
 package org.firstinspires.ftc.teamcode.robot;
 
+import com.acmerobotics.roadrunner.drive.Drive;
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -20,12 +20,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.field.Field;
 import org.firstinspires.ftc.teamcode.util.CommonUtil;
+import org.firstinspires.ftc.teamcode.util.ImuRunner;
 import org.firstinspires.ftc.teamcode.util.Point2d;
 import org.firstinspires.ftc.teamcode.util.Units;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -44,14 +46,19 @@ import java.util.Map;
 public class ShelbyBot
 {
     protected LinearOpMode op = null;
+    public static RobotConstants rbc = new RobotConstants();
+    protected CommonUtil cmu = CommonUtil.getInstance();
+    protected HardwareMap hwMap = null;
 
     public enum OpModeType {TELE, AUTO, UNKNOWN}
-
     public static OpModeType curOpModeType = OpModeType.UNKNOWN;
 
-    public static RobotConstants rbc = new RobotConstants(RobotConstants.Chassis.MEC2);
+    protected List<LynxModule> allHubs = null;
+    protected LynxModule.BulkCachingMode bulkCachingMode =  LynxModule.BulkCachingMode.AUTO;
 
     /* Public OpMode members. */
+
+    public Drive drive = null;
     public DcMotorEx  leftMotor   = null;
     public DcMotorEx  rightMotor  = null;
 
@@ -60,17 +67,24 @@ public class ShelbyBot
 
     public int numLmotors = 0;
     public int numRmotors = 0;
+    public Map<String, DcMotorEx> motors = new HashMap<>();
 
-    public ModernRoboticsI2cGyro        gyro        = null;
-    //public ModernRoboticsI2cColorSensor colorSensor = null;
     public ColorSensor colorSensor = null;
-    public DeviceInterfaceModule        dim         = null;
-
-    protected CommonUtil cmu = CommonUtil.getInstance();
+    private final int colorPort = 0;
+    boolean colorEnabled = false;
 
     public BNO055IMU imu = null;
-
     public boolean gyroInverted = true;
+    public boolean initDirSensor = true;
+    private Orientation angles;
+    private ImuRunner imuRunner;
+    private final ElapsedTime imuTimer = new ElapsedTime();
+    private final boolean useImuThread = false;
+    public boolean gyroReady = false;
+
+    private final int[] cnts = {0,0,0,0};
+    private final double[] vels = {0,0,0,0};
+    private double hdg = 0;
 
     //Distance from ctr of rear wheel to tail
     public float REAR_OFFSET;
@@ -79,16 +93,12 @@ public class ShelbyBot
     protected static float CAMERA_Y_IN_BOT;
     protected static float CAMERA_Z_IN_BOT;
 
-    private final int colorPort = 0;
     private final DriveDir defDriveDir = DriveDir.PUSHER;
     private DriveDir ddir = defDriveDir;
     private boolean invertDrive = false;
     public DriveDir calibrationDriveDir = DriveDir.UNKNOWN;
-    protected HardwareMap hwMap = null;
 
     protected String name = "ShelbyBot";
-
-    boolean colorEnabled = false;
 
     private Field.Alliance alliance = Field.Alliance.RED;
 
@@ -102,6 +112,9 @@ public class ShelbyBot
     public Field.Alliance getAlliance() {return alliance;}
     public void setAlliance(Field.Alliance alnc) {alliance = alnc;}
 
+    public static DcMotor.Direction  LEFT_DIR = DcMotor.Direction.FORWARD;
+    public static DcMotor.Direction RIGHT_DIR = DcMotor.Direction.REVERSE;
+
     public float BOT_LENGTH;
 
     protected double COUNTS_PER_MOTOR_REV;
@@ -111,15 +124,8 @@ public class ShelbyBot
     protected double TUNE;
     public double CPI;
 
-    public static DcMotor.Direction  LEFT_DIR = DcMotor.Direction.FORWARD;
-    public static DcMotor.Direction RIGHT_DIR = DcMotor.Direction.REVERSE;
-
-    public Map<String, DcMotorEx> motors = new HashMap<>();
-
-    public boolean gyroReady = false;
     Map<String, Boolean> capMap = new HashMap<>();
 
-    /* local OpMode members. */
     private final ElapsedTime period  = new ElapsedTime();
 
     private static final String TAG = "SJH_BOT";
@@ -130,7 +136,7 @@ public class ShelbyBot
         //Neverest classic 20,40,60, and orbital 20 have 7 rising edges of Channel A per revolution
         //with a quadrature encoder (4 total edges - A rise, B rise, A fall, B fall) for a total
         //of 28 counts per pre-gear box motor shaft revolution.
-        COUNTS_PER_MOTOR_REV = 28;
+        COUNTS_PER_MOTOR_REV = 28;//RobotConstants.//28;
         DRIVE_GEARS = new double[]{40.0, 1.0/2.0};
 
         WHEEL_DIAMETER_INCHES = 4.1875;
@@ -155,18 +161,30 @@ public class ShelbyBot
         capMap.put("lifter",     false);
     }
 
+    public void initCore(LinearOpMode op)
+    {
+        computeCPI();
+        initOp(op);
+        allHubs = hwMap.getAll(LynxModule.class);
+        for (LynxModule module : allHubs)
+        {
+            module.setBulkCachingMode(bulkCachingMode);
+        }
+    }
+
     /* Initialize standard Hardware interfaces */
     public void init(LinearOpMode op, boolean initDirSensor)
     {
         RobotLog.dd(TAG, "ShelbyBot init");
-        computeCPI();
+        initCore(op);
 
-        initOp(op);
+        this.initDirSensor = initDirSensor;
+        initSensors();
         initDriveMotors();
         initCollectorLifter();
         initPushers();
         initShooters();
-        initSensors();
+
         initCapabilities();
     }
 
@@ -175,16 +193,11 @@ public class ShelbyBot
         init(op, true);
     }
 
-    public void init(LinearOpMode op, String name)
+    public void init(LinearOpMode op, RobotConstants.Chassis chassis, boolean initDirSensor)
     {
-        this.name = name;
-        init(op);
-    }
-
-    public void init(LinearOpMode op, RobotConstants.Chassis chassis)
-    {
-        init(op, chassis.name());
         rbc = new RobotConstants(chassis);
+        this.name = chassis.name();
+        init(op, initDirSensor);
     }
 
     protected void initOp(LinearOpMode op)
@@ -271,49 +284,55 @@ public class ShelbyBot
         RobotLog.dd(TAG, "ShelbyBot pushers - empty");
     }
 
-    protected void initSensors(boolean initDirSensor)
-    {
-        RobotLog.dd(TAG, "ShelbyBot sensors");
-        try  //I2C and DAIO
-        {
-            dim = hwMap.deviceInterfaceModule.get("dim");
-
-            gyro = (ModernRoboticsI2cGyro) hwMap.gyroSensor.get("gyro");
-            //colorSensor = (ModernRoboticsI2cColorSensor) hwMap.colorSensor.get("color");
-            colorSensor = hwMap.colorSensor.get("color");
-
-            capMap.put("sensor", true);
-        }
-        catch (Exception e)
-        {
-            RobotLog.ee(TAG, "ERROR get hardware map\n" + e.toString());
-        }
-
-        if(colorSensor != null)
-        {
-            RobotLog.ii(TAG, "COLOR_SENSOR");
-            RobotLog.ii(TAG, "ConnectionInfo %s", colorSensor.getConnectionInfo());
-            RobotLog.ii(TAG, "I2cAddr %s", Integer.toHexString(colorSensor.getI2cAddress().get8Bit()));
-            RobotLog.ii(TAG, "I2cAddr %s", Integer.toHexString(colorSensor.getI2cAddress().get7Bit()));
-
-            colorSensor.enableLed(false);
-            colorSensor.enableLed(true);
-
-            turnColorOff();
-        }
-
-        if(gyro != null)
-        {
-            RobotLog.ii(TAG, "GYRO_SENSOR");
-            RobotLog.ii(TAG, "ConnectionInfo %s", gyro.getConnectionInfo());
-            RobotLog.ii(TAG, "I2cAddr %s", Integer.toHexString(gyro.getI2cAddress().get8Bit()));
-            RobotLog.ii(TAG, "I2cAddr %s", Integer.toHexString(gyro.getI2cAddress().get7Bit()));
-        }
-    }
-
     protected void initSensors()
     {
-        initSensors(true);
+        RobotLog.dd(TAG, "In TilerunnerGtoBot.initSensors");
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit           = BNO055IMU.AngleUnit.RADIANS;
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMU_IMUCalibration.json";
+        parameters.loggingEnabled      = false;
+        parameters.loggingTag          = "IMU";
+        //parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+
+        boolean clrGood = false;
+        boolean imuGood = false;
+
+        // If hub is mounted vertically, remap the IMU axes so that the z-axis points
+        // upward (normal to the floor) using a command like the following:
+        // BNO055IMUUtil.remapAxes(imu, AxesOrder.XYZ, AxesSigns.NPN);
+
+        try
+        {
+            //imu = (BNO055IMU) cmu.getHardwareMap().get("imu");
+            imu = cmu.getHardwareMap().get(BNO055IMU.class, "imu");
+            if(initDirSensor) imu.initialize(parameters);
+
+            if(useImuThread)
+            {
+                imuRunner = ImuRunner.getInstance(imu);
+                imuRunner.start();
+            }
+
+            imuGood = true;
+        }
+        catch(Exception e)
+        {
+            RobotLog.ee(TAG, "ERROR get imu\n" + e.toString());
+        }
+
+        try
+        {
+            colorSensor = hwMap.get(ColorSensor.class, "color1");
+
+            clrGood = true;
+        }
+        catch(Exception e)
+        {
+            RobotLog.ee(TAG, "ERROR get colorSensor\n" + e.toString());
+        }
+
+        capMap.put("sensor", clrGood && imuGood);
     }
 
     protected void initCapabilities()
@@ -340,6 +359,14 @@ public class ShelbyBot
     protected void computeCPI()
     {
         CPI = RobotConstants.DT_CPI;
+    }
+
+    public void setBcm(LynxModule.BulkCachingMode bcm)
+    {
+        for (LynxModule module : allHubs)
+        {
+            module.setBulkCachingMode(bcm);
+        }
     }
 
     public void setDriveDir (DriveDir ddir)
@@ -379,62 +406,50 @@ public class ShelbyBot
 
     public boolean calibrateGyro()
     {
-        if(gyro == null)
-        {
-            RobotLog.ee(TAG, "NO GYRO FOUND TO CALIBRATE");
-            return false;
-        }
+        //Callibration performed internally and assisted by loading file from offline calib.
+        RobotLog.dd(TAG, "CalibrateGyro isAccelCal %s isGyroCal %s calStatus %s sysStatus %s",
+            imu.isAccelerometerCalibrated(),
+            imu.isGyroCalibrated(),
+            imu.getCalibrationStatus(),
+            imu.getSystemStatus());
 
         if(calibrationDriveDir == DriveDir.UNKNOWN)
         {
             RobotLog.ii(TAG, "calibrateGyro called without having set a drive Direction. " +
-                       "Defaulting to  " + RobotConstants.DT_DIR);
+                "Defaulting to " + RobotConstants.DT_DIR);
             setDriveDir(RobotConstants.DT_DIR);
         }
-
-        RobotLog.ii(TAG, "Starting gyro calibration");
         RobotLog.ii(TAG, "Calibration drive dir = %s", calibrationDriveDir);
-        gyro.calibrate();
-
-        double gyroInitTimout = 5.0;
-        boolean gyroCalibTimedout = false;
-        ElapsedTime gyroTimer = new ElapsedTime();
-
-        while (!op.isStopRequested() &&
-               gyro.isCalibrating())
-        {
-            op.sleep(50);
-            if(gyroTimer.seconds() > gyroInitTimout)
-            {
-                RobotLog.ii(TAG, "GYRO INIT TIMED OUT!!");
-                gyroCalibTimedout = true;
-                break;
-            }
-        }
-        RobotLog.ii(TAG, "Gyro calibrated in %4.2f seconds", gyroTimer.seconds());
-
-        boolean gyroReady = !gyroCalibTimedout;
-        if(gyroReady) gyro.resetZAxisIntegrator();
-        this.gyroReady = gyroReady;
-        return gyroReady;
+        gyroReady = true;
+        return true;
     }
 
     public void resetGyro()
     {
-        if(gyro != null && gyroReady)
-        {
-            gyro.resetZAxisIntegrator();
-        }
     }
 
     public double getGyroHdg()
     {
-        return gyro.getIntegratedZValue();
+        double startTime = imuTimer.milliseconds();
+        getGyroAngles();
+        double yaw = Math.toDegrees(angles.firstAngle);
+        double endTime = imuTimer.milliseconds();
+        double imuTime = endTime - startTime;
+        RobotLog.dd("IMU", String.format(Locale.US,
+            "%.2f,%.4f", imuTime, yaw));
+
+        return yaw;
+    }
+
+    private void getGyroAngles()
+    {
+        if(useImuThread) angles = imuRunner.getOrientation();
+        else             angles = imu.getAngularOrientation();
     }
 
     public double getGyroFhdg()
     {
-        if(imu == null && gyro == null) return 0;
+        if(imu == null) return 0;
         int dirHdgAdj = 0;
         //if(ddir != calibrationDriveDir) dirHdgAdj = 180;
 
@@ -508,6 +523,36 @@ public class ShelbyBot
     }
 
     public DriveDir getDriveDir() { return ddir; }
+
+    public void update()
+    {
+        if(bulkCachingMode == LynxModule.BulkCachingMode.MANUAL)
+        {
+            for (LynxModule module : allHubs)
+            {
+                module.clearBulkCache();
+            }
+        }
+
+        if (drive != null)
+        {
+            if (drive instanceof MecanumDriveLRR) ((MecanumDriveLRR)drive).update();
+            else drive.updatePoseEstimate();
+        }
+
+        int c = 0;
+        for (DcMotorEx m : motors.values())
+        {
+            cnts[c] = m.getCurrentPosition();
+            vels[c++] = m.getVelocity();
+        }
+
+        hdg = getGyroFhdg();
+    }
+
+    public int[] getCnts()    { return cnts; }
+    public double[] getVels() { return vels; }
+    public double getHdg()    { return hdg;  }
 
     /***
      *

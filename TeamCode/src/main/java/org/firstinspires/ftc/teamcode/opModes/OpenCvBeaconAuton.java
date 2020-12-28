@@ -89,10 +89,6 @@ public class OpenCvBeaconAuton extends InitLinearOpMode
 
         String beaconStep = "WAIT";
 
-        if ( useMotor ) {
-            robot.gyro.resetZAxisIntegrator();
-        }
-
         bd.startSensing();
 
         sleep( 200 );
@@ -123,9 +119,6 @@ public class OpenCvBeaconAuton extends InitLinearOpMode
                 {
                     if (gamepad1.b)
                         beaconStep = "INIT";
-
-                    if (gamepad1.y)
-                        robot.gyro.resetZAxisIntegrator();
 
                     switch (beaconStep) {
                         case "INIT":

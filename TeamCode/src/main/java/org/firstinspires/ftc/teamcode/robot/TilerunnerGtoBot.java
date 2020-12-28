@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings({"FieldCanBeLocal","unused"})
-public class TilerunnerGtoBot extends ShelbyImuBot
+public class TilerunnerGtoBot extends ShelbyBot
 {
     Servo    gpitch     = null;
     Servo    gripper    = null;
@@ -103,15 +103,17 @@ public class TilerunnerGtoBot extends ShelbyImuBot
     @Override
     public void init(LinearOpMode op, boolean initDirSensor)
     {
-        computeCPI();
+        initCore(op);
 
-        initOp(op);
+        this.initDirSensor = initDirSensor;
+        initSensors();
         initDriveMotors();
         initCollectorLifter();
         initPushers();
-        initSensors(initDirSensor);
+
         initArm();
         initHolder();
+
         initCapabilities();
     }
 

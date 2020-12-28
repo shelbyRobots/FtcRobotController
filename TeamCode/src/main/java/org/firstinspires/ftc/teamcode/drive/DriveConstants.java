@@ -50,6 +50,11 @@ public class DriveConstants {
     public static double WHEEL_RADIUS = (96.0/2)/25.4; //2; // in
     public static double GEAR_RATIO = 1.025; // output (wheel) speed / input (motor) speed
     public static double TRACK_WIDTH = 16.8; // in - tuned in dash
+    public static final double DC_CIRC = 2 * Math.PI * WHEEL_RADIUS;
+    public static final double DC_ECIRC = DC_CIRC * GEAR_RATIO;
+    public static final double DC_CPI = TICKS_PER_REV / DC_ECIRC;
+    public static final double DC_IPC = 1.0/DC_CPI;
+    public static final double DC_RPM2VEL = DC_ECIRC / 60.0;
 
     /*
      * These are the feedforward parameters used to model the drive motor behavior. If you are using
@@ -76,11 +81,13 @@ public class DriveConstants {
 
 
     public static double encoderTicksToInches(double ticks) {
-        return WHEEL_RADIUS * 2 * Math.PI * GEAR_RATIO * ticks / TICKS_PER_REV;
+//        return WHEEL_RADIUS * 2 * Math.PI * GEAR_RATIO * ticks / TICKS_PER_REV;
+        return ticks * DC_IPC;
     }
 
     public static double rpmToVelocity(double rpm) {
-        return rpm * GEAR_RATIO * 2 * Math.PI * WHEEL_RADIUS / 60.0;
+//        return rpm * GEAR_RATIO * 2 * Math.PI * WHEEL_RADIUS / 60.0;
+        return rpm * DC_RPM2VEL;
     }
 
     public static double getMotorVelocityF(double ticksPerSecond) {

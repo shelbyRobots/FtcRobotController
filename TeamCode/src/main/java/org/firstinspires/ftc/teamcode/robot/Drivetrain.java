@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -23,8 +24,20 @@ public class Drivetrain
         rt.reset();
     }
 
+    Pose2d curEstPose = new Pose2d();
+    public void update()
+    {
+        robot.update();
+        if (robot.drive !=null)
+        {
+            //robot.drive.updatePoseEstimate();
+            curEstPose = robot.drive.getPoseEstimate();
+        }
+    }
+
     public void moveInit(double lPwr, double rPwr)
     {
+        update();
         resetLastPos();
         move(lPwr, rPwr);
         logData(true, "INIT PWR SET");
@@ -210,6 +223,7 @@ public class Drivetrain
         moveInit(pwr, pwr);
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public int strafe(double dst, double pwr, Direction dir, double targetHdg)
     {
         trgtHdg = targetHdg;
@@ -232,13 +246,14 @@ public class Drivetrain
               !op.isStopRequested()  &&
               isBusy())
         {
+            update();
             setCurValues();
             logData();
 
             double ppwr = pwr;
             double tmpPwr = (curLpower + curRpower)/2;
-            rampUp = true;
 
+            //noinspection ConstantConditions
             if(rampUp  && tmpPwr < pwr)
             {
                 ppwr = Range.clip(tmpPwr + pwrIncr, startPwr, pwr);
@@ -253,7 +268,8 @@ public class Drivetrain
             for (Integer c : tgtRpositions)  { sb.append(" "); sb.append(c);  }
             RobotLog.ii(TAG, "%s ", sb.toString());
 
-            if((robot.gyro == null && robot.imu == null))
+            //noinspection IfStatementWithIdenticalBranches
+            if(robot.imu == null)
             {
                 move(ppwr, ppwr);
             }
@@ -286,12 +302,12 @@ public class Drivetrain
         if(doStopAndReset) stopAndReset();
         logData(true, "LINDST");
 
-        double startPwr = 0.1;
+        double startPwr = 0.01;
         boolean foundLine = false;
 
         initLpower = startPwr;
         initRpower = startPwr;
-        int pwrSteps = 5;
+        int pwrSteps = 15;
         double pwrIncr = (pwr - startPwr)/pwrSteps;
 
         //extend distance if doing a color find to make sure we reach line
@@ -315,6 +331,7 @@ public class Drivetrain
               isBusy()               &&
               !areDriveMotorsStuck())
         {
+            update();
             setCurValues();
             logData();
 
@@ -380,7 +397,7 @@ public class Drivetrain
             }
             else
             {
-                if((robot.gyro == null && robot.imu == null))
+                if(robot.imu == null)
                 {
                     move(ppwr, ppwr);
                 }
@@ -580,11 +597,11 @@ public class Drivetrain
 
         ElapsedTime tTimer = new ElapsedTime();
 
-        double startPwr = 0.1;
+        double startPwr = 0.01;
         initLpower = startPwr;
         initRpower = startPwr;
 
-        double pwrSteps = 5.0;
+        double pwrSteps = 15.0;
         double pwrLIncr = (pwr - initLpower)/pwrSteps;
         double pwrRIncr = (pwr - initRpower)/pwrSteps;
 
@@ -684,6 +701,7 @@ public class Drivetrain
               !areTurnMotorsStuck()     &&
               tTimer.seconds() < turnTimeLimit)
         {
+            update();
             setCurValues();
             logData();
 
@@ -797,6 +815,16 @@ public class Drivetrain
         setCurrPt(curPt, false);
     }
 
+    public  void setEstPose(Point2d pt, double hdg)
+    {
+        curEstPose = new Pose2d(pt.getX(), pt.getY(), hdg);
+    }
+
+    public Pose2d getEstPose()
+    {
+        return curEstPose;
+    }
+
     public Point2d getCurrPt() { return currPt; }
     public Point2d getEstPos() { return estPos; }
 
@@ -908,7 +936,7 @@ public class Drivetrain
 
     public void makeGyroCorrections(double pwr, double thdg, Direction dir)
     {
-        if((robot.gyro == null && robot.imu == null) || !robot.gyroReady) return;
+        if(robot.imu == null || !robot.gyroReady) return;
 
         double ldp;
         double rdp;
@@ -916,6 +944,8 @@ public class Drivetrain
         double err = getGyroError(thdg);
 
         double steer = getSteer(err);
+
+        if (dir == Direction.REVERSE) steer *= -1;
 
         if     (pwr + steer >  1.0) steer =  1.0 - pwr;
         else if(pwr + steer < -1.0) steer = -1.0 - pwr;
@@ -1317,7 +1347,7 @@ public class Drivetrain
             if(title != null) comment = title;
             dl.addField(comment);
             dl.addField(frame);
-            if(robot.imu != null || robot.gyro != null) dl.addField(curHdg);
+            if(robot.imu != null) dl.addField(curHdg);
             else                   dl.addField("");
             dl.addField(curLpositions.size() > 0 ? curLpositions.get(0) : -9999);
             dl.addField(curRpositions.size() > 0 ? curRpositions.get(0) : -9999);
@@ -1353,6 +1383,7 @@ public class Drivetrain
     {
         boolean useSpd = true;
 
+        //noinspection ConstantConditions
         if(useSpd)
         {
             for (DcMotorEx m : motors)

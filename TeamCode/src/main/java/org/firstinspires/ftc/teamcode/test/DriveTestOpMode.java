@@ -82,7 +82,7 @@ public class DriveTestOpMode extends LinearOpMode implements FtcMenu.MenuButtons
 
         if (robot.leftMotor != null &&
             robot.rightMotor != null &&
-            robot.gyro != null)
+            robot.imu != null)
         {
             gyroReady = robot.calibrateGyro();
         }
@@ -142,8 +142,6 @@ public class DriveTestOpMode extends LinearOpMode implements FtcMenu.MenuButtons
         drvTrn.setStopIndividualMotorWhenNotBusy(stopIndiv);
 
         RobotLog.ii("SJH", "Starting test do_main_loop");
-        robot.gyro.resetZAxisIntegrator();
-        sleep(100);
 
         //Test speed and accel/decel for various setPower settings
         double tHdg = 0.0;
@@ -214,7 +212,6 @@ public class DriveTestOpMode extends LinearOpMode implements FtcMenu.MenuButtons
 
         if(testMap.get("doTurnAngle"))
         {
-            robot.gyro.resetZAxisIntegrator();
             double angle = 5.0; //-90.0;
             //dl.addField("doTurnAngle ENC " + angle);
             //drvTrn.ctrTurnLinear(angle - robot.getGyroFhdg(), 0.4);

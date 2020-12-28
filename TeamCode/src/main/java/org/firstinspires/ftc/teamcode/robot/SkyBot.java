@@ -182,12 +182,12 @@ public class SkyBot extends TilerunnerGtoBot {
 
     @Override
     public void init(LinearOpMode op, boolean initDirSensor) {
-        computeCPI();
+        initCore(op);
 
-        initOp(op);
+        this.initDirSensor = initDirSensor;
+        initSensors();
         initDriveMotors();
         initCollectorLifter();
-        initSensors(initDirSensor);
         initArm();
         initHolder();
         initParker();

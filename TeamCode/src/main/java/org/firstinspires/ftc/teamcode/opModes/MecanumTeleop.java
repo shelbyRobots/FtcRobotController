@@ -1,17 +1,21 @@
 package org.firstinspires.ftc.teamcode.opModes;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.teamcode.robot.Drivetrain;
 import org.firstinspires.ftc.teamcode.robot.Lifter;
 import org.firstinspires.ftc.teamcode.robot.Loader;
+import org.firstinspires.ftc.teamcode.robot.MecanumDriveLRR;
 import org.firstinspires.ftc.teamcode.robot.RobotConstants;
 import org.firstinspires.ftc.teamcode.robot.ShelbyBot;
 import org.firstinspires.ftc.teamcode.robot.TilerunnerMecanumBot;
 import org.firstinspires.ftc.teamcode.util.Input_Shaper;
 import org.firstinspires.ftc.teamcode.util.ManagedGamepad;
+import org.firstinspires.ftc.teamcode.util.Point2d;
 
 import java.util.Locale;
 
@@ -21,25 +25,41 @@ public class MecanumTeleop extends InitLinearOpMode
 {
     private void initPreStart()
     {
-        robot.setName(pmgr.getBotName());
+        String robotName = pmgr.getBotName();
+        RobotConstants.Chassis chas = RobotConstants.Chassis.MEC2;
+        try
+        {
+            chas = RobotConstants.Chassis.valueOf(robotName);
+        }
+        catch (Exception e)
+        {
+            RobotLog.ee(TAG, "Robotname %s invalid. Defaulting to %s", robotName, chas);
+            chas = RobotConstants.Chassis.MEC2;
+        }
+
         ShelbyBot.OpModeType prevOpModeType = ShelbyBot.curOpModeType;
         ShelbyBot.curOpModeType = ShelbyBot.OpModeType.TELE;
 
         /* Initialize the hardware variables. */
         RobotLog.dd(TAG, "Initialize robot");
-        //robot.init(this);
+
         boolean initSensors = prevOpModeType != ShelbyBot.OpModeType.AUTO;
-        robot.init(this, initSensors);
+        RobotLog.dd(TAG, "Prev opmode type=%s. initSensors=%s",
+            prevOpModeType, initSensors);
+        robot.init(this, chas, initSensors);
 
-        RobotLog.dd(TAG, "Initialize drivetrain");
-        dtrn.init(robot);
-        dtrn.setRampUp(false);
-        dtrn.setRampDown(false);
+        robot.setBcm(LynxModule.BulkCachingMode.MANUAL);
 
-        RobotLog.dd(TAG, "Start Aend fHdg %.2f", robot.getAutonEndHdg());
-        //RobotLog.dd(TAG, "Start Hdg %.2f", robot.get);
-        RobotLog.dd(TAG, "Start Pos %s", robot.getAutonEndPos().toString());
+        Point2d autonEndPos = robot.getAutonEndPos();
+        double autonEndHdg = robot.getAutonEndHdg();
+        Pose2d startPose = new Pose2d(autonEndPos.getX(), autonEndPos.getY(), autonEndHdg);
+        robot.drive.setPoseEstimate(startPose);
+        RobotLog.dd(TAG, "Start Aend fHdg %.2f", Math.toDegrees(autonEndHdg));
+        RobotLog.dd(TAG, "Start Pos %s", autonEndPos.toString());
+
         RobotLog.dd(TAG, "Start mode to %s", robot.leftMotors.get(0).getMode());
+        if(robot.drive instanceof MecanumDriveLRR)
+            ((MecanumDriveLRR)(robot.drive)).setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     private void update()
@@ -52,6 +72,8 @@ public class MecanumTeleop extends InitLinearOpMode
         vels=robot.getVels();
         hdg=robot.getHdg();
 
+        poseEstimate = robot.drive.getPoseEstimate();
+
         if(robot.liftyBoi != null) lStr = robot.liftyBoi.toString();
         if(robot.burr != null)     sStr = robot.burr.toString();
     }
@@ -62,8 +84,11 @@ public class MecanumTeleop extends InitLinearOpMode
                 cnts[0], cnts[1], cnts[2], cnts[3]);
         String velStr = String.format(Locale.US,"VELS: %d %d %d %d",
                 (int)vels[0], (int)vels[1], (int)vels[2], (int)vels[3]);
+        String posStr = String.format(Locale.US, "X:%.2f Y:%.2f H:%.2f",
+            poseEstimate.getX(), poseEstimate.getY(), Math.toDegrees(poseEstimate.getHeading()));
 
         dashboard.displayPrintf(l++, "Dir %s", robot.getDriveDir());
+        dashboard.displayText  (l++, posStr);
         dashboard.displayText  (l++, cntStr);
         dashboard.displayText  (l++, velStr);
         dashboard.displayText  (l++, lStr);
@@ -145,6 +170,7 @@ public class MecanumTeleop extends InitLinearOpMode
         controlGripper();
     }
 
+    public static boolean newDrive = true;
     private void controlDrive()
     {
         if (robot.leftMotors.size() == 0 && robot.rightMotors.size() == 0) return;
@@ -191,6 +217,22 @@ public class MecanumTeleop extends InitLinearOpMode
                     fb_y /= spdScl;
                 }
             }
+        }
+
+        if (newDrive)
+        {
+            double maxCPS = RobotConstants.DT_SAF_CPS;
+            if(hspd) maxCPS = RobotConstants.DT_MAX_CPS;
+            double spdScl = maxCPS/RobotConstants.DT_MAX_CPS;
+            if(robot.drive instanceof MecanumDriveLRR)
+                ((MecanumDriveLRR)(robot.drive)).setWeightedDrivePower(
+                    new Pose2d(
+                        fb_y * spdScl,
+                        -lr_x * spdScl,
+                        -turn *spdScl
+                    )
+            );
+            return;
         }
 
         //Both trig and non-trig versions add turn to left and subtract from right
@@ -322,7 +364,6 @@ public class MecanumTeleop extends InitLinearOpMode
     private final boolean fieldAlign = false;
     private boolean useSetVel = true;
     private final TilerunnerMecanumBot robot = new TilerunnerMecanumBot();
-    private final Drivetrain dtrn = new Drivetrain();
 
     double raw_lr_x;
     double raw_fb_y;
@@ -330,6 +371,8 @@ public class MecanumTeleop extends InitLinearOpMode
     double lr_x;
     double fb_y;
     double turn;
+
+    Pose2d poseEstimate;
 
     int[] cnts = {0,0,0,0};
     double[] vels = {0,0,0,0};
