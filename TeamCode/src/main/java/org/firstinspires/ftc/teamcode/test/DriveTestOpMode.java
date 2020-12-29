@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.test;
 
-import android.widget.TextView;
-
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -37,12 +35,12 @@ public class DriveTestOpMode extends LinearOpMode implements FtcMenu.MenuButtons
         dashboard = HalDashboard.createInstance(telemetry);
 
         FtcRobotControllerActivity act = (FtcRobotControllerActivity)(hardwareMap.appContext);
-        dashboard.setTextView((TextView)act.findViewById(R.id.textOpMode));
+        dashboard.setTextView(act.findViewById(R.id.textOpMode));
         setup();
     }
 
-    private Map<String, Boolean> testMap = new HashMap<>();
-    private String[] tests =
+    private final Map<String, Boolean> testMap = new HashMap<>();
+    private final String[] tests =
             {
                     "doSpeedTest",
                     "doMaxSpeedTest",
@@ -202,11 +200,8 @@ public class DriveTestOpMode extends LinearOpMode implements FtcMenu.MenuButtons
             double[] dist = {48.0};
             for (double aDist : dist)
             {
-                drvTrn.setCurrPt(new Point2d(0, 0));
-                Point2d tPt = new Point2d(aDist, 0.0);
-                dl.addField("doDriveDist " + aDist);
-                drvTrn.driveToPointLinear(tPt, 0.55, Drivetrain.Direction.FORWARD);
-                drvTrn.driveToTarget(0.2, 10);
+                dtu.driveDist(aDist, 0.55);
+                //drvTrn.driveToTarget(0.2, 10);
             }
         }
 
@@ -269,7 +264,7 @@ public class DriveTestOpMode extends LinearOpMode implements FtcMenu.MenuButtons
 
     private void stopMode()
     {
-        if(drvTrn != null) drvTrn.stopAndReset();
+        drvTrn.stopAndReset();
     }
 
     private void setupLogger()
@@ -341,23 +336,16 @@ public class DriveTestOpMode extends LinearOpMode implements FtcMenu.MenuButtons
 
         for(String str : tests)
         {
-            if(outStr.equals(str))
-            {
-                testMap.put(str, true);
-            }
-            else
-            {
-                testMap.put(str, false);
-            }
+            testMap.put(str, outStr.equals(str));
         }
     }
 
     private static HalDashboard dashboard = null;
     private boolean gyroReady;
-    private ShelbyBot   robot = new ShelbyBot();
-    private Drivetrain drvTrn = new Drivetrain();
+    private final ShelbyBot   robot = new ShelbyBot();
+    private final Drivetrain drvTrn = new Drivetrain();
     private DataLogger dl;
     private DriveTestUtil dtu;
     @SuppressWarnings("FieldCanBeLocal")
-    private boolean logData = true;
+    private final boolean logData = true;
 }

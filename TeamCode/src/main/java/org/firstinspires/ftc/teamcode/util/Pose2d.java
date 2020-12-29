@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.util;
 
-import org.opencv.core.Point;
-
 public class Pose2d
 {
     public Pose2d()

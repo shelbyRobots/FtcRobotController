@@ -12,11 +12,11 @@ import org.firstinspires.ftc.teamcode.robot.ShelbyBot;
 
 public class DriveTestUtil
 {
-    private Drivetrain drvTrn;
-    private ShelbyBot robot;
-    private LinearOpMode op;
-    private ElapsedTime et;
-    private DataLogger dl;
+    private final Drivetrain drvTrn;
+    private final ShelbyBot robot;
+    private final LinearOpMode op;
+    private final ElapsedTime et;
+    private final DataLogger dl;
 
     public DriveTestUtil(ShelbyBot bot, LinearOpMode op, Drivetrain drvTrn, DataLogger dl)
     {
