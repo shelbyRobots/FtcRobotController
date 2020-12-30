@@ -170,7 +170,6 @@ public class MecanumTeleop extends InitLinearOpMode
         controlGripper();
     }
 
-    public static boolean newDrive = true;
     private void controlDrive()
     {
         if (robot.leftMotors.size() == 0 && robot.rightMotors.size() == 0) return;
@@ -219,92 +218,17 @@ public class MecanumTeleop extends InitLinearOpMode
             }
         }
 
-        if (newDrive)
-        {
-            double maxCPS = RobotConstants.DT_SAF_CPS;
-            if(hspd) maxCPS = RobotConstants.DT_MAX_CPS;
-            double spdScl = maxCPS/RobotConstants.DT_MAX_CPS;
-            if(robot.drive instanceof MecanumDriveLRR)
-                ((MecanumDriveLRR)(robot.drive)).setWeightedDrivePower(
-                    new Pose2d(
-                        fb_y * spdScl,
-                        -lr_x * spdScl,
-                        -turn *spdScl
-                    )
+        double maxCPS = RobotConstants.DT_SAF_CPS;
+        if(hspd) maxCPS = RobotConstants.DT_MAX_CPS;
+        double spdScl = maxCPS/RobotConstants.DT_MAX_CPS;
+        if(robot.drive instanceof MecanumDriveLRR)
+            ((MecanumDriveLRR)(robot.drive)).setWeightedDrivePower(
+                new Pose2d(
+                    fb_y * spdScl,
+                    -lr_x * spdScl,
+                    -turn *spdScl
+                )
             );
-            return;
-        }
-
-        //Both trig and non-trig versions add turn to left and subtract from right
-        double lf =  turn;
-        double rf = -turn;
-        double lr =  turn;
-        double rr = -turn;
-        double speed = 0.0;
-        double direction = 0.0;
-
-        dashboard.displayPrintf(l++, "PT: lf %4.2f rf %4.2f lr %4.2f rr %4.2f",
-            lf, rf, lr, rr);
-
-        if(trig)
-        {
-            //Start of trig based version - allows fieldAlign
-            speed = spdScl * Math.sqrt(lr_x * lr_x + fb_y * fb_y);
-            direction = Math.atan2(lr_x, fb_y) + rlrAng +
-                    (fieldAlign ? Math.toRadians(90.0 - hdg) : 0.0);
-
-            double spdSin = speed * Math.sin(direction);
-            double spdCos = speed * Math.cos(direction);
-
-            lf += spdSin;
-            rf += spdCos;
-            lr += spdCos;
-            rr += spdSin;
-            //End of trig version
-        }
-        else
-        {
-            //Start of non-trig version (w/o fieldAlign):
-            lf += fb_y + lr_x;
-            rf += fb_y - lr_x;
-            rr += fb_y + lr_x;
-            lr += fb_y - lr_x;
-            //End of non-trig version
-        }
-        double max = Math.max(Math.max(Math.abs(lf), Math.abs(rf)),
-                Math.max(Math.abs(lr), Math.abs(rr)));
-
-        if (max > 1.0)
-        {
-            lf /= max;
-            rf /= max;
-            lr /= max;
-            rr /= max;
-        }
-        dashboard.displayPrintf(l++, "PS: lf %4.2f rf %4.2f lr %4.2f rr %4.2f",
-            lf, rf, lr, rr);
-
-        if (useSetVel)
-        {
-            double maxCPS = RobotConstants.DT_SAF_CPS;
-            if(hspd) maxCPS = RobotConstants.DT_MAX_CPS;
-
-            robot.lfMotor.setVelocity(lf * maxCPS);
-            robot.rfMotor.setVelocity(rf * maxCPS);
-            robot.lrMotor.setVelocity(lr * maxCPS);
-            robot.rrMotor.setVelocity(rr * maxCPS);
-        } else
-        {
-            robot.lfMotor.setPower(lf);
-            robot.rfMotor.setPower(rf);
-            robot.lrMotor.setPower(lr);
-            robot.rrMotor.setPower(rr);
-        }
-
-        dashboard.displayPrintf(l++, "SPD %4.2f DIR %4.2f DSPD: %3.1f FALGN %s USEVEL %s",
-                speed, direction, dSpd, fieldAlign, useSetVel);
-        dashboard.displayPrintf(l++, "OUT: lf %4.2f rf %4.2f lr %4.2f rr %4.2f",
-                lf, rf, lr, rr);
     }
 
     private void processControllerInputs()
@@ -356,12 +280,9 @@ public class MecanumTeleop extends InitLinearOpMode
     double dSpd = 0.0;
     double dStp = 0.1;
 
-    static final double rlrAng = Math.PI/4.0;
     static final double spdScl = Math.sqrt(2.0);
-    static final boolean trig = true;
     Input_Shaper ishaper = new Input_Shaper();
-    @SuppressWarnings("FieldCanBeLocal")
-    private final boolean fieldAlign = false;
+
     private boolean useSetVel = true;
     private final TilerunnerMecanumBot robot = new TilerunnerMecanumBot();
 

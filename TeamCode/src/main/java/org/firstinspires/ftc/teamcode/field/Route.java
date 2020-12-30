@@ -148,13 +148,13 @@ public abstract class Route
 
     final static int    MAX_SEGMENTS = 16;
 
-    private Segment[] segments;
+    private final Segment[] segments;
 
-    private Vector<Segment.Action> actions = new Vector<>(MAX_SEGMENTS);
-    private Vector<Double> segSpeeds = new Vector<>(MAX_SEGMENTS);
-    private Vector<ShelbyBot.DriveDir> segDirs = new Vector<>(MAX_SEGMENTS);
-    private Vector<Double> tuners = new Vector<>(MAX_SEGMENTS);
-    private Vector<Segment.TargetType> ttypes = new Vector<>(MAX_SEGMENTS);
+    private final Vector<Segment.Action> actions = new Vector<>(MAX_SEGMENTS);
+    private final Vector<Double> segSpeeds = new Vector<>(MAX_SEGMENTS);
+    private final Vector<ShelbyBot.DriveDir> segDirs = new Vector<>(MAX_SEGMENTS);
+    private final Vector<Double> tuners = new Vector<>(MAX_SEGMENTS);
+    private final Vector<Segment.TargetType> ttypes = new Vector<>(MAX_SEGMENTS);
 
     PositionOption     startPos;
     PositionOption     parkChoice;
