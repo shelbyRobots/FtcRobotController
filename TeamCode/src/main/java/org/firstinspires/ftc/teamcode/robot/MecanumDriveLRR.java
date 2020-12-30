@@ -59,7 +59,7 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
 @Config
 public class MecanumDriveLRR extends MecanumDrive
 {
-    public static double LATERAL_MULTIPLIER = 1.12;
+    public static double LATERAL_MULTIPLIER = 1.2; //1.12;
 
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;

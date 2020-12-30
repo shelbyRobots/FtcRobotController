@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opModes;
 import android.graphics.Bitmap;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -17,10 +18,12 @@ import org.firstinspires.ftc.teamcode.field.PositionOption;
 import org.firstinspires.ftc.teamcode.field.Route;
 import org.firstinspires.ftc.teamcode.field.UgField;
 import org.firstinspires.ftc.teamcode.field.UgRoute;
+import org.firstinspires.ftc.teamcode.field.UgRrRoute;
 import org.firstinspires.ftc.teamcode.image.Detector;
 import org.firstinspires.ftc.teamcode.image.ImageTracker;
 import org.firstinspires.ftc.teamcode.image.RingDetector;
 import org.firstinspires.ftc.teamcode.robot.Drivetrain;
+import org.firstinspires.ftc.teamcode.robot.MecanumDriveLRR;
 import org.firstinspires.ftc.teamcode.robot.RobotConstants;
 import org.firstinspires.ftc.teamcode.robot.ShelbyBot;
 import org.firstinspires.ftc.teamcode.robot.TilerunnerMecanumBot;
@@ -59,7 +62,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
     private void startMode()
     {
         dashboard.clearDisplay();
-        drvTrn.start();
+        //SBH- drvTrn.start();
         do_main_loop();
     }
 
@@ -208,7 +211,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         robot.init(this, chas, true);
 
         robot.setBcm(LynxModule.BulkCachingMode.MANUAL);
-
+/*SBH
         pts = new UgRoute(startPos, alliance);
         pathSegs.addAll(Arrays.asList(pts.getSegments()));
 
@@ -217,7 +220,15 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
         initHdg = pathSegs.get(0).getFieldHeading();
         robot.setInitHdg(initHdg);
+SBH*/
+        //SBH adds
+        ugrr = new UgRrRoute((MecanumDriveLRR)(robot.drive), startPos, alliance);
+        ShelbyBot.DriveDir startDdir = ShelbyBot.DriveDir.PUSHER;
+        robot.setDriveDir(startDdir);
+        initHdg =UgRrRoute.srtPose.getHeading();
+        robot.setInitHdg(initHdg);
         robot.setAlliance(alliance);
+        //SBH end adds
 
         dashboard.displayPrintf(0, "GYRO CALIBRATING DO NOT TOUCH OR START");
         if (robot.imu != null)
@@ -227,6 +238,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         dashboard.displayPrintf(0, "GYRO CALIBATED: %s", gyroReady);
         dashboard.displayPrintf(1, "Robot Inited");
 
+        /* SBH -
         drvTrn.init(robot);
         drvTrn.setStartHdg(initHdg);
         drvTrn.setRampUp(true);
@@ -236,6 +248,10 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         drvTrn.setCurrPt(currPoint);
         drvTrn.setEstPose(currPoint, initHdg);
         robot.drive.setPoseEstimate(new Pose2d(currPoint.getX(), currPoint.getY(), initHdg));
+        SBH*/
+        //SBH Add
+        robot.drive.setPoseEstimate(UgRrRoute.srtPose);
+        //SBH end adds
 
         dashboard.displayPrintf(1, "Robot & DrvTrn Inited");
 
@@ -256,9 +272,16 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         RobotLog.dd(TAG, "Robot CPI " + RobotConstants.DT_CPI);
         RobotLog.dd(TAG, "BOTDIR=%s START_DDIR =%s",
             RobotConstants.DT_DIR, startDdir);
+
+        /* SBH -
         RobotLog.ii(TAG, "ROUTE: \n" + pts.toString());
         RobotLog.ii(TAG, "Start %s IHDG %4.2f", currPoint, initHdg);
         dashboard.displayPrintf(8, "PATH: Start at %s", currPoint);
+        SBH*/
+        //SBH Add
+        RobotLog.ii(TAG, "Start %s", UgRrRoute.srtPose);
+        dashboard.displayPrintf(8, "PATH: Start at %s", UgRrRoute.srtPose);
+        //SBH end adds
 
         com.vuforia.CameraCalibration camCal = com.vuforia.CameraDevice.getInstance().getCameraCalibration();
         Vec4F distParam = camCal.getDistortionParameters();
@@ -287,7 +310,9 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         RobotLog.ii(TAG, "STARTING AT %4.2f", timer.seconds());
         if(logData)
         {
-            Point2d spt = pathSegs.get(0).getStrtPt();
+            //SBH- Point2d spt = pathSegs.get(0).getStrtPt();
+            //SBH+
+            Pose2d spt = UgRrRoute.srtPose;
             dl.addField("START");
             dl.addField(initHdg);
             dl.addField(spt.getX());
@@ -310,6 +335,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
         //doFindLoc();
 
+        /*SBH
         boolean SkipNextSegment = false;
 
         if(robotName.equals("GTO1"))
@@ -492,8 +518,34 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
             RobotLog.dd(TAG, "Finished seg %d at X:%.2f Y:%.2f H:%.2f",
                 i, ePose.getX(), ePose.getY(), Math.toDegrees(ePose.getHeading()));
         }
+        SBH*/
 
-        Pose2d ePose = drvTrn.getEstPose();
+        //SBH add
+        RobotLog.ii(TAG, "Action SCAN_IMAGE");
+        doScan(0);
+
+        for(Map.Entry<UgRrRoute.State, Trajectory> entry : ugrr.stateTrajMap.entrySet())
+        {
+            UgRrRoute.State state = entry.getKey();
+            Trajectory traj = entry.getValue();
+            if(state == UgRrRoute.State.IDLE) break;
+
+            RobotLog.ii(TAG, "Driving trajectory %s", state);;
+            ((MecanumDriveLRR)(robot.drive)).followTrajectoryAsync(traj);
+            while(opModeIsActive() && !isStopRequested() &&
+                ((MecanumDriveLRR)(robot.drive)).isBusy())
+            {
+                robot.update();
+                Pose2d ePose = robot.drive.getPoseEstimate();
+                robot.setAutonEndPos(new Point2d(ePose.getX(), ePose.getY()));
+                robot.setAutonEndHdg(ePose.getHeading());
+                RobotLog.dd(TAG, "Drive %s at %s", state, ePose);
+            }
+        }
+
+        //end SBH add
+
+        Pose2d ePose = robot.drive.getPoseEstimate();
         robot.setAutonEndPos(new Point2d(ePose.getX(), ePose.getY()));
         robot.setAutonEndHdg(ePose.getHeading());
         RobotLog.dd(TAG, "Finished auton segments at X:%.2f Y:%.2f H:%.2f",
@@ -572,6 +624,38 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
                     ringPos  == RingDetector.Position.LEFT   ? 0 :
                     ringPos  == RingDetector.Position.CENTER ? 1 : 2;
 
+        //SBH add
+        if(alliance == Field.Alliance.RED)
+        {
+            if(startPos == START_1)
+            {
+                if(ringPos == RingDetector.Position.CENTER)
+                {
+                    ugrr.stateTrajMap.put(UgRrRoute.State.DROP1,  ugrr.drop1b);
+                    ugrr.stateTrajMap.put(UgRrRoute.State.CLEAR1, ugrr.clr1b);
+                    ugrr.stateTrajMap.put(UgRrRoute.State.DROP2,  ugrr.drop2b);
+                    ugrr.stateTrajMap.put(UgRrRoute.State.PARK,   ugrr.parkb);
+                }
+                else if(ringPos == RingDetector.Position.RIGHT)
+                {
+                    ugrr.stateTrajMap.put(UgRrRoute.State.DROP1,  ugrr.drop1c);
+                    ugrr.stateTrajMap.put(UgRrRoute.State.CLEAR1, ugrr.clr1c);
+                    ugrr.stateTrajMap.put(UgRrRoute.State.DROP2,  ugrr.drop2c);
+                    ugrr.stateTrajMap.put(UgRrRoute.State.PARK,   ugrr.parkc);
+                }
+            }
+            else
+            {
+                //TODO start2
+            }
+        }
+        else
+        {
+            //TODO BLUE
+        }
+
+        /*SBH-
+
         //3dim array [allnc][start][rPos]
         Point2d[][][] wPts =
            {{{UgField.ROWA, UgField.ROWB, UgField.ROWC},
@@ -596,6 +680,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
                 s.setEndPt(wPt);
             }
         }
+        SBH*/
     }
 
     private void doAlign(int segIdx)
@@ -992,6 +1077,8 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
     private String robotName = "MEC2";
     private static final String TAG = "SJH_RRA";
+
+    private UgRrRoute ugrr;
 
 
 //    public static void main(String[] args)
