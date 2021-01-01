@@ -222,10 +222,10 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         robot.setInitHdg(initHdg);
 SBH*/
         //SBH adds
-        ugrr = new UgRrRoute((MecanumDriveLRR)(robot.drive), startPos, alliance);
+        ugrr = new UgRrRoute(robot, startPos, alliance);
         ShelbyBot.DriveDir startDdir = ShelbyBot.DriveDir.PUSHER;
         robot.setDriveDir(startDdir);
-        initHdg =UgRrRoute.srtPose.getHeading();
+        initHdg = UgRrRoute.srtPose.getHeading();
         robot.setInitHdg(initHdg);
         robot.setAlliance(alliance);
         //SBH end adds
@@ -303,11 +303,10 @@ SBH*/
 
     private void do_main_loop()
     {
-        timer.reset();
         startTimer.reset();
         dl.resetTime();
 
-        RobotLog.ii(TAG, "STARTING AT %4.2f", timer.seconds());
+        RobotLog.ii(TAG, "STARTING AT %.2f %.2f", startTimer.seconds(), timer.seconds());
         if(logData)
         {
             //SBH- Point2d spt = pathSegs.get(0).getStrtPt();
@@ -521,31 +520,55 @@ SBH*/
         SBH*/
 
         //SBH add
+
+        double shootWait = 1.5;
+        ElapsedTime shootTimer = new ElapsedTime();
+
         RobotLog.ii(TAG, "Action SCAN_IMAGE");
         doScan(0);
+        Pose2d ePose = robot.drive.getPoseEstimate();
 
         for(Map.Entry<UgRrRoute.State, Trajectory> entry : ugrr.stateTrajMap.entrySet())
         {
+            timer.reset();
             UgRrRoute.State state = entry.getKey();
             Trajectory traj = entry.getValue();
             if(state == UgRrRoute.State.IDLE) break;
 
-            RobotLog.ii(TAG, "Driving trajectory %s", state);;
+            RobotLog.ii(TAG, "Driving trajectory %s", state);
             ((MecanumDriveLRR)(robot.drive)).followTrajectoryAsync(traj);
             while(opModeIsActive() && !isStopRequested() &&
                 ((MecanumDriveLRR)(robot.drive)).isBusy())
             {
                 robot.update();
-                Pose2d ePose = robot.drive.getPoseEstimate();
+
+                ePose = robot.drive.getPoseEstimate();
                 robot.setAutonEndPos(new Point2d(ePose.getX(), ePose.getY()));
                 robot.setAutonEndHdg(ePose.getHeading());
-                RobotLog.dd(TAG, "Drive %s at %s", state, ePose);
+                RobotLog.dd(TAG, "Drive %s from %s at %.2f",
+                    state, ePose, startTimer.seconds());
+            }
+
+            RobotLog.ii(TAG, "Finished %s at %s at %.2f in %.2f",
+                state, ePose, startTimer.seconds(), timer.seconds());
+
+            if(state == UgRrRoute.State.SHOOT)
+            {
+                shootTimer.reset();
+                while(opModeIsActive() && !isStopRequested() &&
+                    shootTimer.seconds() < shootWait)
+                {
+                    robot.update();
+                    robot.waitForTick(10);
+                }
+
+                if(robot.burr != null) robot.burr.stop();
             }
         }
 
         //end SBH add
 
-        Pose2d ePose = robot.drive.getPoseEstimate();
+        ePose = robot.drive.getPoseEstimate();
         robot.setAutonEndPos(new Point2d(ePose.getX(), ePose.getY()));
         robot.setAutonEndHdg(ePose.getHeading());
         RobotLog.dd(TAG, "Finished auton segments at X:%.2f Y:%.2f H:%.2f",
@@ -587,11 +610,6 @@ SBH*/
         tracker.setActive(false);
     }
 
-    private void update()
-    {
-        robot.update();
-    }
-
     private void doScan(int segIdx)
     {
         RobotLog.dd(TAG, "doScan" + " segIdx:" + segIdx);
@@ -608,6 +626,7 @@ SBH*/
         setRingPoint(segIdx);
     }
 
+    @SuppressWarnings("unused")
     private void doGrab(int segIdx)
     {
         RobotLog.dd(TAG, "doGrab seg %d at %f", segIdx, startTimer.seconds());
@@ -683,32 +702,38 @@ SBH*/
         SBH*/
     }
 
+    @SuppressWarnings("unused")
     private void doAlign(int segIdx)
     {
         RobotLog.dd(TAG, "doAlign seg %d at %f", segIdx, startTimer.seconds());
     }
 
+    @SuppressWarnings("unused")
     private void doDrop(int segIdx)
     {
         RobotLog.dd(TAG, "Dropping wobblyBOI on seg %d at %f", segIdx, startTimer.seconds());
         if(robot.burr != null) robot.burr.shotSpeed(DEF_SHT_DST);
     }
 
+    @SuppressWarnings("unused")
     private void doPlatch()
     {
         RobotLog.dd(TAG, "Platching platform");
     }
 
+    @SuppressWarnings("unused")
     private void doUnPlatch()
     {
         RobotLog.dd(TAG, "UnPlatching platform");
     }
 
+    @SuppressWarnings("unused")
     private void doPark()
     {
         RobotLog.dd(TAG, "Parking bot");
     }
 
+    @SuppressWarnings("unused")
     private void doShoot(int segIdx)
     {
         Segment shootSeg = pathSegs .get(segIdx);
@@ -730,6 +755,7 @@ SBH*/
         return ret;
     }
 
+    @SuppressWarnings("unused")
     private void doMove(Segment seg)
     {
         if(!opModeIsActive() || isStopRequested() || robot.motors.size() < 1) return;
@@ -837,11 +863,13 @@ SBH*/
                 angle, timer.time(), cHdg);
     }
 
+    @SuppressWarnings("unused")
     private void doEncoderTurn(double fHdg, String prefix)
     {
         doEncoderTurn(fHdg, Drivetrain.TURN_BUSYTHRESH, prefix);
     }
 
+    @SuppressWarnings("unused")
     private void doGyroTurn(double fHdg, String prefix)
     {
         if(!gyroReady) return;
