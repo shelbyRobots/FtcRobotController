@@ -98,7 +98,7 @@ public class RingPipeline
         Mat hsvThresholdInput = goldSource;
         double[] hsvThresholdHue = {5, 25};
         double[] hsvThresholdSaturation = {170, 255};
-        double[] hsvThresholdValue = {80.0, 255.0};
+        double[] hsvThresholdValue = {60.0, 255.0};
         hsvThreshold(hsvThresholdInput, hsvThresholdHue, hsvThresholdSaturation, hsvThresholdValue, hsvThresholdOutput);
 
 //		// Step CV_erode0:
