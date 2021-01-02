@@ -38,19 +38,20 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.HEADING_PID;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_ACCEL;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_VEL;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MOTOR_VELO_PID;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.RUN_USING_ENCODER;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.TRACK_WIDTH;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.TRANSLATIONAL_PID;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.defAccelConstraint;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.defVelConstraint;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.encoderTicksToInches;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kA;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kStatic;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
+import static org.firstinspires.ftc.teamcode.robot.RobotConstants.HEADING_PID;
+import static org.firstinspires.ftc.teamcode.robot.RobotConstants.LATERAL_MULTIPLIER;
+import static org.firstinspires.ftc.teamcode.robot.RobotConstants.MAX_ANG_ACCEL;
+import static org.firstinspires.ftc.teamcode.robot.RobotConstants.MAX_ANG_VEL;
+import static org.firstinspires.ftc.teamcode.robot.RobotConstants.MOTOR_VELO_PID;
+import static org.firstinspires.ftc.teamcode.robot.RobotConstants.RUN_USING_ENCODER;
+import static org.firstinspires.ftc.teamcode.robot.RobotConstants.DT_TRACK_WIDTH;
+import static org.firstinspires.ftc.teamcode.robot.RobotConstants.TRANSLATIONAL_PID;
+import static org.firstinspires.ftc.teamcode.robot.RobotConstants.defAccelConstraint;
+import static org.firstinspires.ftc.teamcode.robot.RobotConstants.defVelConstraint;
+import static org.firstinspires.ftc.teamcode.robot.RobotConstants.encoderTicksToInches;
+import static org.firstinspires.ftc.teamcode.robot.RobotConstants.kA;
+import static org.firstinspires.ftc.teamcode.robot.RobotConstants.kStatic;
+import static org.firstinspires.ftc.teamcode.robot.RobotConstants.kV;
 
 /*
  * Simple mecanum drive hardware implementation for REV hardware.
@@ -59,8 +60,6 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
 @Config
 public class MecanumDriveLRR extends MecanumDrive
 {
-    public static double LATERAL_MULTIPLIER = 1.2; //1.12;
-
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;
     public static double OMEGA_WEIGHT = 1;
@@ -101,7 +100,7 @@ public class MecanumDriveLRR extends MecanumDrive
 
     public MecanumDriveLRR(BNO055IMU imu)
     {
-        super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
+        super(kV, kA, kStatic, DT_TRACK_WIDTH, DT_TRACK_WIDTH, LATERAL_MULTIPLIER);
 
         this.imu = imu;
         HardwareMap hardwareMap = CommonUtil.getInstance().getHardwareMap();
@@ -369,6 +368,8 @@ public class MecanumDriveLRR extends MecanumDrive
 
         setDrivePower(vel);
     }
+
+    public void cancelFollowing() { mode = Mode.IDLE; }
 
     @NonNull
     @Override

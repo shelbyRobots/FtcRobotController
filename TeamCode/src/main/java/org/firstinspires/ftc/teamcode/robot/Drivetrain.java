@@ -171,7 +171,7 @@ public class Drivetrain
 
     public void strafeDistance(double dst, double pwr, Direction dir)
     {
-        int counts = (int)(distanceToCounts(dst) * RobotConstants.strafeScale);
+        int counts = (int)(distanceToCounts(dst) * RobotConstants.LATERAL_MULTIPLIER);
         RobotLog.ii(TAG, "strafeDistance: %6.2f Counts %d Dir %s",
             dst, counts, dir);
 

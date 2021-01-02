@@ -15,17 +15,16 @@ import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAcceleration
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.robot.MecanumDriveLRR;
+import org.firstinspires.ftc.teamcode.robot.RobotConstants;
 import org.firstinspires.ftc.teamcode.robot.TilerunnerMecanumBot;
 import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 
 import java.util.Arrays;
 import java.util.EnumMap;
 
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_VEL;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.TRACK_WIDTH;
+import static org.firstinspires.ftc.teamcode.robot.RobotConstants.MAX_ANG_VEL;
+import static org.firstinspires.ftc.teamcode.robot.RobotConstants.DT_TRACK_WIDTH;
 
 public class UgRrRoute
 {
@@ -37,13 +36,13 @@ public class UgRrRoute
 
 //  private FtcDashboard dashboard;
 
-  public static TrajectoryVelocityConstraint defVelLim = DriveConstants.defVelConstraint;
-  public static TrajectoryAccelerationConstraint defAccelLim = DriveConstants.defAccelConstraint;
+  public static TrajectoryVelocityConstraint defVelLim = RobotConstants.defVelConstraint;
+  public static TrajectoryAccelerationConstraint defAccelLim = RobotConstants.defAccelConstraint;
 
   public final static TrajectoryVelocityConstraint wobVelLim =
       new MinVelocityConstraint(Arrays.asList(
           new AngularVelocityConstraint(MAX_ANG_VEL),
-          new MecanumVelocityConstraint(25, TRACK_WIDTH)
+          new MecanumVelocityConstraint(25, DT_TRACK_WIDTH)
       ));
   public final static TrajectoryAccelerationConstraint wobAccelLim
       = new ProfileAccelerationConstraint(20);
@@ -73,7 +72,7 @@ public class UgRrRoute
   public static final Pose2d srtPose = new Pose2d(-61.5,-44,0);
   Pose2d dogPose = new Pose2d(0,-59,0);
   Pose2d wAcPose = new Pose2d(0.0,-59,0);
-  Pose2d shtPose = new Pose2d(0.0,-36,0);
+  public static final Pose2d shtPose = new Pose2d(0.0,-36,0);
   Pose2d md1Pose = new Pose2d(-16.0, -52.0, 0);
   Pose2d md2Pose = new Pose2d(-48.0, -50.0, 0);
   Pose2d walPose = new Pose2d(-60.0,-40,0);

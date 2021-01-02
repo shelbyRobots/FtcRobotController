@@ -10,6 +10,8 @@ import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAcceleration
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
+import org.firstinspires.ftc.teamcode.robot.RobotConstants;
+
 import java.util.Arrays;
 
 /*
@@ -29,8 +31,8 @@ public class DriveConstants {
     /*
      * These are motor constants that should be listed online for your motors.
      */
-    public static final double TICKS_PER_REV = 537.6;
-    public static final double MAX_RPM = 312; //340;
+    public static final double TICKS_PER_REV = RobotConstants.DT_CPMR;
+    public static final double MAX_RPM = RobotConstants.DT_MAX_RPM;
 
     /*
      * Set RUN_USING_ENCODER to true to enable built-in hub velocity control using drive encoders.
@@ -56,10 +58,10 @@ public class DriveConstants {
      * angular distances although most angular parameters are wrapped in Math.toRadians() for
      * convenience. Make sure to exclude any gear ratio included in MOTOR_CONFIG from GEAR_RATIO.
      */
-    public static double WHEEL_RADIUS = (96.0/2)/25.4; //2; // in
-    public static double GEAR_RATIO = 1.025; // output (wheel) speed / input (motor) speed
-    public static double TRACK_WIDTH = 16.8; // in - tuned in dash
-    public static final double DC_CIRC = 2 * Math.PI * WHEEL_RADIUS;
+    public static double WHEEL_RADIUS = RobotConstants.DT_WHEEL_DIAM/2.0;
+    public static double GEAR_RATIO = RobotConstants.DT_EXT_GEAR_RATIO; // wheelSpd / motspd
+    public static double TRACK_WIDTH = RobotConstants.DT_TRACK_WIDTH;
+    public static final double DC_CIRC = RobotConstants.DT_CIRCUM;
     public static final double DC_ECIRC = DC_CIRC * GEAR_RATIO;
     public static final double DC_CPI = TICKS_PER_REV / DC_ECIRC;
     public static final double DC_IPC = 1.0/DC_CPI;

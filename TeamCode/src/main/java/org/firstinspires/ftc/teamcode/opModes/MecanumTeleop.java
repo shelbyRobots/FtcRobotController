@@ -2,12 +2,15 @@ package org.firstinspires.ftc.teamcode.opModes;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.RobotLog;
 
+import org.firstinspires.ftc.teamcode.field.UgRrRoute;
 import org.firstinspires.ftc.teamcode.robot.Lifter;
 import org.firstinspires.ftc.teamcode.robot.Loader;
 import org.firstinspires.ftc.teamcode.robot.MecanumDriveLRR;
@@ -188,8 +191,39 @@ public class MecanumTeleop extends InitLinearOpMode
         boolean hspd = gpad1.pressed(ManagedGamepad.Button.R_TRIGGER);
         boolean dtrn = gpad1.pressed(ManagedGamepad.Button.L_TRIGGER);
         boolean tglF = gpad1.just_pressed(ManagedGamepad.Button.Y);
+        boolean drvS = gpad1.just_pressed(ManagedGamepad.Button.A);
+        boolean trnS = gpad1.just_pressed(ManagedGamepad.Button.B);
+        boolean canA = gpad1.just_pressed(ManagedGamepad.Button.X);
 
         if (tglF) useField = !useField;
+
+        if (drvS)
+        {
+            Trajectory traj = new TrajectoryBuilder(poseEstimate,
+                RobotConstants.defVelConstraint, RobotConstants.defAccelConstraint)
+                .lineToLinearHeading(shtPose)
+                .build();
+
+            ((MecanumDriveLRR)(robot.drive)).followTrajectoryAsync(traj);
+            return;
+        }
+
+        if (trnS)
+        {
+            ((MecanumDriveLRR)(robot.drive)).turnAsync(0);
+            return;
+        }
+
+        if (canA)
+        {
+            ((MecanumDriveLRR)(robot.drive)).cancelFollowing();
+            return;
+        }
+
+        if(((MecanumDriveLRR)(robot.drive)).isBusy())
+        {
+            return;
+        }
 
         lr_x = ishaper.shape(raw_lr_x, 0.1);
         fb_y = ishaper.shape(raw_fb_y, 0.1);
@@ -217,6 +251,7 @@ public class MecanumTeleop extends InitLinearOpMode
             }
         }
 
+        Vector2d driveInput;
         if(useField)
         {
             // Rotate input vector by the inverse of current bot heading
@@ -293,8 +328,9 @@ public class MecanumTeleop extends InitLinearOpMode
     Input_Shaper ishaper = new Input_Shaper();
 
     private boolean useField = false;
-    private Vector2d driveInput = new Vector2d(0,0);
     private final TilerunnerMecanumBot robot = new TilerunnerMecanumBot();
+
+    Pose2d shtPose = UgRrRoute.shtPose;
 
     double raw_lr_x;
     double raw_fb_y;
