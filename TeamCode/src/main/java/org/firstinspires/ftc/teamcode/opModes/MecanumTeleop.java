@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opModes;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -186,11 +187,9 @@ public class MecanumTeleop extends InitLinearOpMode
         boolean decr = gpad1.just_pressed(ManagedGamepad.Button.L_BUMP);
         boolean hspd = gpad1.pressed(ManagedGamepad.Button.R_TRIGGER);
         boolean dtrn = gpad1.pressed(ManagedGamepad.Button.L_TRIGGER);
-        boolean tglV = gpad1.just_pressed(ManagedGamepad.Button.Y);
-        //boolean step_driveType = gpad1.just_pressed(ManagedGamepad.Button.A);
+        boolean tglF = gpad1.just_pressed(ManagedGamepad.Button.Y);
 
-        //if (step_driveType) fieldAlign = !fieldAlign;
-        if (tglV) useSetVel = !useSetVel;
+        if (tglF) useField = !useField;
 
         lr_x = ishaper.shape(raw_lr_x, 0.1);
         fb_y = ishaper.shape(raw_fb_y, 0.1);
@@ -218,14 +217,21 @@ public class MecanumTeleop extends InitLinearOpMode
             }
         }
 
+        if(useField){
+            // Rotate input vector by the inverse of current bot heading
+            driveInput = new Vector2d(fb_y, -lr_x).rotated(-poseEstimate.getHeading());
+        }else{
+            driveInput = new Vector2d(fb_y, -lr_x);
+        }
+
         double maxCPS = RobotConstants.DT_SAF_CPS;
         if(hspd) maxCPS = RobotConstants.DT_MAX_CPS;
         double spdScl = maxCPS/RobotConstants.DT_MAX_CPS;
         if(robot.drive instanceof MecanumDriveLRR)
             ((MecanumDriveLRR)(robot.drive)).setWeightedDrivePower(
                 new Pose2d(
-                    fb_y * spdScl,
-                    -lr_x * spdScl,
+                    driveInput.getY() * spdScl,
+                    driveInput.getX() * spdScl,
                     -turn *spdScl
                 )
             );
@@ -283,7 +289,8 @@ public class MecanumTeleop extends InitLinearOpMode
     static final double spdScl = Math.sqrt(2.0);
     Input_Shaper ishaper = new Input_Shaper();
 
-    private boolean useSetVel = true;
+    private boolean useField = false;
+    private Vector2d driveInput = new Vector2d(0,0);
     private final TilerunnerMecanumBot robot = new TilerunnerMecanumBot();
 
     double raw_lr_x;
