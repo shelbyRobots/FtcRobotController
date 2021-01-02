@@ -217,10 +217,13 @@ public class MecanumTeleop extends InitLinearOpMode
             }
         }
 
-        if(useField){
+        if(useField)
+        {
             // Rotate input vector by the inverse of current bot heading
-            driveInput = new Vector2d(fb_y, -lr_x).rotated(-poseEstimate.getHeading());
-        }else{
+            driveInput = new Vector2d(-lr_x, -fb_y).rotated(-poseEstimate.getHeading());
+        }
+        else
+        {
             driveInput = new Vector2d(fb_y, -lr_x);
         }
 
@@ -230,8 +233,8 @@ public class MecanumTeleop extends InitLinearOpMode
         if(robot.drive instanceof MecanumDriveLRR)
             ((MecanumDriveLRR)(robot.drive)).setWeightedDrivePower(
                 new Pose2d(
-                    driveInput.getY() * spdScl,
                     driveInput.getX() * spdScl,
+                    driveInput.getY() * spdScl,
                     -turn *spdScl
                 )
             );
