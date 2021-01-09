@@ -109,8 +109,8 @@ public class Loader
 
     public enum gatePos
     {
-        OPEN(0.0),
-        CLOSE(0.3);
+        OPEN(0.25),
+        CLOSE(0.6);
 
         public final double srvPos;
 

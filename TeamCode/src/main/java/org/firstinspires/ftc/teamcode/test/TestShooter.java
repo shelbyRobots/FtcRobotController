@@ -1,11 +1,14 @@
 package org.firstinspires.ftc.teamcode.test;
 
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.opModes.InitLinearOpMode;
 import org.firstinspires.ftc.teamcode.robot.Shooter;
 import org.firstinspires.ftc.teamcode.util.ManagedGamepad;
+
+import java.util.List;
 
 
 @TeleOp(name = "TestShooter", group = "Test")
@@ -17,7 +20,10 @@ public class TestShooter extends InitLinearOpMode
     private static final double   MAX_DIST = 136;     // Maximum that we can shoot
     private static final double   MIN_DIST = 0;     // Minimum that we can shoot.
     private static final double   FAV_DIST = 70;
-    // Define class members
+    private double cps = 0.0;
+    private static final double MIN_CPS = 0.0;
+    private static final double MAX_CPS = 6000.0;
+    private static final double CPS_INC = 20.0;
 
     private static final String TAG = "SJH_TSH";
 
@@ -29,8 +35,13 @@ public class TestShooter extends InitLinearOpMode
         Shooter shooter = new Shooter(hardwareMap);
         shooter.init();
 
-        double distance = FAV_DIST;
+        List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
+        for (LynxModule module : allHubs)
+        {
+            module.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
+        }
 
+        double distance = FAV_DIST;
 
         // Wait for the start button
         dashboard.displayPrintf(0, "Press Start to run Motors.");
@@ -44,6 +55,11 @@ public class TestShooter extends InitLinearOpMode
         // Ramp motor speeds till stop pressed.
         while(opModeIsActive())
         {
+            for (LynxModule module : allHubs)
+            {
+                module.clearBulkCache();
+            }
+
             shooter.update();
             gpad1.update();
 
@@ -51,7 +67,13 @@ public class TestShooter extends InitLinearOpMode
             boolean step_down  = gpad1.just_pressed(ManagedGamepad.Button.D_DOWN);
             boolean zeroize    = gpad1.just_pressed(ManagedGamepad.Button.D_RIGHT);
             boolean normal     = gpad1.just_pressed(ManagedGamepad.Button.D_LEFT);
+            boolean shtInc     = gpad1.just_pressed(ManagedGamepad.Button.R_BUMP);
+            boolean shtDec     = gpad1.just_pressed(ManagedGamepad.Button.L_BUMP);
 
+            if (shtInc) cps += CPS_INC;
+            else if (shtDec) cps -=  CPS_INC;
+
+            if(shtDec || shtDec) shooter.shootCps(cps);
 
             if (step_up && distance < MAX_DIST) {
                 distance += INCREMENT;

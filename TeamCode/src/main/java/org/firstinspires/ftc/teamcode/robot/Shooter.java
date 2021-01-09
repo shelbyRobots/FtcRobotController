@@ -69,8 +69,8 @@ public class Shooter
         double cir = dia * Math.PI;
 
         double theta = Math.toRadians(35);
-        double v0 = Math.sqrt((g*Math.pow(distance,2))/
-                (2*Math.pow(Math.cos(theta),2)*(height-distance*Math.tan(theta)-heightOfShooter)));
+        v0 = Math.sqrt((g*Math.pow(distance,2))/
+            (2*Math.pow(Math.cos(theta),2)*(height-distance*Math.tan(theta)-heightOfShooter)));
         return 2 * (v0 / cir) * SHOOTER_CPR;
     }
 
@@ -80,6 +80,14 @@ public class Shooter
         cps = calcCps(dist);
         if(shooter != null) shooter.setVelocity(cps);
     }
+
+    public void shootCps(double cps)
+    {
+        this.cps = cps;
+        if(shooter != null) shooter.setVelocity(cps);
+    }
+
+    public double getV0() {return v0;}
 
     private final double SHOOTER_CPER = 28; //quad encoder cnts/encoder rev
     private final double SHOOTER_INT_GEAR = 1; //1:1 motor - approx 6000 rpm (no load)
@@ -92,13 +100,17 @@ public class Shooter
     private static final String TAG = "SJH_SHT";
     private double dist = 0;
     private double cps = 0;
+    private double v0 = 0.0;
 
     public static void main(String[] args)
     {
         Shooter shtr = new Shooter(null);
-        double dist = 70;
-        double cps = shtr.calcCps(dist);
-        System.out.println(String.format(Locale.US, "Dist %4.2f cps %4.2f rps %4.2f",
-                dist, cps, cps/shtr.SHOOTER_CPR));
+        for(double dist = 10; dist < 400; dist+=6)
+        {
+            double cps = shtr.calcCps(dist);
+            System.out.println(String.format(Locale.US, "Dist %4.2f cps %.2f rps %.2f v0: %.2f",
+                dist, cps, cps/shtr.SHOOTER_CPR, shtr.getV0()));
+        }
+
     }
 }
