@@ -225,7 +225,7 @@ SBH*/
         ugrr = new UgRrRoute(robot, startPos, alliance);
         ShelbyBot.DriveDir startDdir = ShelbyBot.DriveDir.PUSHER;
         robot.setDriveDir(startDdir);
-        initHdg = UgRrRoute.srtPose.getHeading();
+        initHdg = UgRrRoute.startPose.getHeading();
         robot.setInitHdg(initHdg);
         robot.setAlliance(alliance);
         //SBH end adds
@@ -249,9 +249,6 @@ SBH*/
         drvTrn.setEstPose(currPoint, initHdg);
         robot.drive.setPoseEstimate(new Pose2d(currPoint.getX(), currPoint.getY(), initHdg));
         SBH*/
-        //SBH Add
-        robot.drive.setPoseEstimate(UgRrRoute.srtPose);
-        //SBH end adds
 
         dashboard.displayPrintf(1, "Robot & DrvTrn Inited");
 
@@ -278,10 +275,6 @@ SBH*/
         RobotLog.ii(TAG, "Start %s IHDG %4.2f", currPoint, initHdg);
         dashboard.displayPrintf(8, "PATH: Start at %s", currPoint);
         SBH*/
-        //SBH Add
-        RobotLog.ii(TAG, "Start %s", UgRrRoute.srtPose);
-        dashboard.displayPrintf(8, "PATH: Start at %s", UgRrRoute.srtPose);
-        //SBH end adds
 
         com.vuforia.CameraCalibration camCal = com.vuforia.CameraDevice.getInstance().getCameraCalibration();
         Vec4F distParam = camCal.getDistortionParameters();
@@ -311,7 +304,7 @@ SBH*/
         {
             //SBH- Point2d spt = pathSegs.get(0).getStrtPt();
             //SBH+
-            Pose2d spt = UgRrRoute.srtPose;
+            Pose2d spt = UgRrRoute.startPose;
             dl.addField("START");
             dl.addField(initHdg);
             dl.addField(spt.getX());
