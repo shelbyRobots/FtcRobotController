@@ -1,11 +1,14 @@
 package org.firstinspires.ftc.teamcode.test;
 
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.opModes.InitLinearOpMode;
 import org.firstinspires.ftc.teamcode.robot.Loader;
 import org.firstinspires.ftc.teamcode.util.ManagedGamepad;
+
+import java.util.List;
 
 
 @TeleOp(name = "Testloader", group = "Test")
@@ -30,6 +33,12 @@ public class Testloader extends InitLinearOpMode
         Loader loader = new Loader(hardwareMap);
         loader.init();
 
+        List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
+        for (LynxModule module : allHubs)
+        {
+            module.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
+        }
+
         int p;
 
 
@@ -44,7 +53,14 @@ public class Testloader extends InitLinearOpMode
             p=0;
 
             gpad1.update();
+
+            for (LynxModule module : allHubs)
+            {
+                module.clearBulkCache();
+            }
+
             loader.update();
+
             boolean step_up    = gpad1.just_pressed(ManagedGamepad.Button.D_UP);
             boolean step_down  = gpad1.just_pressed(ManagedGamepad.Button.D_DOWN);
             boolean zeroize    = gpad1.just_pressed(ManagedGamepad.Button.D_RIGHT);
@@ -68,10 +84,12 @@ public class Testloader extends InitLinearOpMode
 
             if(whlBak)
             {
+                RobotLog.dd(TAG, "Moving wheel back");
                 loader.whlBak();
             }
             else if(whlFwd)
             {
+                RobotLog.dd(TAG, "Moving wheel forward");
                 loader.whlFwd();
             }
             else
@@ -83,6 +101,7 @@ public class Testloader extends InitLinearOpMode
             dashboard.displayPrintf(p++, "Motor Power %4.2f", power);
             RobotLog.dd(TAG, "Motor Power %4.2f", power);
 
+            dashboard.displayPrintf(p++, "Bak %s Fwd %s", whlBak, whlFwd);
             dashboard.displayPrintf(p++, "Press Stop to end test.");
             dashboard.displayPrintf( p++, "Incr power : Dpad up");
             dashboard.displayPrintf( p++, "Decr power : Dpad down");

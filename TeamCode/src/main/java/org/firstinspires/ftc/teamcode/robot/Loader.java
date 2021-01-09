@@ -11,7 +11,6 @@ import com.qualcomm.robotcore.util.RobotLog;
 import java.util.Locale;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.NonNull;
 public class Loader
 {
     public Loader(HardwareMap map)
