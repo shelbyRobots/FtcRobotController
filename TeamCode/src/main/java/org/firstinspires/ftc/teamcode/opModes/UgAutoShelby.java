@@ -17,12 +17,10 @@ import org.firstinspires.ftc.teamcode.field.Field;
 import org.firstinspires.ftc.teamcode.field.PositionOption;
 import org.firstinspires.ftc.teamcode.field.Route;
 import org.firstinspires.ftc.teamcode.field.UgField;
-import org.firstinspires.ftc.teamcode.field.UgRoute;
 import org.firstinspires.ftc.teamcode.field.UgRrRoute;
 import org.firstinspires.ftc.teamcode.image.Detector;
 import org.firstinspires.ftc.teamcode.image.ImageTracker;
 import org.firstinspires.ftc.teamcode.image.RingDetector;
-import org.firstinspires.ftc.teamcode.robot.Drivetrain;
 import org.firstinspires.ftc.teamcode.robot.MecanumDriveLRR;
 import org.firstinspires.ftc.teamcode.robot.RobotConstants;
 import org.firstinspires.ftc.teamcode.robot.ShelbyBot;
@@ -30,12 +28,7 @@ import org.firstinspires.ftc.teamcode.robot.TilerunnerMecanumBot;
 import org.firstinspires.ftc.teamcode.util.AutoTransitioner;
 import org.firstinspires.ftc.teamcode.util.ManagedGamepad;
 import org.firstinspires.ftc.teamcode.util.Point2d;
-import org.firstinspires.ftc.teamcode.util.Segment;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -46,9 +39,6 @@ import org.firstinspires.ftc.teamcode.util.FtcValueMenu;
 
 import static org.firstinspires.ftc.teamcode.field.Route.StartPos.START_1;
 
-//import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-
-
 //@SuppressWarnings("ConstantConditions")
 @Autonomous(name="UgAutoShelby", group="Auton")
 //@Disabled
@@ -56,13 +46,11 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 {
     public UgAutoShelby()
     {
-        //super();
     }
 
     private void startMode()
     {
         dashboard.clearDisplay();
-        //SBH- drvTrn.start();
         do_main_loop();
     }
 
@@ -118,7 +106,6 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
     private void stopMode()
     {
         es.shutdownNow();
-        if(drvTrn != null) drvTrn.cleanup();
         if(tracker != null) {
             tracker.setFrameQueueSize(0);
             tracker.setActive(false);
@@ -211,24 +198,13 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         robot.init(this, chas, true);
 
         robot.setBcm(LynxModule.BulkCachingMode.MANUAL);
-/*SBH
-        pts = new UgRoute(startPos, alliance);
-        pathSegs.addAll(Arrays.asList(pts.getSegments()));
 
-        ShelbyBot.DriveDir startDdir = pathSegs.get(0).getDir();
-        robot.setDriveDir(startDdir);
-
-        initHdg = pathSegs.get(0).getFieldHeading();
-        robot.setInitHdg(initHdg);
-SBH*/
-        //SBH adds
         ugrr = new UgRrRoute(robot, startPos, alliance);
         ShelbyBot.DriveDir startDdir = ShelbyBot.DriveDir.PUSHER;
         robot.setDriveDir(startDdir);
         initHdg = UgRrRoute.startPose.getHeading();
         robot.setInitHdg(initHdg);
         robot.setAlliance(alliance);
-        //SBH end adds
 
         dashboard.displayPrintf(0, "GYRO CALIBRATING DO NOT TOUCH OR START");
         if (robot.imu != null)
@@ -237,18 +213,6 @@ SBH*/
         }
         dashboard.displayPrintf(0, "GYRO CALIBATED: %s", gyroReady);
         dashboard.displayPrintf(1, "Robot Inited");
-
-        /* SBH -
-        drvTrn.init(robot);
-        drvTrn.setStartHdg(initHdg);
-        drvTrn.setRampUp(true);
-        int colThresh = 450;
-        drvTrn.setColorThresh(colThresh);
-        Point2d currPoint = pathSegs.get(0).getStrtPt();
-        drvTrn.setCurrPt(currPoint);
-        drvTrn.setEstPose(currPoint, initHdg);
-        robot.drive.setPoseEstimate(new Pose2d(currPoint.getX(), currPoint.getY(), initHdg));
-        SBH*/
 
         dashboard.displayPrintf(1, "Robot & DrvTrn Inited");
 
@@ -269,12 +233,6 @@ SBH*/
         RobotLog.dd(TAG, "Robot CPI " + RobotConstants.DT_CPI);
         RobotLog.dd(TAG, "BOTDIR=%s START_DDIR =%s",
             RobotConstants.DT_DIR, startDdir);
-
-        /* SBH -
-        RobotLog.ii(TAG, "ROUTE: \n" + pts.toString());
-        RobotLog.ii(TAG, "Start %s IHDG %4.2f", currPoint, initHdg);
-        dashboard.displayPrintf(8, "PATH: Start at %s", currPoint);
-        SBH*/
 
         com.vuforia.CameraCalibration camCal = com.vuforia.CameraDevice.getInstance().getCameraCalibration();
         Vec4F distParam = camCal.getDistortionParameters();
@@ -323,202 +281,11 @@ SBH*/
 
         RobotLog.ii(TAG, "START CHDG %6.3f", robot.getGyroHdg());
 
-        //robot.resetGyro();
-
-        //doFindLoc();
-
-        /*SBH
-        boolean SkipNextSegment = false;
-
-        if(robotName.equals("GTO1"))
-        {
-            drvTrn.setRampSpdL(0.15);
-            drvTrn.setRampSpdM(0.35);
-            drvTrn.setRampSpdH(0.60);
-            drvTrn.setRampCntH(600);
-            drvTrn.setRampCntM(300);
-            drvTrn.setRampCntL(100);
-        }
-
-
-        for (int i = 0; i < pathSegs.size(); ++i)
-        {
-            if (!opModeIsActive() || isStopRequested()) break;
-
-            Segment prntSeg = pathSegs.get(i);
-            String segName = prntSeg.getName();
-            RobotLog.ii(TAG, "Starting segment %s at %4.2f", segName,
-                    startTimer.seconds());
-            RobotLog.ii(TAG, prntSeg.toString());
-
-            if (SkipNextSegment)
-            {
-                SkipNextSegment = false;
-                RobotLog.ii(TAG, "Skipping segment %s", pathSegs.get(i).getName());
-                if (i < pathSegs.size() - 1)
-                {
-                    RobotLog.ii(TAG, "Setting segment %s start pt to %s",
-                            pathSegs.get(i + 1).getName(),
-                            pathSegs.get(i).getStrtPt());
-                    pathSegs.get(i + 1).setStrtPt(pathSegs.get(i).getStrtPt());
-                }
-                continue;
-            }
-
-            Segment curSeg;
-
-            if (curPos == null || !useImageLoc)
-            {
-                curSeg = pathSegs.get(i);
-            } else
-            {
-                drvTrn.setCurrPt(curPos);
-                curSeg = new Segment("CURSEG", curPos, pathSegs.get(i).getTgtPt());
-            }
-            curPos = null;
-
-            robot.setDriveDir(curSeg.getDir());
-
-            drvTrn.setInitValues();
-
-            double tgtHdg = curSeg.getFieldHeading();
-            if(robot.getDriveDir() != RobotConstants.DT_DIR)
-            {
-                tgtHdg = angNormalize(tgtHdg + 180);
-            }
-
-            String segLogStr = String.format(Locale.US, "%s - %s H: %4.1f",
-                    curSeg.getStrtPt().toString(),
-                    curSeg.getTgtPt().toString(),
-                    curSeg.getFieldHeading());
-            drvTrn.logData(true, segName + " " + segLogStr);
-
-            if (curSeg.getLength() >= 0.01 &&
-                (curSeg.getDir() != ShelbyBot.DriveDir.LEFT &&
-                 curSeg.getDir() != ShelbyBot.DriveDir.RIGHT))
-            {
-//                RobotLog.ii(TAG, "ENCODER TURN %s t=%6.4f", curSeg.getName(),
-//                        startTimer.seconds());
-//                doEncoderTurn(tgtHdg, segName + " encoderTurn"); //quick but rough
-                RobotLog.ii(TAG, "GYRO TURN %s t=%6.4f", curSeg.getName(),
-                        startTimer.seconds());
-                doGyroTurn(tgtHdg, segName + " gyroTurn");
-            }
-
-            if (curSeg.getLength() >= 0.1)
-            {
-                RobotLog.ii(TAG, "MOVE %s t=%6.4f", curSeg.getName(),
-                        startTimer.seconds());
-                doMove(curSeg);
-            }
-
-            double pturn = curSeg.getPostTurn();
-            if (usePostTurn && pturn != curSeg.getFieldHeading())
-            {
-                RobotLog.ii(TAG, "ENCODER POST TURN %s", curSeg.getName());
-                doEncoderTurn(pturn, segName + " postEncoderTurn");
-
-//                RobotLog.ii(TAG, "GRYO POST TURN %s", curSeg.getName());
-//                doGyroTurn(pturn, segName + " postGyroTurn");
-            }
-
-            if (!opModeIsActive() || isStopRequested())
-            {
-                drvTrn.stopMotion();
-                break;
-            }
-
-            RobotLog.ii(TAG, "Planned pos: %s %s",
-                    pathSegs.get(i).getTgtPt(), tgtHdg);
-
-            Segment.Action act = curSeg.getAction();
-
-            RobotLog.ii(TAG, "ACTION %s %s t=%6.4f", curSeg.getName(), act,
-                    startTimer.seconds());
-
-            if (act != Segment.Action.NOTHING)
-            {
-                drvTrn.setInitValues();
-                drvTrn.logData(true, segName + " action " + act.toString());
-            }
-
-            switch (act)
-            {
-                case SET_ALIGN:
-                {
-                    RobotLog.ii(TAG, "Action SET_ALIGN");
-                    doAlign(i);
-                    break;
-                }
-
-                case SCAN_IMAGE:
-                {
-                    RobotLog.ii(TAG, "Action SCAN_IMAGE");
-                    doScan(i);
-                    break;
-                }
-
-                case GRAB:
-                {
-                    RobotLog.ii(TAG, "Action GRAB");
-                    doGrab(i);
-                    break;
-                }
-
-
-                case PUSH:
-                {
-                    //If we have a grabber, grab platform
-                    RobotLog.ii(TAG, "Action PUSH");
-                    doPlatch();
-                    break;
-                }
-
-                case DROP:
-                {
-                    RobotLog.ii(TAG, "Action DROP");
-                    doDrop(i);
-                    break;
-                }
-
-                case RETRACT:
-                {
-                    RobotLog.ii(TAG, "Action RETRACT");
-                    doUnPlatch();
-                    break;
-                }
-
-                case PARK:
-                {
-                    RobotLog.ii(TAG, "Action PARK");
-                    doPark();
-                    break;
-                }
-
-                case SHOOT:
-                {
-                    RobotLog.ii(TAG, "Action SHOOT");
-                    doShoot(i);
-                    break;
-                }
-            }
-
-            Pose2d ePose = drvTrn.getEstPose();
-            robot.setAutonEndPos(new Point2d(ePose.getX(), ePose.getY()));
-            robot.setAutonEndHdg(ePose.getHeading());
-
-            RobotLog.dd(TAG, "Finished seg %d at X:%.2f Y:%.2f H:%.2f",
-                i, ePose.getX(), ePose.getY(), Math.toDegrees(ePose.getHeading()));
-        }
-        SBH*/
-
-        //SBH add
-
         double shootWait = 1.5;
         ElapsedTime shootTimer = new ElapsedTime();
 
         RobotLog.ii(TAG, "Action SCAN_IMAGE");
-        doScan(0);
+        doScan();
         Pose2d ePose = robot.drive.getPoseEstimate();
 
         for(Map.Entry<UgRrRoute.State, Trajectory> entry : ugrr.stateTrajMap.entrySet())
@@ -558,8 +325,6 @@ SBH*/
                 if(robot.burr != null) robot.burr.stop();
             }
         }
-
-        //end SBH add
 
         ePose = robot.drive.getPoseEstimate();
         robot.setAutonEndPos(new Point2d(ePose.getX(), ePose.getY()));
@@ -603,9 +368,9 @@ SBH*/
         tracker.setActive(false);
     }
 
-    private void doScan(int segIdx)
+    private void doScan()
     {
-        RobotLog.dd(TAG, "doScan" + " segIdx:" + segIdx);
+        RobotLog.dd(TAG, "doScan");
 
         if(useLight && usePhone)
             CameraDevice.getInstance().setFlashTorchMode(true) ;
@@ -616,25 +381,19 @@ SBH*/
         if(useLight && usePhone)
             CameraDevice.getInstance().setFlashTorchMode(false);
 
-        setRingPoint(segIdx);
+        setRingPoint();
     }
 
-    @SuppressWarnings("unused")
-    private void doGrab(int segIdx)
+    private void setRingPoint()
     {
-        RobotLog.dd(TAG, "doGrab seg %d at %f", segIdx, startTimer.seconds());
-    }
+        RobotLog.dd(TAG, "Getting ringPt for %s %s %s",
+                alliance, startPos, ringPos);
 
-    private void setRingPoint(int segIdx)
-    {
-        RobotLog.dd(TAG, "Getting ringPt for %s %s %s seg=%d",
-                alliance, startPos, ringPos, segIdx);
-
-        int allnc = alliance == Field.Alliance.RED     ? 0 : 1;
-        int start = startPos == START_1 ? 0 : 1;
-        int rPos  = ringPos  == RingDetector.Position.NONE   ? 0 :
-                    ringPos  == RingDetector.Position.LEFT   ? 0 :
-                    ringPos  == RingDetector.Position.CENTER ? 1 : 2;
+//        int allnc = alliance == Field.Alliance.RED     ? 0 : 1;
+//        int start = startPos == START_1 ? 0 : 1;
+//        int rPos  = ringPos  == RingDetector.Position.NONE   ? 0 :
+//                    ringPos  == RingDetector.Position.LEFT   ? 0 :
+//                    ringPos  == RingDetector.Position.CENTER ? 1 : 2;
 
         //SBH add
         if(alliance == Field.Alliance.RED)
@@ -659,11 +418,13 @@ SBH*/
             else
             {
                 //TODO start2
+                RobotLog.dd(TAG, "Setup start2");
             }
         }
         else
         {
             //TODO BLUE
+            RobotLog.dd(TAG, "Setup blue");
         }
 
         /*SBH-
@@ -696,50 +457,6 @@ SBH*/
     }
 
     @SuppressWarnings("unused")
-    private void doAlign(int segIdx)
-    {
-        RobotLog.dd(TAG, "doAlign seg %d at %f", segIdx, startTimer.seconds());
-    }
-
-    @SuppressWarnings("unused")
-    private void doDrop(int segIdx)
-    {
-        RobotLog.dd(TAG, "Dropping wobblyBOI on seg %d at %f", segIdx, startTimer.seconds());
-        if(robot.burr != null) robot.burr.shotSpeed(DEF_SHT_DST);
-    }
-
-    @SuppressWarnings("unused")
-    private void doPlatch()
-    {
-        RobotLog.dd(TAG, "Platching platform");
-    }
-
-    @SuppressWarnings("unused")
-    private void doUnPlatch()
-    {
-        RobotLog.dd(TAG, "UnPlatching platform");
-    }
-
-    @SuppressWarnings("unused")
-    private void doPark()
-    {
-        RobotLog.dd(TAG, "Parking bot");
-    }
-
-    @SuppressWarnings("unused")
-    private void doShoot(int segIdx)
-    {
-        Segment shootSeg = pathSegs .get(segIdx);
-        Point2d shootPoint = shootSeg.getTgtPt();
-        double shotdist = shootPoint.distance(UgField.RRG1);
-        RobotLog.dd(TAG, "Shooting");
-        if(robot.burr != null) robot.burr.shotSpeed(shotdist);
-        sleep(500);
-        // TODO add control of loader fire
-        sleep(1000);
-        if(robot.burr != null) robot.burr.stop();
-    }
-
     private double angNormalize(double ang)
     {
         double ret = ang;
@@ -747,144 +464,6 @@ SBH*/
         while (ret <= -180) ret += 360;
         return ret;
     }
-
-    @SuppressWarnings("unused")
-    private void doMove(Segment seg)
-    {
-        if(!opModeIsActive() || isStopRequested() || robot.motors.size() < 1) return;
-
-        drvTrn.setInitValues();
-
-        drvTrn.setBusyAnd(true);
-        String  snm = seg.getName();
-        Point2d spt = seg.getStrtPt();
-        Point2d ept = seg.getTgtPt();
-        double  fhd = seg.getFieldHeading();
-        ShelbyBot.DriveDir dir = seg.getDir();
-        double speed = seg.getSpeed();
-        double fudge = seg.getDrvTuner();
-        Segment.TargetType ttype = seg.getTgtType();
-
-        Drivetrain.Direction ddir = Drivetrain.Direction.FORWARD;
-        switch (dir)
-        {
-            case LEFT:   ddir = Drivetrain.Direction.LEFT;    break;
-            case RIGHT:  ddir = Drivetrain.Direction.RIGHT;   break;
-            case INTAKE: ddir = Drivetrain.Direction.REVERSE; break;
-            case PUSHER: ddir = Drivetrain.Direction.FORWARD; break;
-        }
-
-        RobotLog.ii(TAG, "Drive %s %s %s %6.2f %3.2f %s:%s tune: %4.2f %s",
-                snm, spt, ept, fhd, speed, dir, ddir, fudge, ttype);
-
-        dashboard.displayPrintf(2, "STATE: %s %s %s - %s %6.2f %3.2f %s",
-                "DRIVE", snm, spt, ept, fhd, speed, dir);
-        Pose2d curPose = drvTrn.getEstPose();
-        dashboard.displayPrintf(3, "X:%.2f Y:%.2f H:%.2f",
-            curPose.getX(), curPose.getY(), Math.toDegrees(curPose.getHeading()));
-
-        drvTrn.logData(true, snm + " move");
-        drvTrn.setDrvTuner(fudge);
-
-        timer.reset();
-
-        if(ttype == Segment.TargetType.COLOR)
-        {
-            RobotLog.dd(TAG, "colorSensor is %s", robot.colorSensor == null ? "null" : "good");
-        }
-
-        if(robot.colorSensor != null && ttype == Segment.TargetType.COLOR)
-        {
-            RobotLog.dd(TAG,"Doing color seg %d", colSegNum);
-            colSegNum++;
-            int colSensOffset = drvTrn.distanceToCounts(3.0);
-            drvTrn.setColSensOffset(colSensOffset);
-            drvTrn.setInitValues();
-
-            double fullSegLen = seg.getLength();
-
-            RobotLog.dd(TAG, "SBH calling driveDistanceLinear %4.2f %4.2f %s %4.2f %s",
-            fullSegLen, speed, ddir, fhd, "true");
-            drvTrn.driveDistanceLinear(fullSegLen, speed, ddir, fhd, true);
-            //Possibly do Vuf scan here to get localization
-        }
-        else
-        {
-            double targetHdg = fhd;
-            if(dir != RobotConstants.DT_DIR)
-            {
-                targetHdg = angNormalize(targetHdg+ 180.0);
-            }
-
-            if(dir == ShelbyBot.DriveDir.RIGHT || dir == ShelbyBot.DriveDir.LEFT)
-            {
-                drvTrn.strafe(spt.distance(ept), speed, ddir, targetHdg);
-            }
-            else
-            {
-                drvTrn.driveToPointLinear(ept, speed, ddir, targetHdg);
-            }
-        }
-
-        drvTrn.setCurrPt(ept);
-
-        RobotLog.ii(TAG, "Completed move %s. Time: %6.3f HDG: %6.3f",
-                seg.getName(), timer.time(), robot.getGyroFhdg());
-    }
-
-
-    private void doEncoderTurn(double fHdg, @SuppressWarnings("SameParameterValue") int thresh, String prefix)
-    {
-        if(!opModeIsActive() || isStopRequested() || robot.motors.size() < 1) return;
-        drvTrn.setBusyAnd(true);
-        drvTrn.setInitValues();
-        drvTrn.logData(true, prefix);
-        double cHdg = drvTrn.curHdg;
-        double angle = fHdg - cHdg;
-        RobotLog.ii(TAG, "doEncoderTurn CHDG %6.3f THDG %6.3f", cHdg, fHdg);
-
-        while (angle <= -180.0) angle += 360.0;
-        while (angle >   180.0) angle -= 360.0;
-        if(Math.abs(angle) <= 4.0) return;
-
-        RobotLog.ii(TAG, "Turn %5.2f", angle);
-        dashboard.displayPrintf(2, "STATE: %s %5.2f", "TURN", angle);
-        timer.reset();
-        drvTrn.ctrTurnLinear(angle, DEF_ENCTRN_PWR, thresh);
-        cHdg = robot.getGyroFhdg();
-        RobotLog.ii(TAG, "Completed turn %5.2f. Time: %6.3f CHDG: %6.3f",
-                angle, timer.time(), cHdg);
-    }
-
-    @SuppressWarnings("unused")
-    private void doEncoderTurn(double fHdg, String prefix)
-    {
-        doEncoderTurn(fHdg, Drivetrain.TURN_BUSYTHRESH, prefix);
-    }
-
-    @SuppressWarnings("unused")
-    private void doGyroTurn(double fHdg, String prefix)
-    {
-        if(!gyroReady) return;
-        if(!opModeIsActive() || isStopRequested() || robot.motors.size() < 1) return;
-
-        drvTrn.setInitValues();
-        drvTrn.logData(true, prefix);
-        double cHdg = drvTrn.curHdg;
-
-        RobotLog.ii(TAG, "doGyroTurn CHDG %4.2f THDG %4.2f", cHdg, fHdg);
-
-        if(Math.abs(fHdg-cHdg) < 1.0)
-            return;
-
-        timer.reset();
-        drvTrn.ctrTurnToHeading(fHdg, DEF_GYRTRN_PWR);
-
-        cHdg = drvTrn.curHdg;
-        RobotLog.ii(TAG, "Completed turnGyro %4.2f. Time: %6.3f CHDG: %4.2f",
-                fHdg, timer.time(), cHdg);
-    }
-
 
     private RingDetector.Position getRingPos()
     {
@@ -1048,48 +627,27 @@ SBH*/
         }
     }
 
-    private final static double DEF_ENCTRN_PWR  = 0.8;
-    private final static double DEF_GYRTRN_PWR  = 0.5;
-
-    private final List<Segment> pathSegs = new ArrayList<>();
-
     private TilerunnerMecanumBot   robot;
-
-    private Route pts;
 
     private final ElapsedTime timer = new ElapsedTime();
     private final ElapsedTime startTimer = new ElapsedTime();
-    private final Drivetrain drvTrn = new Drivetrain();
 
     private Detector det;
     private static ImageTracker tracker;
     private RingDetector.Position ringPos = RingDetector.Position.NONE;
 
-    private static Point2d curPos;
     private double initHdg = 0.0;
     private boolean gyroReady;
-    @SuppressWarnings("FieldCanBeLocal")
-    private final boolean usePostTurn = true;
-
-    private final double DEF_SHT_DST = UgField.ROSA.distance(UgField.RRG1);
 
     private static PositionOption startPos = START_1;
     private static Field.Alliance alliance = Field.Alliance.RED;
 
     private static PositionOption parkPos = Route.ParkPos.CENTER_PARK;
-//
-//    private int RED_THRESH = 15;
-//    private int GRN_THRESH = 15;
-//    private int BLU_THRESH = 15;
-//    @SuppressWarnings("FieldCanBeLocal")
-//    private int COLOR_THRESH = 20;
 
     private double delay = 0.0;
 
-    @SuppressWarnings("FieldCanBeLocal")
+    @SuppressWarnings("unused")
     private final boolean useImageLoc  = false;
-
-    private int colSegNum = 0;
 
     private static final boolean useLight = true;
     private static final boolean usePhone = false;

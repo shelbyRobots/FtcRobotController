@@ -283,9 +283,28 @@ public class UgRrRoute
     if(robot.burr != null) robot.burr.shotSpeed(DEF_SHT_DST);
   }
 
+  @SuppressWarnings("unused")
   private void doGrab()
   {
     RobotLog.dd(TAG, "doGrab");
+  }
+
+  @SuppressWarnings("unused")
+  private void doPlatch()
+  {
+    RobotLog.dd(TAG, "Platching platform");
+  }
+
+  @SuppressWarnings("unused")
+  private void doUnPlatch()
+  {
+    RobotLog.dd(TAG, "UnPlatching platform");
+  }
+
+  @SuppressWarnings("unused")
+  private void doPark()
+  {
+    RobotLog.dd(TAG, "Parking bot");
   }
 
   private void doShoot()
