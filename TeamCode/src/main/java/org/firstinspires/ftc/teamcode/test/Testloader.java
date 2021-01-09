@@ -50,10 +50,15 @@ public class Testloader extends InitLinearOpMode
             boolean zeroize    = gpad1.just_pressed(ManagedGamepad.Button.D_RIGHT);
             boolean pass       = gpad1.just_pressed(ManagedGamepad.Button.A);
 
+            boolean whlBak     = gpad1.value(ManagedGamepad.AnalogInput.L_TRIGGER_VAL) > 0.5;
+            boolean whlFwd     = gpad1.value(ManagedGamepad.AnalogInput.R_TRIGGER_VAL) > 0.5;
+
             if(step_up && power < MAX_FWD)         power += INCREMENT;
             else if(step_down && power > MAX_REV)  power -= INCREMENT;
             else if(zeroize)                       power = 0.0;
             else if(pass)                          gatePass = !gatePass;
+
+            loader.load(power);
 
             if(gatePass){
                 loader.setGatePos(Loader.gatePos.OPEN);
@@ -61,7 +66,18 @@ public class Testloader extends InitLinearOpMode
                 loader.setGatePos(Loader.gatePos.CLOSE);
             }
 
-            loader.load(power);
+            if(whlBak)
+            {
+                loader.whlBak();
+            }
+            else if(whlFwd)
+            {
+                loader.whlFwd();
+            }
+            else
+            {
+                loader.whlStp();
+            }
 
             // Display the current value
             dashboard.displayPrintf(p++, "Motor Power %4.2f", power);

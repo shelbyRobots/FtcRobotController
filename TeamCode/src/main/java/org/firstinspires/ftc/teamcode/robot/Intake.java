@@ -18,18 +18,18 @@ public class Intake
     public boolean init()
     {
         boolean success = false;
-            try
-            {
-                intaker = hwMap.get(DcMotorEx.class, "intake");
-                intaker.setDirection(DcMotor.Direction.REVERSE);
-                intaker.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                intaker.setPower(0);
-                success = true;
-            }
-            catch (Exception e)
-            {
-              RobotLog.ee(TAG, "ERROR get hardware map initIntake\n" + e.toString());
-            }
+        try
+        {
+            intaker = hwMap.get(DcMotorEx.class, "intake");
+            intaker.setDirection(DcMotor.Direction.REVERSE);
+            intaker.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            intaker.setPower(0);
+            success = true;
+        }
+        catch (Exception e)
+        {
+            RobotLog.ee(TAG, "ERROR get hardware map initIntake\n" + e.toString());
+        }
 
         try
         {

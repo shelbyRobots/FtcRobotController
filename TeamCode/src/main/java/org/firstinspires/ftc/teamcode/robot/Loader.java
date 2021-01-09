@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.RobotLog;
@@ -23,7 +25,7 @@ public class Loader
         try
         {
             loadMotor = hwMap.get(DcMotorEx.class, "loader");
-            loadMotor.setDirection(DcMotor.Direction.FORWARD);
+            loadMotor.setDirection(DcMotor.Direction.REVERSE);
             loadMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             loadMotor.setPower(0);
 
@@ -38,29 +40,25 @@ public class Loader
         {
             ringGate = hwMap.get(Servo.class, "ringGate");
             setGatePos(gatePos.CLOSE);
-
-        } catch (Exception e){
+        }
+        catch (Exception e)
+        {
             success = false;
-            RobotLog.ee(TAG, "ERROR in loader init\n" + e.toString());
+            RobotLog.ee(TAG, "ERROR in loader init gate\n" + e.toString());
+        }
+
+        try
+        {
+            ldrSrvo = hwMap.get(CRServo.class, "ldrSrvo");
+            ldrSrvo.setDirection(DcMotorSimple.Direction.REVERSE);
+        }
+        catch (Exception e)
+        {
+            success = false;
+            RobotLog.ee(TAG, "ERROR in loader init ldrSrvo\n" + e.toString());
         }
 
         return success;
-    }
-
-    public void setGatePos(gatePos pos){
-        curGatePos = pos;
-        if(ringGate != null) ringGate.setPosition(curGatePos.srvPos);
-    }
-
-    public enum gatePos{
-        OPEN(0.0),
-        CLOSE(0.3);
-
-        public final double srvPos;
-
-        gatePos (double srvPos){
-            this.srvPos = srvPos;
-        }
     }
 
     public void update()
@@ -72,9 +70,36 @@ public class Loader
         }
     }
 
-    public void pass(){
+    public void setGatePos(gatePos pos)
+    {
+        curGatePos = pos;
+        if(ringGate != null) ringGate.setPosition(curGatePos.srvPos);
+    }
+
+    public void pass()
+    {
         if (curGatePos != gatePos.OPEN) setGatePos(gatePos.OPEN);
         //TODO: add sleep to close ringGate
+    }
+
+    public void load(double pwr)
+    {
+        if(loadMotor != null) loadMotor.setPower(pwr);
+    }
+
+    public void whlFwd()
+    {
+        ldrSrvo.setPower(1.0);
+    }
+
+    public void whlBak()
+    {
+        ldrSrvo.setPower(-1.0);
+    }
+
+    public void whlStp()
+    {
+        ldrSrvo.setPower(0.0);
     }
 
     @NonNull
@@ -83,15 +108,23 @@ public class Loader
                 encPos, curSpd);
     }
 
-    public void load (double pwr)
+    public enum gatePos
     {
-        if(loadMotor != null) loadMotor.setPower(pwr);
+        OPEN(0.0),
+        CLOSE(0.3);
+
+        public final double srvPos;
+
+        gatePos (double srvPos){
+            this.srvPos = srvPos;
+        }
     }
 
     private gatePos curGatePos;
     private DcMotorEx loadMotor;
     protected HardwareMap hwMap;
     public Servo ringGate;
+    public CRServo ldrSrvo;
     private static final String TAG = "SJH_LDR";
     private int encPos;
     private double curSpd;
