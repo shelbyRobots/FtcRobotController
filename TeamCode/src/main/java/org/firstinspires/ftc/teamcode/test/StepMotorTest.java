@@ -217,12 +217,14 @@ public class StepMotorTest extends InitLinearOpMode
 
             if(toggle_mod)
             {
-                DcMotor.RunMode newMode = RUN_USING_ENCODER;
-                DcMotor.RunMode curMode = motors.get(0).getMode();
-                if(curMode == RUN_USING_ENCODER)
-                    newMode = DcMotor.RunMode.RUN_WITHOUT_ENCODER;
                 for(int m = 0; m < MAX_MOTORS; m++)
                 {
+                    if(!actLst.get(m)) continue;
+                    DcMotor.RunMode newMode = RUN_USING_ENCODER;
+                    DcMotor.RunMode curMode = motors.get(m).getMode();
+                    if(curMode == RUN_USING_ENCODER)
+                        newMode = DcMotor.RunMode.RUN_WITHOUT_ENCODER;
+                    
                     DcMotorEx mot = motors.get(m);
                     if(mot != null) mot.setMode(newMode);
                 }
@@ -232,6 +234,7 @@ public class StepMotorTest extends InitLinearOpMode
             {
                 for(int m = 0; m < MAX_MOTORS; m++)
                 {
+                    if(!actLst.get(m)) continue;
                     DcMotorEx mot = motors.get(m);
                     if(mot != null)
                     {
