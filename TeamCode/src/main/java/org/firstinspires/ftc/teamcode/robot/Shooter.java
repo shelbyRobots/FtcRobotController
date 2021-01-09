@@ -62,23 +62,23 @@ public class Shooter
         double height = 35;
         double heightOfShooter = 12;
 
-        double g = 9.81 *3.28084 *12;
+        double g = -9.81 *3.28084 *12;
         //diameter of the wheels
         double dia = 4;
         //cicumference of the wheels
         double cir = dia * Math.PI;
 
         double theta = Math.toRadians(35);
-        double v0 = Math.sqrt((-g*Math.pow(distance,2))/
+        double v0 = Math.sqrt((g*Math.pow(distance,2))/
                 (2*Math.pow(Math.cos(theta),2)*(height-distance*Math.tan(theta)-heightOfShooter)));
-        cps = 2 * (v0 / cir) * SHOOTER_CPR;
-        return cps;
+        return 2 * (v0 / cir) * SHOOTER_CPR;
     }
 
     public void shotSpeed(double distance)
     {
         dist = distance;
-        if(shooter != null) shooter.setVelocity(calcCps(distance));
+        cps = calcCps(dist);
+        if(shooter != null) shooter.setVelocity(cps);
     }
 
     private final double SHOOTER_CPER = 28; //quad encoder cnts/encoder rev
