@@ -26,6 +26,7 @@ import org.firstinspires.ftc.teamcode.robot.RobotConstants;
 import org.firstinspires.ftc.teamcode.robot.ShelbyBot;
 import org.firstinspires.ftc.teamcode.robot.TilerunnerMecanumBot;
 import org.firstinspires.ftc.teamcode.util.AutoTransitioner;
+import org.firstinspires.ftc.teamcode.util.CommonUtil;
 import org.firstinspires.ftc.teamcode.util.ManagedGamepad;
 import org.firstinspires.ftc.teamcode.util.Point2d;
 
@@ -469,6 +470,9 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
     {
         if(!opModeIsActive() || ringPos != RingDetector.Position.NONE)
             return ringPos;
+
+        if(!CommonUtil.getInstance().getVuforiaInitializer().hasCam)
+            return RingDetector.Position.LEFT;
 
         tracker.setActive(true);
         ringPos = RingDetector.Position.NONE;

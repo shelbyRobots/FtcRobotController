@@ -37,11 +37,13 @@ public class VuforiaInitializer
     private HardwareMap hardwareMap;
 
     private VuforiaTrackables trackables;
-    private List<VuforiaTrackable> allTrackables = new ArrayList<>();
+    private final List<VuforiaTrackable> allTrackables = new ArrayList<>();
 
     private static final String TAG = "SJH_vInit";
     private static final double MM_PER_INCH = 25.4;
     private static final int NUM_FRAME_IMAGES = 10;
+
+    public boolean hasCam = false;
 
     public enum Challenge
     {
@@ -103,12 +105,14 @@ public class VuforiaInitializer
             try
             {
                 webcamName = hardwareMap.get(WebcamName.class, "webcam");
+                if (webcamName != null) parameters.cameraName = webcamName;
+                hasCam = true;
             }
             catch (Exception e)
             {
                 RobotLog.ee(TAG, "ERROR get hardware map vufInit webcam\n" + e.toString());
             }
-            if (webcamName != null) parameters.cameraName = webcamName;
+
             //parameters.useExtendedTracking = false;
         }
     }
