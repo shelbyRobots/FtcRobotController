@@ -22,7 +22,8 @@ public class TestShooter extends InitLinearOpMode
     private static final double   FAV_DIST = 70;
     private double cps = 0.0;
     private static final double MIN_CPS = 0.0;
-    private static final double MAX_CPS = 6000.0;
+    //6000RPM/60 for RPS * 28 CPR for 1:1 goBilda motor = 2800
+    private static final double MAX_CPS = (6000.0/60.0) * 28;
     private static final double CPS_INC = 20.0;
 
     private static final String TAG = "SJH_TSH";
@@ -70,10 +71,10 @@ public class TestShooter extends InitLinearOpMode
             boolean shtInc     = gpad1.just_pressed(ManagedGamepad.Button.R_BUMP);
             boolean shtDec     = gpad1.just_pressed(ManagedGamepad.Button.L_BUMP);
 
-            if (shtInc) cps += CPS_INC;
-            else if (shtDec) cps -=  CPS_INC;
+            if (shtInc) {cps += CPS_INC; cps = Math.min(cps, MAX_CPS);}
+            else if (shtDec) {cps -=  CPS_INC; cps = Math.max(cps, MIN_CPS);}
 
-            if(shtDec || shtDec) shooter.shootCps(cps);
+            if(shtInc || shtDec) shooter.shootCps(cps);
 
             if (step_up && distance < MAX_DIST) {
                 distance += INCREMENT;

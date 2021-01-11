@@ -109,8 +109,8 @@ public class Loader
 
     public enum gatePos
     {
-        OPEN(0.25),
-        CLOSE(0.6);
+        OPEN(RobotConstants.LD_GATE_OPEN),
+        CLOSE(RobotConstants.LD_GATE_CLOSED);
 
         public final double srvPos;
 

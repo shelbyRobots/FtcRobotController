@@ -15,6 +15,17 @@ import java.util.Arrays;
 @SuppressWarnings("unused")
 public class RobotConstants
 {
+  public static double WA_CLAMP_OPEN = 1.00;
+  public static double WA_CLAMP_MID  = 0.98;
+  public static double WA_CLAMP_GRAB = 0.96;
+
+  public static double LD_GATE_OPEN   = 0.5;
+  public static double LD_GATE_CLOSED = 0.62;
+
+  public static double SH_FAV_CPS = 1900;
+
+  public static DcMotorSimple.Direction LD_PUSH_DIR = DcMotorSimple.Direction.REVERSE;
+
   public static final double MMPERIN = 25.4;
   public static Motors.MotorModel DT_MOTOR = Motors.MotorModel.GOBILDA_5202_19_2;
   public static double DT_CPMR = DT_MOTOR.getCpr(); //counts per motor output shaft rev
@@ -109,6 +120,14 @@ public class RobotConstants
         MOTOR_VELO_PID = new PIDFCoefficients(14, 0, 0.3, 12.8); //need RR tuning
         break;
       case MEC2:
+        WA_CLAMP_OPEN = 1.00;
+        WA_CLAMP_MID  = 0.98;
+        WA_CLAMP_GRAB = 0.96;
+
+        LD_GATE_OPEN   = 0.5;
+        LD_GATE_CLOSED = 0.62;
+
+        LD_PUSH_DIR = DcMotorSimple.Direction.REVERSE;
       case MEC3:
       default:
         DT_MOTOR = Motors.MotorModel.GOBILDA_5202_19_2;

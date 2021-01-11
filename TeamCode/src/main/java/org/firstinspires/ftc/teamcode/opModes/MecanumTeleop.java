@@ -134,11 +134,19 @@ public class MecanumTeleop extends InitLinearOpMode
         boolean shoot = gpad2.pressed(ManagedGamepad.Button.R_TRIGGER);
         if(loader) runLoader = !runLoader;
         if(robot.intake != null) robot.intake.suck(intake);
-        if(robot.loader != null && runLoader) robot.loader.load(intake);
         if(robot.loader != null)
         {
-            if(shoot) robot.loader.setGatePos(Loader.gatePos.OPEN);
-            else      robot.loader.setGatePos(Loader.gatePos.CLOSE);
+            if(runLoader) robot.loader.load(intake);
+            if(shoot)
+            {
+                robot.loader.setGatePos(Loader.gatePos.OPEN);
+                robot.loader.whlFwd();
+            }
+            else
+            {
+                robot.loader.setGatePos(Loader.gatePos.CLOSE);
+                robot.loader.whlStp();
+            }
         }
     }
 
@@ -151,20 +159,25 @@ public class MecanumTeleop extends InitLinearOpMode
         boolean normal     = gpad2.just_pressed(ManagedGamepad.Button.D_UP);
 
 
-        if (step_up && distance < MAX_DIST) {
-            distance += INCREMENT;
-            robot.burr.shotSpeed(distance);
-        }
-        if (step_down && distance > MIN_DIST) {
-            distance -= INCREMENT;
-            robot.burr.shotSpeed(distance);
-        }
+//        if (step_up && distance < MAX_DIST) {
+//            distance += INCREMENT;
+//            robot.burr.shotSpeed(distance);
+//        }
+//        if (step_down && distance > MIN_DIST) {
+//            distance -= INCREMENT;
+//            robot.burr.shotSpeed(distance);
+//        }
+        if (step_up) {cps += CPS_INC; cps = Math.min(cps, MAX_CPS);}
+        else if (step_down) {cps -=  CPS_INC; cps = Math.max(cps, MIN_CPS);}
+        if(step_up || step_down) robot.burr.shootCps(cps);
         if (zeroize){
             robot.burr.stop();
         }
         if (normal){
             distance = FAV_DIST;
-            robot.burr.shotSpeed(distance);
+            cps = RobotConstants.SH_FAV_CPS;
+            //robot.burr.shotSpeed(distance);
+            robot.burr.shootCps(cps);
         }
     }
 
@@ -348,6 +361,11 @@ public class MecanumTeleop extends InitLinearOpMode
     private static final double MIN_DIST = 60;
     private static final double MAX_DIST = 136;
     private static final double INCREMENT = 6;
+    private double cps = 0.0;
+    private static final double MIN_CPS = 0.0;
+    //6000RPM/60 for RPS * 28 CPR for 1:1 goBilda motor = 2800
+    private static final double MAX_CPS = (6000.0/60.0) * 28;
+    private static final double CPS_INC = 20.0;
 
     private String lStr = "";
     private String sStr = "";

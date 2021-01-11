@@ -149,9 +149,9 @@ public class Lifter
 
     public enum ClampPos
     {
-        OPEN(0.3),
-        CLOSED(0.6),
-        MID(0.5);
+        OPEN(RobotConstants.WA_CLAMP_OPEN),
+        CLOSED(RobotConstants.WA_CLAMP_GRAB),
+        MID(RobotConstants.WA_CLAMP_MID);
 
         public final double srvPos;
 
