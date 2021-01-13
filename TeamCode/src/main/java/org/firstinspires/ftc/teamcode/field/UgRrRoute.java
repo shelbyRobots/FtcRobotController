@@ -12,6 +12,7 @@ import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAcceleration
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.robotcore.util.RobotLog;
 
+import org.firstinspires.ftc.teamcode.robot.Loader;
 import org.firstinspires.ftc.teamcode.robot.MecanumDriveLRR;
 import org.firstinspires.ftc.teamcode.robot.RobotConstants;
 import org.firstinspires.ftc.teamcode.robot.TilerunnerMecanumBot;
@@ -81,6 +82,7 @@ public class UgRrRoute
   Pose2d prkPose;
 
   private double DEF_SHT_DST; //= shtPose.vec().distTo(goalVec);
+  private double DEF_SHT_CPS = RobotConstants.SH_FAV_CPS;
 
   public Trajectory drop1a;
   public Trajectory drop1b;
@@ -280,7 +282,8 @@ public class UgRrRoute
   private void doDrop()
   {
     RobotLog.dd(TAG, "Dropping wobblyBOI");
-    if(robot.burr != null) robot.burr.shotSpeed(DEF_SHT_DST);
+    //if(robot.burr != null) robot.burr.shotSpeed(DEF_SHT_DST);
+    if(robot.burr != null) robot.burr.shootCps(DEF_SHT_CPS);
   }
 
   @SuppressWarnings("unused")
@@ -309,11 +312,17 @@ public class UgRrRoute
 
   private void doShoot()
   {
-    double shotdist = DEF_SHT_DST;
+    //double shotdist = DEF_SHT_DST;
     RobotLog.dd(TAG, "Shooting");
-    if(robot.burr != null) robot.burr.shotSpeed(shotdist);
-    // TODO add control of loader fire
-    if(robot.burr != null) robot.burr.stop();
+    //if(robot.burr != null) robot.burr.shotSpeed(shotdist);
+    if(robot.burr != null) robot.burr.shootCps(DEF_SHT_CPS);
+
+    if(robot.loader != null)
+    {
+      robot.loader.load(1.0);
+      robot.loader.setGatePos(Loader.gatePos.OPEN);
+      robot.loader.whlFwd();
+    }
   }
 
 //  public static void main(String[] args)

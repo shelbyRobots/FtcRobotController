@@ -21,6 +21,7 @@ import org.firstinspires.ftc.teamcode.field.UgRrRoute;
 import org.firstinspires.ftc.teamcode.image.Detector;
 import org.firstinspires.ftc.teamcode.image.ImageTracker;
 import org.firstinspires.ftc.teamcode.image.RingDetector;
+import org.firstinspires.ftc.teamcode.robot.Loader;
 import org.firstinspires.ftc.teamcode.robot.MecanumDriveLRR;
 import org.firstinspires.ftc.teamcode.robot.RobotConstants;
 import org.firstinspires.ftc.teamcode.robot.ShelbyBot;
@@ -324,6 +325,12 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
                 }
 
                 if(robot.burr != null) robot.burr.stop();
+                if(robot.loader != null)
+                {
+                    robot.loader.load(0.0);
+                    robot.loader.setGatePos(Loader.gatePos.CLOSE);
+                    robot.loader.whlStp();
+                }
             }
         }
 

@@ -106,7 +106,7 @@ public class MecanumTeleop extends InitLinearOpMode
     private void controlArmElev()
     {
         if(robot.liftyBoi == null) return;
-        double lftPwr = -gpad1.value(ManagedGamepad.AnalogInput.R_STICK_Y);
+        double lftPwr = -gpad2.value(ManagedGamepad.AnalogInput.R_STICK_Y);
         boolean stow = gpad2.just_pressed(ManagedGamepad.Button.A);
         boolean grab = gpad2.just_pressed(ManagedGamepad.Button.B);
         boolean hold = gpad2.just_pressed(ManagedGamepad.Button.X);
