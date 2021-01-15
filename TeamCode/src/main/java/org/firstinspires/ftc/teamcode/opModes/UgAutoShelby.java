@@ -283,7 +283,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
         RobotLog.ii(TAG, "START CHDG %6.3f", robot.getGyroHdg());
 
-        double shootWait = 1.5;
+        double shootWait = 2.0;
         ElapsedTime shootTimer = new ElapsedTime();
 
         RobotLog.ii(TAG, "Action SCAN_IMAGE");

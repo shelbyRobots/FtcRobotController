@@ -9,6 +9,7 @@ import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAcceleration
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.util.RobotLog;
 
 import java.util.Arrays;
 
@@ -88,8 +89,8 @@ public class RobotConstants
   //SBH TODO:  adjust these after initial setup
   public static double MAX_VEL = 59; //RR tune  maxVel 59.96
   public static double MAX_ACCEL = 40;
-  public static double MAX_ANG_VEL = Math.toRadians(360);
-  public static double MAX_ANG_ACCEL = Math.toRadians(270);
+  public static double MAX_ANG_VEL = Math.toRadians(180);
+  public static double MAX_ANG_ACCEL = Math.toRadians(180);
 
   public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(7.5, 0, 0);
   public static PIDCoefficients HEADING_PID = new PIDCoefficients(8, 0, 0);
@@ -119,22 +120,40 @@ public class RobotConstants
         DT_TRACK_WIDTH = 14.9; //need RR tuning
         MOTOR_VELO_PID = new PIDFCoefficients(14, 0, 0.3, 12.8); //need RR tuning
         break;
+
       case MEC2:
+        RobotLog.dd(TAG, "Running as MEC2");
         WA_CLAMP_OPEN = 1.00;
         WA_CLAMP_MID  = 0.98;
         WA_CLAMP_GRAB = 0.96;
 
         LD_GATE_OPEN   = 0.5;
         LD_GATE_CLOSED = 0.62;
-
         LD_PUSH_DIR = DcMotorSimple.Direction.REVERSE;
+
+        SH_FAV_CPS = 1900;
+
+        MAX_VEL = 50;
+        LATERAL_MULTIPLIER = 1.18;
+        DT_MOTOR = Motors.MotorModel.GOBILDA_5202_19_2;
+        DT_EXT_GEAR_RATIO = 1.025; //tuned by RR tuning
+        DT_WHEEL_DIAM = 96.0/MMPERIN;
+        DT_TRACK_WIDTH = 16.4; //tuned by RR tuning
+        MOTOR_VELO_PID = new PIDFCoefficients(14.4, 0, 0.4, 13.4); //RR tuning
+        TRANSLATIONAL_PID = new PIDCoefficients(5, 0, 0);
+        HEADING_PID = new PIDCoefficients(5, 0, 0);
+        break;
+
       case MEC3:
-      default:
         DT_MOTOR = Motors.MotorModel.GOBILDA_5202_19_2;
         DT_EXT_GEAR_RATIO = 1.025; //tuned by RR tuning
         DT_WHEEL_DIAM = 96.0/MMPERIN;
         DT_TRACK_WIDTH = 16.8; //tuned by RR tuning
         MOTOR_VELO_PID = new PIDFCoefficients(14, 0, 0.3, 12.8); //RR tuning
+        break;
+
+      default:
+        DT_MOTOR = Motors.MotorModel.GOBILDA_5202_19_2;
         break;
     }
 
