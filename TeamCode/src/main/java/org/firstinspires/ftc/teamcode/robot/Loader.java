@@ -88,16 +88,19 @@ public class Loader
 
     public void whlFwd()
     {
+        if(ldrSrvo == null) return;
         ldrSrvo.setPower(1.0);
     }
 
     public void whlBak()
     {
+        if(ldrSrvo == null) return;
         ldrSrvo.setPower(-1.0);
     }
 
     public void whlStp()
     {
+        if(ldrSrvo == null) return;
         ldrSrvo.setPower(0.0);
     }
 

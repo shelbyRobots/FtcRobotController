@@ -123,6 +123,8 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         robotName = pmgr.getBotName();
         alliance = Field.Alliance.valueOf(pmgr.getAllianceColor());
         delay    = pmgr.getDelay();
+        cps      = pmgr.getCps();
+        RobotConstants.SH_FAV_CPS = cps;
         startPos = Route.StartPos.valueOf(pmgr.getStartPosition());
         try
         {
@@ -137,7 +139,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         dashboard.displayPrintf(2, "Pref BOT: %s", robotName);
         dashboard.displayPrintf(3, "Pref Alliance: %s", alliance);
         dashboard.displayPrintf(4, "Pref StartPos: %s %s", startPos, parkPos);
-        dashboard.displayPrintf(5, "Pref Delay: %.2f", delay);
+        dashboard.displayPrintf(5, "Pref Delay: %.2f Cps: %d", delay, cps);
     }
 
     private void setup()
@@ -232,6 +234,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         RobotLog.ii(TAG, "PARKPOS %s", parkPos);
         RobotLog.ii(TAG, "DELAY    %4.2f", delay);
         RobotLog.ii(TAG, "BOT      %s", robotName);
+        RobotLog.ii(TAG, "CPS      %s", cps);
         RobotLog.dd(TAG, "Robot CPI " + RobotConstants.DT_CPI);
         RobotLog.dd(TAG, "BOTDIR=%s START_DDIR =%s",
             RobotConstants.DT_DIR, startDdir);
@@ -656,6 +659,8 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
     private static PositionOption parkPos = Route.ParkPos.CENTER_PARK;
 
     private double delay = 0.0;
+
+    private int cps = 1900;
 
     @SuppressWarnings("unused")
     private final boolean useImageLoc  = false;

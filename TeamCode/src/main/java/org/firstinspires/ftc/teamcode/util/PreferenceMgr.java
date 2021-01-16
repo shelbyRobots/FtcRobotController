@@ -8,15 +8,16 @@ import com.qualcomm.robotcore.util.RobotLog;
 @SuppressWarnings("unused")
 public class PreferenceMgr
 {
-   private CommonUtil cmu;
+   private final CommonUtil cmu;
    private SharedPreferences sharedPreferences;
 
-   private String clubName       = "shelby";
+   private final String clubName = "shelby";
    private String botName        = "GTO1";
    private String allianceColor  = "RED";
    private String startPosition  = "START_1";
    private String parkPosition   = "TRI_TIP";
    private String delay          = "0";
+   private String cps            = "1900";
 
    private String leftOffset     = "0.0";
    private String cntrOffset     = "0.0";
@@ -42,6 +43,9 @@ public class PreferenceMgr
 
    public int getDelay() { return Integer.parseInt(delay); }
    public void setDelay(int delay) { this.delay =  String.valueOf(delay); }
+
+   public int getCps() { return Integer.parseInt(cps); }
+   public void setCps(int cps) { this.cps =  String.valueOf(cps); }
 
    public void setLeftOffset(double offset)
    {
@@ -99,6 +103,8 @@ public class PreferenceMgr
                                                           ".ParkPosition", parkPosition);
       delay         = sharedPreferences.getString(clubName + "." + botName +
                                                           ".Delay", delay);
+      cps           = sharedPreferences.getString(clubName + "." + botName +
+          ".Cps", cps);
 
       writePrefs();
    }
@@ -112,6 +118,7 @@ public class PreferenceMgr
       editor.putString(clubName + "." + botName + ".StartPosition", startPosition);
       editor.putString(clubName + "." + botName + ".ParkPosition",  parkPosition);
       editor.putString(clubName + "." + botName + ".Delay",         delay);
+      editor.putString(clubName + "." + botName + ".Cps",           cps);
       editor.apply();
    }
 
@@ -140,5 +147,6 @@ public class PreferenceMgr
       RobotLog.dd(TAG, "startPos: %s", startPosition);
       RobotLog.dd(TAG, "parkPos:  %s", parkPosition);
       RobotLog.dd(TAG, "delay:    %s", delay);
+      RobotLog.dd(TAG, "cps:      %s", cps);
    }
 }

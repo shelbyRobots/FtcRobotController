@@ -23,6 +23,8 @@ public class AutoSetupMenu extends InitLinearOpMode implements FtcMenu.MenuButto
     private String startPosition;
     private String parkPosition;
     private int    delay;
+    private boolean useCps = true;
+    private int cps = 1900;
 
     private int lnum = 1;
 
@@ -77,6 +79,7 @@ public class AutoSetupMenu extends InitLinearOpMode implements FtcMenu.MenuButto
         startPosition = prfMgr.getStartPosition();
         parkPosition  = prfMgr.getParkPosition();
         delay         = prfMgr.getDelay();
+        cps           = prfMgr.getCps();
 
         RobotLog.dd(TAG, "Default Config Values:");
         RobotLog.dd(TAG, "Club:     %s", club);
@@ -85,6 +88,7 @@ public class AutoSetupMenu extends InitLinearOpMode implements FtcMenu.MenuButto
         RobotLog.dd(TAG, "startPos: %s", startPosition);
         RobotLog.dd(TAG, "parkPos:  %s", parkPosition);
         RobotLog.dd(TAG, "delay:    %d", delay);
+        RobotLog.dd(TAG, "cps:      %d use: %s", cps, useCps);
     }
 
     private final String[] botNames = {"GTO1", "MEC1", "MEC2", "MEC3"};
@@ -133,6 +137,9 @@ public class AutoSetupMenu extends InitLinearOpMode implements FtcMenu.MenuButto
         FtcValueMenu  delayMenu
                 = new FtcValueMenu("Delay:",       parkMenu,     this,
                                           0.0, 20.0, 1.0, 0.0, "%5.2f");
+        FtcValueMenu  cpsMenu
+            = new FtcValueMenu("CPS:",       delayMenu,     this,
+            0, 3000, 20, 1900, "%f");
 
         //
         // remember last saved settings and reorder the menu with last run settings as the defaults
@@ -166,6 +173,8 @@ public class AutoSetupMenu extends InitLinearOpMode implements FtcMenu.MenuButto
                 parkMenu.addChoice(str, str, false, delayMenu);
         }
 
+        delayMenu.setChildMenu(cpsMenu);
+
         //
         // Walk the menu tree starting with the strategy menu as the root
         // menu and get user choices.
@@ -180,12 +189,14 @@ public class AutoSetupMenu extends InitLinearOpMode implements FtcMenu.MenuButto
         allianceColor = allianceMenu.getCurrentChoiceText();
         bot           = botMenu.getCurrentChoiceText();
         delay = (int)delayMenu.getCurrentValue();
+        cps = (int)cpsMenu.getCurrentValue();
 
         prfMgr.setBotName(bot);
         prfMgr.setStartPosition(startPosition);
         prfMgr.setParkPosition(parkPosition);
         prfMgr.setAllianceColor(allianceColor);
         prfMgr.setDelay(delay);
+        prfMgr.setCps(cps);
 
         RobotLog.dd(TAG, "Writing Config Values:");
         RobotLog.dd(TAG, "Club:     %s", club);
@@ -194,6 +205,7 @@ public class AutoSetupMenu extends InitLinearOpMode implements FtcMenu.MenuButto
         RobotLog.dd(TAG, "startPos: %s", startPosition);
         RobotLog.dd(TAG, "parkPos:  %s", parkPosition);
         RobotLog.dd(TAG, "delay:    %d", delay);
+        RobotLog.dd(TAG, "cps:      %d", cps);
 
         //write the options to sharedpreferences
         prfMgr.writePrefs();
@@ -206,6 +218,7 @@ public class AutoSetupMenu extends InitLinearOpMode implements FtcMenu.MenuButto
         dashboard.displayPrintf(lnum++, "Start:    " + startPosition);
         dashboard.displayPrintf(lnum++, "Park:     " + parkPosition);
         dashboard.displayPrintf(lnum++, "Delay:    " + delay);
+        dashboard.displayPrintf(lnum++, "Cps:      " + cps);
     }
 
     private void doOffsets()

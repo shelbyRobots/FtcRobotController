@@ -129,23 +129,22 @@ public class MecanumTeleop extends InitLinearOpMode
     private void controlIntake()
     {
         double intake = -gpad2.value(ManagedGamepad.AnalogInput.L_STICK_Y);
-        //L Bump acts as a toggle to activate or deactivate the loader
-        boolean loader  = gpad2.just_pressed(ManagedGamepad.Button.L_BUMP);
         boolean shoot = gpad2.pressed(ManagedGamepad.Button.R_TRIGGER);
-        if(loader) runLoader = !runLoader;
+
         if(robot.intake != null) robot.intake.suck(intake);
         if(robot.loader != null)
         {
-            if(runLoader) robot.loader.load(intake);
             if(shoot)
             {
                 robot.loader.setGatePos(Loader.gatePos.OPEN);
                 robot.loader.whlFwd();
+                robot.loader.load(1.0);
             }
             else
             {
                 robot.loader.setGatePos(Loader.gatePos.CLOSE);
                 robot.loader.whlStp();
+                robot.loader.load(0.0);
             }
         }
     }
@@ -153,10 +152,10 @@ public class MecanumTeleop extends InitLinearOpMode
     private void controlShooter()
     {
         if(robot.burr == null) return;
-        boolean step_up    = gpad2.just_pressed(ManagedGamepad.Button.D_RIGHT);
-        boolean step_down  = gpad2.just_pressed(ManagedGamepad.Button.D_LEFT);
-        boolean zeroize    = gpad2.just_pressed(ManagedGamepad.Button.D_DOWN);
-        boolean normal     = gpad2.just_pressed(ManagedGamepad.Button.D_UP);
+        boolean step_up    = gpad2.just_pressed(ManagedGamepad.Button.D_UP);
+        boolean step_down  = gpad2.just_pressed(ManagedGamepad.Button.D_DOWN);
+        boolean zeroize    = gpad2.just_pressed(ManagedGamepad.Button.D_LEFT);
+        boolean normal     = gpad2.just_pressed(ManagedGamepad.Button.D_RIGHT);
 
 
 //        if (step_up && distance < MAX_DIST) {
@@ -169,16 +168,17 @@ public class MecanumTeleop extends InitLinearOpMode
 //        }
         if (step_up) {cps += CPS_INC; cps = Math.min(cps, MAX_CPS);}
         else if (step_down) {cps -=  CPS_INC; cps = Math.max(cps, MIN_CPS);}
-        if(step_up || step_down) robot.burr.shootCps(cps);
+        else if (normal)
+        {
+            //distance = FAV_DIST;
+            //robot.burr.shotSpeed(distance);
+            cps = RobotConstants.SH_FAV_CPS;
+        }
+        if(step_up || step_down || normal) robot.burr.shootCps(cps);
         if (zeroize){
             robot.burr.stop();
         }
-        if (normal){
-            distance = FAV_DIST;
-            cps = RobotConstants.SH_FAV_CPS;
-            //robot.burr.shotSpeed(distance);
-            robot.burr.shootCps(cps);
-        }
+
     }
 
     private void controlArm()
@@ -223,7 +223,7 @@ public class MecanumTeleop extends InitLinearOpMode
 
         if (trnS)
         {
-            ((MecanumDriveLRR)(robot.drive)).turnAsync(0);
+            ((MecanumDriveLRR)(robot.drive)).turnAsync(Math.toRadians(180.0));
             return;
         }
 
@@ -333,7 +333,7 @@ public class MecanumTeleop extends InitLinearOpMode
         }
     }
 
-    private boolean runLoader = false;
+
     double dSpd = 0.0;
     double dStp = 0.1;
 

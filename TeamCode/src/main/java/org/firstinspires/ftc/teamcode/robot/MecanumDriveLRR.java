@@ -194,7 +194,7 @@ public class MecanumDriveLRR extends MecanumDrive
 
         turnProfile = MotionProfileGenerator.generateSimpleMotionProfile(
                 new MotionState(heading, 0, 0, 0),
-                new MotionState(heading + angle, 0, 0, 0),
+                new MotionState(angle, 0, 0, 0),
                 MAX_ANG_VEL,
                 MAX_ANG_ACCEL
         );
