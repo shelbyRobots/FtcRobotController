@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.RobotLog;
@@ -42,12 +41,24 @@ public class Lifter
         try
         {
             clampServo = hwMap.get(Servo.class, "clamp");
-            clmpPos = ClampPos.MID;
+            clmpPos = ClampPos.CLOSED;
             setClampPos(clmpPos);
         }
         catch (Exception e)
         {
             RobotLog.ee(TAG, "ERROR lifter - no clampServo clamp\n" + e.toString());
+            success = false;
+        }
+
+        try
+        {
+            wobGuide = hwMap.get(Servo.class, "wobGuide");
+            guidePos = GuidePos.OPEN;
+            setGuidePos(guidePos);
+        }
+        catch (Exception e)
+        {
+            RobotLog.ee(TAG, "ERROR lifter - no wobGuide clamp\n" + e.toString());
             success = false;
         }
 
@@ -121,6 +132,25 @@ public class Lifter
         else                          setClampPos(ClampPos.OPEN);
     }
 
+    public void setGuidePos(GuidePos pos)
+    {
+        guidePos = pos;
+        guideLoc = guidePos.srvPos;
+        if(wobGuide != null) wobGuide.setPosition(clmpLoc);
+    }
+
+    public void adjGuidePos(double incr)
+    {
+        guideLoc +=incr;
+        if(wobGuide != null) wobGuide.setPosition(clmpLoc);
+    }
+
+    public void toggleGuidePos ()
+    {
+        if (guidePos == GuidePos.OPEN) setGuidePos(GuidePos.CLOSED);
+        else                           setGuidePos(GuidePos.OPEN);
+    }
+
     public void update()
     {
         if(liftMotor != null) lftCnts = liftMotor.getCurrentPosition();
@@ -158,13 +188,27 @@ public class Lifter
         ClampPos(double srvPos) { this.srvPos = srvPos; }
     }
 
+    public enum GuidePos
+    {
+        OPEN(RobotConstants.WG_CLAMP_OPEN),
+        CLOSED(RobotConstants.WG_CLAMP_GRAB),
+        MID(RobotConstants.WG_CLAMP_MID);
+
+        public final double srvPos;
+
+        GuidePos(double srvPos) { this.srvPos = srvPos; }
+    }
+
     public DcMotorEx liftMotor;
     public Servo clampServo;
+    public Servo wobGuide;
     protected HardwareMap hwMap;
 
     private DcMotor.RunMode lastRunMode;
     private ClampPos clmpPos = ClampPos.MID;
     private double clmpLoc = ClampPos.MID.srvPos;
+    private GuidePos guidePos = GuidePos.MID;
+    private double guideLoc = GuidePos.MID.srvPos;
     private LiftPos tgtPos = LiftPos.STOW;
     private int lftCnts = convLiftpos(tgtPos);
     private double tgtVel = 0.0;

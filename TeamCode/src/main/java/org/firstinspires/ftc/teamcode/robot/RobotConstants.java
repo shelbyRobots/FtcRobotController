@@ -16,14 +16,20 @@ import java.util.Arrays;
 @SuppressWarnings("unused")
 public class RobotConstants
 {
-  public static double WA_CLAMP_OPEN = 1.00;
-  public static double WA_CLAMP_MID  = 0.98;
-  public static double WA_CLAMP_GRAB = 0.96;
+  //Wobblie Arm Clamp Servo positions
+  public static double WA_CLAMP_OPEN = 0.60;
+  public static double WA_CLAMP_MID  = 0.75;
+  public static double WA_CLAMP_GRAB = 0.98;
+
+  //Wobblie AutonGuide Clamp Servo positions
+  public static double WG_CLAMP_OPEN = 0.60;
+  public static double WG_CLAMP_MID  = 0.75;
+  public static double WG_CLAMP_GRAB = 0.98;
 
   public static double LD_GATE_OPEN   = 0.5;
   public static double LD_GATE_CLOSED = 0.62;
 
-  public static double SH_FAV_CPS = 1900;
+  public static double SH_FAV_CPS = 1860;
 
   public static DcMotorSimple.Direction LD_PUSH_DIR = DcMotorSimple.Direction.REVERSE;
 
@@ -86,7 +92,7 @@ public class RobotConstants
    * small and gradually increase them later after everything is working. All distance units are
    * inches.
    */
-  //SBH TODO:  adjust these after initial setup
+
   public static double MAX_VEL = 59; //RR tune  maxVel 59.96
   public static double MAX_ACCEL = 40;
   public static double MAX_ANG_VEL = Math.toRadians(180);
@@ -123,15 +129,15 @@ public class RobotConstants
 
       case MEC2:
         RobotLog.dd(TAG, "Running as MEC2");
-        WA_CLAMP_OPEN = 1.00;
-        WA_CLAMP_MID  = 0.98;
-        WA_CLAMP_GRAB = 0.96;
+        WA_CLAMP_OPEN = 0.60;
+        WA_CLAMP_MID  = 0.75;
+        WA_CLAMP_GRAB = 0.98;
 
-        LD_GATE_OPEN   = 0.5;
-        LD_GATE_CLOSED = 0.62;
+        LD_GATE_OPEN   = 0.36;
+        LD_GATE_CLOSED = 0.56;
         LD_PUSH_DIR = DcMotorSimple.Direction.REVERSE;
 
-        SH_FAV_CPS = 1900;
+        SH_FAV_CPS = 1860;
 
         MAX_VEL = 50;
         LATERAL_MULTIPLIER = 1.18;

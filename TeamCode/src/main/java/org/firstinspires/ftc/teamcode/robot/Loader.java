@@ -78,7 +78,6 @@ public class Loader
     public void pass()
     {
         if (curGatePos != gatePos.OPEN) setGatePos(gatePos.OPEN);
-        //TODO: add sleep to close ringGate
     }
 
     public void load(double pwr)

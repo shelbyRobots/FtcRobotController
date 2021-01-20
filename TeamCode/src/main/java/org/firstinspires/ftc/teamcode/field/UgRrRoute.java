@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.field;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.acmerobotics.roadrunner.trajectory.constraints.AngularVelocityConstraint;
@@ -12,6 +11,7 @@ import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAcceleration
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.robotcore.util.RobotLog;
 
+import org.firstinspires.ftc.teamcode.robot.Lifter;
 import org.firstinspires.ftc.teamcode.robot.Loader;
 import org.firstinspires.ftc.teamcode.robot.MecanumDriveLRR;
 import org.firstinspires.ftc.teamcode.robot.RobotConstants;
@@ -47,8 +47,8 @@ public class UgRrRoute
   public enum State
   {
     DROP1,
-    CLEAR1,
     SHOOT,
+    REVERSE,
     WOB2,
     DROP2,
     PARK,
@@ -59,46 +59,74 @@ public class UgRrRoute
 
   final static int    MAX_SEGMENTS = 32;
 
-  private final static boolean GO_FOR_TWO = true;
-
-  Pose2d wA1Pose;
-  Pose2d wA2Pose;
-  Pose2d wB1Pose;
-  Pose2d wB2Pose;
-  Pose2d wC1Pose;
-  Pose2d wC2Pose;
+  public final static boolean GO_FOR_TWO = true;
 
   public static Pose2d startPose;
-  Pose2d st1Pose;
-  Pose2d st2Pose;
-  Pose2d dg1Pose;
-  Pose2d dg2Pose;
-  Pose2d wAcPose;
   public static Pose2d shtPose;
-  Pose2d md1Pose;
-  Pose2d md2Pose;
-  Pose2d walPose;
-  Pose2d w2gPose;
-  Pose2d prkPose;
 
-  private double DEF_SHT_DST; //= shtPose.vec().distTo(goalVec);
-  private double DEF_SHT_CPS = RobotConstants.SH_FAV_CPS;
+  //char1: p=Pose2d, t=Trajectory
+  //char2: W=Wobble, M=Mid, D=Drop, S=Shoot, R=Return, P=Park
+  //char3: O=Outside, I=Inside
+  //char4: A-C=dest box, D=Drop, R=Return, N=aNy (non specific)
+  Pose2d pWON;
+  Pose2d pMOD;
+  Pose2d pDOA;
+  Pose2d pDOB;
+  Pose2d pDOC;
+  Pose2d pSON;
+  Pose2d pMOR;
+  Pose2d pRON;
+  Pose2d pWIN;
+  Pose2d pMID;
+  Pose2d pDIA;
+  Pose2d pDIB;
+  Pose2d pDIC;
+  Pose2d pPIN;
 
-  public Trajectory drop1a;
-  public Trajectory drop1b;
-  public Trajectory drop1c;
-  public Trajectory clr1a;
-  public Trajectory clr1b;
-  public Trajectory clr1c;
-  public Trajectory shoot;
-  public Trajectory wob2;
-  public Trajectory drop2a;
-  public Trajectory drop2b;
-  public Trajectory drop2c;
-  public Trajectory parks;
-  public Trajectory parka;
-  public Trajectory parkb;
-  public Trajectory parkc;
+  Pose2d pSIN;
+  Pose2d pMIR;
+  Pose2d pRIN;
+  Pose2d pPON;
+
+  public Trajectory tDIA;
+  public Trajectory tDIB;
+  public Trajectory tDIC;
+  public Trajectory tDOA;
+  public Trajectory tDOB;
+  public Trajectory tDOC;
+
+  public Trajectory tSIA;
+  public Trajectory tSIB;
+  public Trajectory tSIC;
+  public Trajectory tSOA;
+  public Trajectory tSOB;
+  public Trajectory tSOC;
+
+  public Trajectory tRIN;
+  public Trajectory tRON;
+
+  public Trajectory tWIN;
+  public Trajectory tWON;
+
+  public Trajectory tPIA;
+  public Trajectory tPIB;
+  public Trajectory tPIC;
+  public Trajectory tPOA;
+  public Trajectory tPOB;
+  public Trajectory tPOC;
+
+  public Trajectory tPIS;
+  public Trajectory tPOS;
+
+
+  public Trajectory WD1;
+  public Trajectory SHT;
+  public Trajectory REV;
+  public Trajectory WPU;
+  public Trajectory WD2;
+  public Trajectory PRK;
+
+  //private double DEF_SHT_DST; //= shtPose.vec().distTo(goalVec);
 
   private static final String TAG = "SJH_URR";
 
@@ -114,124 +142,160 @@ public class UgRrRoute
     initPoses();
     initTrajectories();
 
-    stateTrajMap.put(State.DROP1,  drop1a);
-    stateTrajMap.put(State.CLEAR1, clr1a);
-    stateTrajMap.put(State.SHOOT,  shoot);
+    stateTrajMap.put(State.DROP1,  WD1);
+    stateTrajMap.put(State.SHOOT,  SHT);
     if(GO_FOR_TWO)
     {
-      stateTrajMap.put(State.WOB2, wob2);
-      stateTrajMap.put(State.DROP2, drop2a);
-      stateTrajMap.put(State.PARK, parka);
+      stateTrajMap.put(State.REVERSE, REV);
+      stateTrajMap.put(State.WOB2,    WPU);
+      stateTrajMap.put(State.DROP2,   WD2);
+
     }
-    else
-    {
-      stateTrajMap.put(State.PARK, parks);
-    }
+    stateTrajMap.put(State.PARK,    PRK);
   }
 
   public void initTrajectories()
   {
+    double grabDist = 2.0;
+    double grabDistI = grabDist;
+    double grabDistO = grabDist;
+    if(startPos == START_2)
+    {
+      grabDistO = 0.0;
+    }
+    else
+    {
+      grabDistI = 0.0;
+    }
     RobotLog.dd(TAG, "Building trajectories");
     drive.setPoseEstimate(startPose);
-    if (startPos == START_2) initStart2Traj();
-    else                     initStart1Traj();
+
+    tDIA = new TrajectoryBuilder(pWIN, defVelLim, defAccelLim)
+        .addDisplacementMarker(grabDistI, this::doGrab)
+        .splineTo(pMID.vec(), pMID.getHeading())
+        .splineTo(pDIA.vec(), pDIA.getHeading())
+        .addDisplacementMarker(this::doDrop)
+        .addDisplacementMarker(this::doStartShoot).build();
+    tDIB = new TrajectoryBuilder(pWIN, defVelLim, defAccelLim)
+        .addDisplacementMarker(grabDistI, this::doGrab)
+        .splineTo(pMID.vec(), pMID.getHeading())
+        .splineTo(pDIB.vec(), pDIB.getHeading())
+        .addDisplacementMarker(this::doDrop)
+        .addDisplacementMarker(this::doStartShoot).build();
+    tDIC = new TrajectoryBuilder(pWIN, defVelLim, defAccelLim)
+        .addDisplacementMarker(grabDistI, this::doGrab)
+        .splineTo(pMID.vec(), pMID.getHeading())
+        .splineTo(pDIC.vec(), pDIC.getHeading())
+        .addDisplacementMarker(this::doDrop)
+        .addDisplacementMarker(this::doStartShoot).build();
+    tDOA = new TrajectoryBuilder(pWON, defVelLim, defAccelLim)
+        .addDisplacementMarker(grabDistO, this::doGrab)
+        .splineTo(pMOD.vec(), pMOD.getHeading())
+        .splineTo(pDOA.vec(), pDOA.getHeading())
+        .addDisplacementMarker(this::doDrop)
+        .addDisplacementMarker(this::doStartShoot).build();
+    tDOB = new TrajectoryBuilder(pWON, defVelLim, defAccelLim)
+        .addDisplacementMarker(grabDistO, this::doGrab)
+        .splineTo(pMOD.vec(), pMOD.getHeading())
+        .splineTo(pDOB.vec(), pDOB.getHeading())
+        .addDisplacementMarker(this::doDrop)
+        .addDisplacementMarker(this::doStartShoot).build();
+    tDOC = new TrajectoryBuilder(pWON, defVelLim, defAccelLim)
+        .addDisplacementMarker(grabDistO, this::doGrab)
+        .splineTo(pMOD.vec(), pMOD.getHeading())
+        .splineTo(pDOC.vec(), pDOC.getHeading())
+        .addDisplacementMarker(this::doDrop)
+        .addDisplacementMarker(this::doStartShoot).build();
+
+    tSIA = new TrajectoryBuilder(tDIA.end(), Math.toRadians(180), defVelLim, defAccelLim)
+        .lineToLinearHeading(pSIN)
+        .addDisplacementMarker(this::doShoot).build();
+    tSIB = new TrajectoryBuilder(tDIB.end(), Math.toRadians(180), defVelLim, defAccelLim)
+        .lineToLinearHeading(pSIN)
+        .addDisplacementMarker(this::doShoot).build();
+    tSIC = new TrajectoryBuilder(tDIC.end(), Math.toRadians(180), defVelLim, defAccelLim)
+        .lineToLinearHeading(pSIN)
+        .addDisplacementMarker(this::doShoot).build();
+    tSOA = new TrajectoryBuilder(tDOA.end(), Math.toRadians(180), defVelLim, defAccelLim)
+        .lineToLinearHeading(pSON)
+        .addDisplacementMarker(this::doShoot).build();
+    tSOB = new TrajectoryBuilder(tDOB.end(), Math.toRadians(180), defVelLim, defAccelLim)
+        .lineToLinearHeading(pSON)
+        .addDisplacementMarker(this::doShoot).build();
+    tSOC = new TrajectoryBuilder(tDOC.end(), Math.toRadians(180), defVelLim, defAccelLim)
+        .lineToLinearHeading(pSON)
+        .addDisplacementMarker(this::doShoot).build();
+
+    tRIN = new TrajectoryBuilder(tSIA.end(), Math.toRadians(180), defVelLim, defAccelLim)
+        .splineTo(pMIR.vec(), pMIR.getHeading(), wobVelLim, wobAccelLim)
+        .splineTo(pRIN.vec(), pRIN.getHeading(), wobVelLim, wobAccelLim).build();
+    tRON = new TrajectoryBuilder(tSOA.end(), Math.toRadians(180), defVelLim, defAccelLim)
+        .splineTo(pMOR.vec(), pMOR.getHeading(), wobVelLim, wobAccelLim)
+        .splineTo(pRON.vec(), pRON.getHeading(), wobVelLim, wobAccelLim).build();
+
+    tWIN = new TrajectoryBuilder(tRON.end(), Math.toRadians(180), defVelLim, defAccelLim)
+        .splineToConstantHeading(pWIN.vec(), pWIN.getHeading(), wobVelLim, wobAccelLim).build();
+    tWON = new TrajectoryBuilder(tRIN.end(), Math.toRadians(180), defVelLim, defAccelLim)
+        .splineToConstantHeading(pWON.vec(), pWIN.getHeading(), wobVelLim, wobAccelLim).build();
+
+    if(startPos == START_2)
+    {
+      WD1 = tDIA;
+      SHT = tSIA;
+      REV = tRIN;
+      WPU = tWON;
+      WD2 = tDOA;
+      if(GO_FOR_TWO)
+      {
+        tPOA = new TrajectoryBuilder(tDOA.end(), Math.toRadians(180), defVelLim, defAccelLim)
+            .lineToLinearHeading(pPON)
+            .addDisplacementMarker(this::doPark).build();
+        tPOB = new TrajectoryBuilder(tDOB.end(), Math.toRadians(180), defVelLim, defAccelLim)
+            .lineToLinearHeading(pPON)
+            .addDisplacementMarker(this::doPark).build();
+        tPOC = new TrajectoryBuilder(tDOC.end(), Math.toRadians(180), defVelLim, defAccelLim)
+            .lineToLinearHeading(pPON)
+            .addDisplacementMarker(this::doPark).build();
+        PRK = tPOA;
+      }
+      else
+      {
+        tPIS = new TrajectoryBuilder(tSIA.end(), Math.toRadians(180), defVelLim, defAccelLim)
+            .lineToLinearHeading(pPIN)
+            .addDisplacementMarker(this::doPark).build();
+        PRK = tPIS;
+      }
+    }
+    else
+    {
+      WD1 = tDOA;
+      SHT = tSOA;
+      REV = tRON;
+      WPU = tWIN;
+      WD2 = tDIA;
+      if(GO_FOR_TWO)
+      {
+        tPIA = new TrajectoryBuilder(tDIA.end(), Math.toRadians(180), defVelLim, defAccelLim)
+            .lineToLinearHeading(pPIN)
+            .addDisplacementMarker(this::doPark).build();
+        tPIB = new TrajectoryBuilder(tDIB.end(), Math.toRadians(180), defVelLim, defAccelLim)
+            .lineToLinearHeading(pPIN)
+            .addDisplacementMarker(this::doPark).build();
+        tPIC = new TrajectoryBuilder(tDIC.end(), Math.toRadians(180), defVelLim, defAccelLim)
+            .lineToLinearHeading(pPIN)
+            .addDisplacementMarker(this::doPark).build();
+        PRK = tPIA;
+      }
+      else
+      {
+        tPOS = new TrajectoryBuilder(tSOA.end(), Math.toRadians(180), defVelLim, defAccelLim)
+            .lineToLinearHeading(pPON)
+            .addDisplacementMarker(this::doPark).build();
+        PRK = tPOS;
+      }
+    }
 
     RobotLog.dd(TAG, "Done Building trajectories");
-  }
-
-  private void initStart1Traj()
-  {
-    drop1a = new TrajectoryBuilder(startPose, defVelLim, defAccelLim)
-        .splineTo(dg1Pose.vec(), dg1Pose.getHeading())
-        .splineTo(wA1Pose.vec(), wA1Pose.getHeading())
-        .addDisplacementMarker(this::doDrop).build();
-    drop1b = new TrajectoryBuilder(startPose, defVelLim, defAccelLim)
-        .splineTo(dg1Pose.vec(), dg1Pose.getHeading())
-        .splineTo(wB1Pose.vec(), wB1Pose.getHeading())
-        .addDisplacementMarker(this::doDrop).build();
-    drop1c = new TrajectoryBuilder(startPose, defVelLim, defAccelLim)
-        .splineTo(dg1Pose.vec(), dg1Pose.getHeading())
-        .splineTo(wC1Pose.vec(), wC1Pose.getHeading())
-        .addDisplacementMarker(this::doDrop).build();
-    clr1a = new TrajectoryBuilder(drop1a.end(), Math.toRadians(180), defVelLim, defAccelLim)
-        .lineToLinearHeading(wAcPose).build();
-    clr1b = new TrajectoryBuilder(drop1b.end(), Math.toRadians(180), defVelLim, defAccelLim)
-        .lineToLinearHeading(wAcPose).build();
-    clr1c = new TrajectoryBuilder(drop1c.end(), Math.toRadians(180), defVelLim, defAccelLim)
-        .lineToLinearHeading(wAcPose).build();
-    shoot = new TrajectoryBuilder(clr1a.end(), Math.toRadians(180), defVelLim, defAccelLim)
-        .lineToLinearHeading(shtPose)
-        .addDisplacementMarker(this::doShoot).build();
-    wob2 = new TrajectoryBuilder(shoot.end(), Math.toRadians(-90), defVelLim, defAccelLim)
-        .splineToConstantHeading(md1Pose.vec(), Math.toRadians(180))
-        .splineToConstantHeading(md2Pose.vec(), Math.toRadians(180))
-        .splineToConstantHeading(walPose.vec(), Math.toRadians(90), wobVelLim, wobAccelLim)
-        .splineToConstantHeading(w2gPose.vec(), Math.toRadians(90), wobVelLim, wobAccelLim).build();
-    drop2a = new TrajectoryBuilder(wob2.end(), defVelLim, defAccelLim)
-        .splineTo(dg2Pose.vec(), dg2Pose.getHeading())
-        .splineTo(wA2Pose.vec(), wA2Pose.getHeading()).build();
-    drop2b = new TrajectoryBuilder(wob2.end(), defVelLim, defAccelLim)
-        .splineTo(dg2Pose.vec(), dg2Pose.getHeading())
-        .splineTo(wB2Pose.vec(), wB2Pose.getHeading()).build();
-    drop2c = new TrajectoryBuilder(wob2.end(), defVelLim, defAccelLim)
-        .splineTo(dg2Pose.vec(), dg2Pose.getHeading())
-        .splineTo(wC2Pose.vec(), wC2Pose.getHeading()).build();
-    parks = new TrajectoryBuilder(shoot.end(), Math.toRadians(180), defVelLim, defAccelLim)
-        .lineToLinearHeading(prkPose).build();
-    parka = new TrajectoryBuilder(drop2a.end(), Math.toRadians(180), defVelLim, defAccelLim)
-        .lineToLinearHeading(prkPose).build();
-    parkb = new TrajectoryBuilder(drop2b.end(), Math.toRadians(180), defVelLim, defAccelLim)
-        .lineToLinearHeading(prkPose).build();
-    parkc = new TrajectoryBuilder(drop2c.end(), Math.toRadians(180), defVelLim, defAccelLim)
-        .lineToLinearHeading(prkPose).build();
-  }
-
-  private void initStart2Traj()
-  {
-    drop1a = new TrajectoryBuilder(startPose, defVelLim, defAccelLim)
-      .splineTo(dg2Pose.vec(), dg2Pose.getHeading())
-      .splineTo(wA2Pose.vec(), wA2Pose.getHeading())
-      .addDisplacementMarker(this::doDrop).build();
-    drop1b = new TrajectoryBuilder(startPose, defVelLim, defAccelLim)
-        .splineTo(dg2Pose.vec(), dg2Pose.getHeading())
-        .splineTo(wB2Pose.vec(), wB2Pose.getHeading())
-        .addDisplacementMarker(this::doDrop).build();
-    drop1c = new TrajectoryBuilder(startPose, defVelLim, defAccelLim)
-        .splineTo(dg2Pose.vec(), dg2Pose.getHeading())
-        .splineTo(wC2Pose.vec(), wC2Pose.getHeading())
-        .addDisplacementMarker(this::doDrop).build();
-    //TODO - figure out CLR for start 2, and rest of route
-    clr1a = new TrajectoryBuilder(drop1a.end(), Math.toRadians(180), defVelLim, defAccelLim)
-        .lineToLinearHeading(wAcPose).build();
-    clr1b = new TrajectoryBuilder(drop1b.end(), Math.toRadians(180), defVelLim, defAccelLim)
-        .lineToLinearHeading(wAcPose).build();
-    clr1c = new TrajectoryBuilder(drop1c.end(), Math.toRadians(180), defVelLim, defAccelLim)
-        .lineToLinearHeading(wAcPose).build();
-    shoot = new TrajectoryBuilder(clr1a.end(), Math.toRadians(180), defVelLim, defAccelLim)
-        .lineToLinearHeading(shtPose)
-        .addDisplacementMarker(this::doShoot).build();
-    wob2 = new TrajectoryBuilder(shoot.end(), Math.toRadians(-90), defVelLim, defAccelLim)
-        .splineToConstantHeading(md1Pose.vec(), Math.toRadians(180))
-        .splineToConstantHeading(md2Pose.vec(), Math.toRadians(180))
-        .splineToConstantHeading(walPose.vec(), Math.toRadians(90), wobVelLim, wobAccelLim)
-        .splineToConstantHeading(w2gPose.vec(), Math.toRadians(90), wobVelLim, wobAccelLim).build();
-    drop2a = new TrajectoryBuilder(wob2.end(), defVelLim, defAccelLim)
-        .splineTo(dg2Pose.vec(), dg2Pose.getHeading())
-        .splineTo(wA2Pose.vec(), wA2Pose.getHeading()).build();
-    drop2b = new TrajectoryBuilder(wob2.end(), defVelLim, defAccelLim)
-        .splineTo(dg2Pose.vec(), dg2Pose.getHeading())
-        .splineTo(wB2Pose.vec(), wB2Pose.getHeading()).build();
-    drop2c = new TrajectoryBuilder(wob2.end(), defVelLim, defAccelLim)
-        .splineTo(dg2Pose.vec(), dg2Pose.getHeading())
-        .splineTo(wC2Pose.vec(), wC2Pose.getHeading()).build();
-    parks = new TrajectoryBuilder(shoot.end(), Math.toRadians(180), defVelLim, defAccelLim)
-        .lineToLinearHeading(prkPose).build();
-    parka = new TrajectoryBuilder(drop2a.end(), Math.toRadians(180), defVelLim, defAccelLim)
-        .lineToLinearHeading(prkPose).build();
-    parkb = new TrajectoryBuilder(drop2b.end(), Math.toRadians(180), defVelLim, defAccelLim)
-        .lineToLinearHeading(prkPose).build();
-    parkc = new TrajectoryBuilder(drop2c.end(), Math.toRadians(180), defVelLim, defAccelLim)
-        .lineToLinearHeading(prkPose).build();
   }
 
   Vector<Pose2d> poses = new Vector<>(MAX_SEGMENTS);
@@ -246,31 +310,40 @@ public class UgRrRoute
       sy = -1;
       sh = -1;
     }
-    wA1Pose = new Pose2d(sx*  6.0,sy*-59.0, sh* Math.toRadians(0));  poses.add(wA1Pose);
-    wA2Pose = new Pose2d(sx* 14.0,sy*-44.0, sh*-Math.toRadians(90)); poses.add(wA2Pose);
-    wB1Pose = new Pose2d(sx* 24.0,sy*-48.0, sh* Math.toRadians(45)); poses.add(wB1Pose);
-    wB2Pose = new Pose2d(sx* 24.0,sy*-30.0, sh*-Math.toRadians(20)); poses.add(wB2Pose);
-    wC1Pose = new Pose2d(sx* 48.0,sy*-59.0, sh* Math.toRadians(0));  poses.add(wC1Pose);
-    wC2Pose = new Pose2d(sx* 44.0,sy*-44.0, sh*-Math.toRadians(45)); poses.add(wC2Pose);
 
-    st1Pose = new Pose2d(sx*-61.5,sy*-44.0, sh* Math.toRadians(0));  poses.add(st1Pose);
-    st2Pose = new Pose2d(sx*-61.5,sy*-28.0, sh* Math.toRadians(0));  poses.add(st2Pose);
-    dg1Pose = new Pose2d(sx*  0.0,sy*-59.0, sh* Math.toRadians(0));  poses.add(dg1Pose);
-    dg2Pose = new Pose2d(sx*  0.0,sy*-24.0, sh* Math.toRadians(0));  poses.add(dg2Pose);
-    wAcPose = new Pose2d(sx*  0.0,sy*-59.0, sh* Math.toRadians(0));  poses.add(wAcPose);
-    shtPose = new Pose2d(sx*  0.0,sy*-36.0, sh* Math.toRadians(0));  poses.add(shtPose);
-    md1Pose = new Pose2d(sx*-16.0,sy*-52.0, sh* Math.toRadians(0));  poses.add(md1Pose);
-    md2Pose = new Pose2d(sx*-48.0,sy*-50.0, sh* Math.toRadians(0));  poses.add(md2Pose);
-    walPose = new Pose2d(sx*-60.0,sy*-40.0, sh* Math.toRadians(0));  poses.add(walPose);
-    w2gPose = new Pose2d(sx*-61.0,sy*-24.0, sh* Math.toRadians(0));  poses.add(w2gPose);
-    prkPose = new Pose2d(sx* 10.0,sy*-36.0, sh* Math.toRadians(0));  poses.add(prkPose);
+    double shtHdgO = sh*13.33;
+    double shtHdgI = -shtHdgO;
 
-    DEF_SHT_DST = shtPose.vec().distTo(new Vector2d(72.0, sy*-36.0));
+    pWIN = new Pose2d(sx*-61.5,sy*-24.0, sh*Math.toRadians(0));  poses.add(pWIN);
+    pWON = new Pose2d(sx*-61.5,sy*-48.0, sh*Math.toRadians(0));  poses.add(pWON);
 
-    if(startPos == START_2) startPose = st2Pose;
-    else startPose = st1Pose;
+    pMID = new Pose2d(sx*-24.0,sy*-24.0, sh*Math.toRadians(0));  poses.add(pMID);
+    pMOD = new Pose2d(sx*-18.0,sy*-53.0, sh*Math.toRadians(0));  poses.add(pMOD);
+
+    pDIA = new Pose2d(sx*  7.0,sy*-45.0, sh*Math.toRadians(-45));  poses.add(pDIA);
+    pDIB = new Pose2d(sx* 20.0,sy*-28.0, sh*Math.toRadians(-20));  poses.add(pDIB);
+    pDIC = new Pose2d(sx* 46.0,sy*-46.0, sh*Math.toRadians(-45));  poses.add(pDIC);
+    pDOA = new Pose2d(sx*  5.0,sy*-56.0, sh*Math.toRadians(-30));  poses.add(pDOA);
+    pDOB = new Pose2d(sx* 28.0,sy*-46.0, sh*Math.toRadians(-35));  poses.add(pDOB);
+    pDOC = new Pose2d(sx* 52.0,sy*-59.0, sh*Math.toRadians(0));  poses.add(pDOC);
+
+    pSIN = new Pose2d(sx* -6.0,sy*-18.0, sh*Math.toRadians(shtHdgI));  poses.add(pSIN);
+    pSON = new Pose2d(sx* -6.0,sy*-54.0, sh*Math.toRadians(shtHdgO));  poses.add(pSON);
+
+    pMIR = new Pose2d(sx*-30.0,sy*-18.0, sh*Math.toRadians(180.0-shtHdgI));  poses.add(pMIR);
+    pMOR = new Pose2d(sx*-30.0,sy*-54.0, sh*Math.toRadians(180.0-shtHdgO));  poses.add(pMOR);
+
+    pRIN = new Pose2d(sx*-60.0,sy*-28.0, sh*Math.toRadians(180.0-shtHdgI));  poses.add(pRIN);
+    pRON = new Pose2d(sx*-60.0,sy*-44.0, sh*Math.toRadians(180.0-shtHdgO));  poses.add(pRON);
+
+    pPIN = new Pose2d(sx*  4.0,sy*-36.0, sh*Math.toRadians(0));  poses.add(pPIN);
+    pPON = new Pose2d(sx*  4.0,sy*-36.0, sh*Math.toRadians(0));  poses.add(pPON);
+
+    startPose = pWON;
+    if(startPos == START_2) startPose = pWIN;
   }
 
+  @SuppressWarnings("unused")
   private void printPoses()
   {
     for (Pose2d pose : poses)
@@ -282,32 +355,30 @@ public class UgRrRoute
   private void doDrop()
   {
     RobotLog.dd(TAG, "Dropping wobblyBOI");
-    //if(robot.burr != null) robot.burr.shotSpeed(DEF_SHT_DST);
-    if(robot.burr != null) robot.burr.shootCps(DEF_SHT_CPS);
+    if(robot.liftyBoi != null) robot.liftyBoi.setGuidePos(Lifter.GuidePos.OPEN);
   }
 
-  @SuppressWarnings("unused")
   private void doGrab()
   {
     RobotLog.dd(TAG, "doGrab");
+    if(robot.liftyBoi != null) robot.liftyBoi.setGuidePos(Lifter.GuidePos.CLOSED);
   }
 
-  @SuppressWarnings("unused")
-  private void doPlatch()
-  {
-    RobotLog.dd(TAG, "Platching platform");
-  }
-
-  @SuppressWarnings("unused")
-  private void doUnPlatch()
-  {
-    RobotLog.dd(TAG, "UnPlatching platform");
-  }
-
-  @SuppressWarnings("unused")
   private void doPark()
   {
     RobotLog.dd(TAG, "Parking bot");
+    if(robot.burr != null) robot.burr.stop();
+    if(robot.loader != null)
+    {
+      robot.loader.load(0.0);
+      robot.loader.setGatePos(Loader.gatePos.CLOSE);
+      robot.loader.whlStp();
+    }
+    if(robot.liftyBoi != null)
+    {
+      robot.liftyBoi.setGuidePos(Lifter.GuidePos.OPEN);
+      robot.liftyBoi.setClampPos(Lifter.ClampPos.CLOSED);
+    }
   }
 
   private void doShoot()
@@ -315,7 +386,7 @@ public class UgRrRoute
     //double shotdist = DEF_SHT_DST;
     RobotLog.dd(TAG, "Shooting");
     //if(robot.burr != null) robot.burr.shotSpeed(shotdist);
-    if(robot.burr != null) robot.burr.shootCps(DEF_SHT_CPS);
+    if(robot.burr != null) robot.burr.shootCps(RobotConstants.SH_FAV_CPS);
 
     if(robot.loader != null)
     {
@@ -323,6 +394,16 @@ public class UgRrRoute
       robot.loader.setGatePos(Loader.gatePos.OPEN);
       robot.loader.whlFwd();
     }
+  }
+
+  private boolean firstShoot = true;
+  private void doStartShoot()
+  {
+    if(!firstShoot) return;
+    firstShoot = false;
+    RobotLog.dd(TAG, "Starting shooter");
+    //if(robot.burr != null) robot.burr.shotSpeed(DEF_SHT_DST);
+    if(robot.burr != null) robot.burr.shootCps(RobotConstants.SH_FAV_CPS);
   }
 
 //  public static void main(String[] args)

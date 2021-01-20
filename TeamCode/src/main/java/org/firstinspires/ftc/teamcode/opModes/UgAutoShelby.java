@@ -400,71 +400,53 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         RobotLog.dd(TAG, "Getting ringPt for %s %s %s",
                 alliance, startPos, ringPos);
 
-//        int allnc = alliance == Field.Alliance.RED     ? 0 : 1;
-//        int start = startPos == START_1 ? 0 : 1;
-//        int rPos  = ringPos  == RingDetector.Position.NONE   ? 0 :
-//                    ringPos  == RingDetector.Position.LEFT   ? 0 :
-//                    ringPos  == RingDetector.Position.CENTER ? 1 : 2;
-
-        //SBH add
-        if(alliance == Field.Alliance.RED)
+        if(startPos == START_1)
         {
-            if(startPos == START_1)
+            if(ringPos == RingDetector.Position.CENTER)
             {
-                if(ringPos == RingDetector.Position.CENTER)
+                ugrr.stateTrajMap.put(UgRrRoute.State.DROP1,  ugrr.tDOB);
+                ugrr.stateTrajMap.put(UgRrRoute.State.SHOOT,  ugrr.tSOB);
+                if(UgRrRoute.GO_FOR_TWO)
                 {
-                    ugrr.stateTrajMap.put(UgRrRoute.State.DROP1,  ugrr.drop1b);
-                    ugrr.stateTrajMap.put(UgRrRoute.State.CLEAR1, ugrr.clr1b);
-                    ugrr.stateTrajMap.put(UgRrRoute.State.DROP2,  ugrr.drop2b);
-                    ugrr.stateTrajMap.put(UgRrRoute.State.PARK,   ugrr.parkb);
-                }
-                else if(ringPos == RingDetector.Position.RIGHT)
-                {
-                    ugrr.stateTrajMap.put(UgRrRoute.State.DROP1,  ugrr.drop1c);
-                    ugrr.stateTrajMap.put(UgRrRoute.State.CLEAR1, ugrr.clr1c);
-                    ugrr.stateTrajMap.put(UgRrRoute.State.DROP2,  ugrr.drop2c);
-                    ugrr.stateTrajMap.put(UgRrRoute.State.PARK,   ugrr.parkc);
+                    ugrr.stateTrajMap.put(UgRrRoute.State.DROP2, ugrr.tDIB);
+                    ugrr.stateTrajMap.put(UgRrRoute.State.PARK, ugrr.tPIB);
                 }
             }
-            else
+            else if(ringPos == RingDetector.Position.RIGHT)
             {
-                //TODO start2
-                RobotLog.dd(TAG, "Setup start2");
+                ugrr.stateTrajMap.put(UgRrRoute.State.DROP1,  ugrr.tDOC);
+                ugrr.stateTrajMap.put(UgRrRoute.State.SHOOT,  ugrr.tSOC);
+                if(UgRrRoute.GO_FOR_TWO)
+                {
+                    ugrr.stateTrajMap.put(UgRrRoute.State.DROP2, ugrr.tDIC);
+                    ugrr.stateTrajMap.put(UgRrRoute.State.PARK, ugrr.tPIC);
+                }
             }
         }
         else
         {
-            //TODO BLUE
-            RobotLog.dd(TAG, "Setup blue");
-        }
-
-        /*SBH-
-
-        //3dim array [allnc][start][rPos]
-        Point2d[][][] wPts =
-           {{{UgField.ROWA, UgField.ROWB, UgField.ROWC},
-             {UgField.RIWA, UgField.RIWB, UgField.RIWC}},
-            {{pts.convertRtoB(UgField.ROWA), pts.convertRtoB(UgField.ROWB), pts.convertRtoB(UgField.ROWC)},
-             {pts.convertRtoB(UgField.RIWA), pts.convertRtoB(UgField.RIWB), pts.convertRtoB(UgField.RIWC)}}};
-
-        Point2d wPt = wPts[allnc][start][rPos];
-
-        RobotLog.dd(TAG, "Setting wobbly drop to %s", wPt.getName());
-
-        for (Segment s : pathSegs) {
-            String sPt = s.getStrtPt().getName();
-            if (sPt.equals("ROWA") || sPt.equals("RIWA") ||sPt.equals("BOWA") || sPt.equals("BIWA"))
+            RobotLog.dd(TAG, "Setup start2");
+            if(ringPos == RingDetector.Position.CENTER)
             {
-                s.setStrtPt(wPt);
+                ugrr.stateTrajMap.put(UgRrRoute.State.DROP1,  ugrr.tDIB);
+                ugrr.stateTrajMap.put(UgRrRoute.State.SHOOT,  ugrr.tSIB);
+                if(UgRrRoute.GO_FOR_TWO)
+                {
+                    ugrr.stateTrajMap.put(UgRrRoute.State.DROP2, ugrr.tDOB);
+                    ugrr.stateTrajMap.put(UgRrRoute.State.PARK, ugrr.tPOB);
+                }
             }
-
-            String ePt = s.getTgtPt().getName();
-            if (ePt.equals("ROWA") || ePt.equals("RIWA") || ePt.equals("BOWA") || ePt.equals("BIWA"))
+            else if(ringPos == RingDetector.Position.RIGHT)
             {
-                s.setEndPt(wPt);
+                ugrr.stateTrajMap.put(UgRrRoute.State.DROP1,  ugrr.tDIC);
+                ugrr.stateTrajMap.put(UgRrRoute.State.SHOOT,  ugrr.tSIC);
+                if(UgRrRoute.GO_FOR_TWO)
+                {
+                    ugrr.stateTrajMap.put(UgRrRoute.State.DROP2, ugrr.tDOC);
+                    ugrr.stateTrajMap.put(UgRrRoute.State.PARK, ugrr.tPOC);
+                }
             }
         }
-        SBH*/
     }
 
     @SuppressWarnings("unused")
@@ -509,6 +491,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
             if(rgbImage == null)
             {
                 RobotLog.dd(TAG, "getringPos - image from tracker is null");
+                //noinspection ConstantConditions
                 if(!tempTest) continue;
             }
             RobotLog.dd(TAG, "getringPos - loop calling det.setBitmap");
