@@ -42,7 +42,6 @@ public abstract class InitLinearOpMode extends LinearOpMode
 
         pmgr = new PreferenceMgr();
         pmgr.readPrefs();
-        //dtrnType = Drivetrain.DrivetrainType.valueOf(pmgr.getRobotConfig());
     }
 
     @SuppressWarnings("unused")

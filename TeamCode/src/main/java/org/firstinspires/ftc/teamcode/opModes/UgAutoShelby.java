@@ -669,34 +669,4 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
     private static final String TAG = "SJH_RRA";
 
     private UgRrRoute ugrr;
-
-
-//    public static void main(String[] args)
-//    {
-//        for (RingDetector.Position ringPos : RingDetector.Position.values()) {
-//            for (Field.Alliance all : Field.Alliance.values()) {
-//                for (PositionOption strt : EnumSet.range(START_1,START_2)) {
-//                    int allnc = all == Field.Alliance.RED ? 0 : 1;
-//                    int start = strt == START_1 ? 0 : 1;
-//                    int rPos =
-//                            ringPos == RingDetector.Position.NONE ? 0 :
-//                                    ringPos == RingDetector.Position.LEFT ? 0 :
-//                                            ringPos == RingDetector.Position.CENTER ? 1 : 2;
-//
-//                    //3dim array [allnc][start][rPos]
-//                    Point2d[][][] wPts =
-//                            {{{UgField.RRWA, UgField.RRWB, UgField.RRWC},
-//                                    {UgField.RLWA, UgField.RLWB, UgField.RLWC}},
-//                                    {{UgRoute.convertRtoB(UgField.RRWA), UgRoute.convertRtoB(UgField.RRWB), UgRoute.convertRtoB(UgField.RRWC)},
-//                                            {UgRoute.convertRtoB(UgField.RLWA), UgRoute.convertRtoB(UgField.RLWB), UgRoute.convertRtoB(UgField.RLWC)}}};
-//
-//                    Point2d wPt = wPts[allnc][start][rPos];
-//
-//                    String s = String.format("Alnc %4s Strt %s Rpos %6s %4s", all, strt, ringPos, wPt.getName());
-//                    System.out.println(s);
-//                    //RobotLog.dd(TAG, "Setting wobbly drop to " + wPt.getName());
-//                }
-//            }
-//        }
-//    }
 }

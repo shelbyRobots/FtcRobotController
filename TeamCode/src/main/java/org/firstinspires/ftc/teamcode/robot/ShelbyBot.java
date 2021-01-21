@@ -286,7 +286,7 @@ public class ShelbyBot
 
     protected void initSensors()
     {
-        RobotLog.dd(TAG, "In TilerunnerGtoBot.initSensors");
+        RobotLog.dd(TAG, "In ShelbyBot.initSensors");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.RADIANS;
         parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
