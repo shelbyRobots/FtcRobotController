@@ -29,6 +29,7 @@ package org.firstinspires.ftc.teamcode.learn;
  */
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -61,7 +62,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 
 @Autonomous(name="JE_TEST", group="Pushbot")
-//@Disabled
+@Disabled
 public class JE_Test extends  LinearOpMode{
     /* Declare OpMode members. */
     JE_bot robot   = new JE_bot();   // Use a Pushbot's hardware
