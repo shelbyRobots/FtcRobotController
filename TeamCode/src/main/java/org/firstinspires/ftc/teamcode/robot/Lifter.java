@@ -68,7 +68,7 @@ public class Lifter
     private int convLiftpos(LiftPos pos)
     {
         double degPos = pos.posDeg;
-        int encPos = (int)(degPos*LIFTER_CPD);
+        int encPos = (int)(degPos*LIFTER_CPD) - LIFTER_OFST;
         if(pos == LiftPos.HERE) encPos = lftCnts;
         return encPos;
     }
@@ -136,13 +136,13 @@ public class Lifter
     {
         guidePos = pos;
         guideLoc = guidePos.srvPos;
-        if(wobGuide != null) wobGuide.setPosition(clmpLoc);
+        if(wobGuide != null) wobGuide.setPosition(guideLoc);
     }
 
     public void adjGuidePos(double incr)
     {
         guideLoc +=incr;
-        if(wobGuide != null) wobGuide.setPosition(clmpLoc);
+        if(wobGuide != null) wobGuide.setPosition(guideLoc);
     }
 
     public void toggleGuidePos ()
@@ -166,7 +166,7 @@ public class Lifter
 
     public enum LiftPos
     {
-        STOW(0.0),
+        STOW(-45.0),
         GRAB(180.0),
         DROP(150.0),
         HOLD(90.0),
@@ -219,6 +219,7 @@ public class Lifter
     private static final double LIFTER_EXT_GEAR = 1.0; //1:1 bevel
     private static final double LIFTER_CPR = LIFTER_CPER * LIFTER_INT_GEAR * LIFTER_EXT_GEAR; // cnts/outShaftRev
     private static final double LIFTER_CPD = LIFTER_CPR / 360.0;
+    private static final int    LIFTER_OFST = (int)(LiftPos.STOW.posDeg * LIFTER_CPD);
 
     private static final String TAG = "SJH_LFT";
 }

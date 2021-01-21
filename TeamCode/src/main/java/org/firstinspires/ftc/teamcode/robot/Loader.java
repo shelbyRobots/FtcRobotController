@@ -50,6 +50,7 @@ public class Loader
         {
             ldrSrvo = hwMap.get(CRServo.class, "ldrSrvo");
             ldrSrvo.setDirection(DcMotorSimple.Direction.REVERSE);
+            whlStp();
         }
         catch (Exception e)
         {
