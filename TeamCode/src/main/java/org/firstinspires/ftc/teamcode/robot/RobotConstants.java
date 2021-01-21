@@ -17,17 +17,17 @@ import java.util.Arrays;
 public class RobotConstants
 {
   //Wobblie Arm Clamp Servo positions
-  public static double WA_CLAMP_OPEN = 0.60;
-  public static double WA_CLAMP_MID  = 0.75;
-  public static double WA_CLAMP_GRAB = 0.98;
+  public static double WA_CLAMP_OPEN = 0.42;
+  public static double WA_CLAMP_MID  = 0.35;
+  public static double WA_CLAMP_GRAB = 0.25;
 
   //Wobblie AutonGuide Clamp Servo positions
-  public static double WG_CLAMP_OPEN = 0.60;
+  public static double WG_CLAMP_OPEN = 0.62;
   public static double WG_CLAMP_MID  = 0.75;
-  public static double WG_CLAMP_GRAB = 0.98;
+  public static double WG_CLAMP_GRAB = 0.90;
 
-  public static double LD_GATE_OPEN   = 0.5;
-  public static double LD_GATE_CLOSED = 0.62;
+  public static double LD_GATE_OPEN   = 0.36;
+  public static double LD_GATE_CLOSED = 0.56;
 
   public static double SH_FAV_CPS = 1860;
 
@@ -129,9 +129,13 @@ public class RobotConstants
 
       case MEC2:
         RobotLog.dd(TAG, "Running as MEC2");
-        WA_CLAMP_OPEN = 0.60;
-        WA_CLAMP_MID  = 0.75;
-        WA_CLAMP_GRAB = 0.98;
+        WA_CLAMP_OPEN = 0.42;
+        WA_CLAMP_MID  = 0.35;
+        WA_CLAMP_GRAB = 0.25;
+
+        WG_CLAMP_OPEN = 0.62;
+        WG_CLAMP_MID  = 0.75;
+        WG_CLAMP_GRAB = 0.90;
 
         LD_GATE_OPEN   = 0.36;
         LD_GATE_CLOSED = 0.56;
