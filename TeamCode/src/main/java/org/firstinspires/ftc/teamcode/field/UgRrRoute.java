@@ -161,11 +161,11 @@ public class UgRrRoute
     double grabDistO = grabDist;
     if(startPos == START_2)
     {
-      grabDistO = 0.0;
+      grabDistI = 0.0;
     }
     else
     {
-      grabDistI = 0.0;
+      grabDistO = 0.0;
     }
     RobotLog.dd(TAG, "Building trajectories");
     drive.setPoseEstimate(startPose);
@@ -320,7 +320,7 @@ public class UgRrRoute
     pMID = new Pose2d(sx*-24.0,sy*-24.0, sh*Math.toRadians(0));  poses.add(pMID);
     pMOD = new Pose2d(sx*-18.0,sy*-53.0, sh*Math.toRadians(0));  poses.add(pMOD);
 
-    pDIA = new Pose2d(sx*  7.0,sy*-45.0, sh*Math.toRadians(-45));  poses.add(pDIA);
+    pDIA = new Pose2d(sx*  5.0,sy*-45.0, sh*Math.toRadians(-35));  poses.add(pDIA);
     pDIB = new Pose2d(sx* 20.0,sy*-28.0, sh*Math.toRadians(-20));  poses.add(pDIB);
     pDIC = new Pose2d(sx* 46.0,sy*-46.0, sh*Math.toRadians(-45));  poses.add(pDIC);
     pDOA = new Pose2d(sx*  5.0,sy*-56.0, sh*Math.toRadians(-30));  poses.add(pDOA);
@@ -393,6 +393,11 @@ public class UgRrRoute
       robot.loader.load(1.0);
       robot.loader.setGatePos(Loader.gatePos.OPEN);
       robot.loader.whlFwd();
+    }
+
+    if(robot.intake != null)
+    {
+      robot.intake.suck(1.0);
     }
   }
 
