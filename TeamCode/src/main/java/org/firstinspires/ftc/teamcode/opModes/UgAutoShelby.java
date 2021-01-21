@@ -21,6 +21,7 @@ import org.firstinspires.ftc.teamcode.field.UgRrRoute;
 import org.firstinspires.ftc.teamcode.image.Detector;
 import org.firstinspires.ftc.teamcode.image.ImageTracker;
 import org.firstinspires.ftc.teamcode.image.RingDetector;
+import org.firstinspires.ftc.teamcode.robot.Lifter;
 import org.firstinspires.ftc.teamcode.robot.Loader;
 import org.firstinspires.ftc.teamcode.robot.MecanumDriveLRR;
 import org.firstinspires.ftc.teamcode.robot.RobotConstants;
@@ -202,6 +203,17 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         robot.init(this, chas, true);
 
         robot.setBcm(LynxModule.BulkCachingMode.MANUAL);
+
+        if(robot.liftyBoi != null)
+        {
+            robot.liftyBoi.setClampPos(Lifter.ClampPos.CLOSED);
+            robot.liftyBoi.setGuidePos(Lifter.GuidePos.OPEN);
+            robot.liftyBoi.setLiftPos(Lifter.LiftPos.STOW);
+        }
+        if(robot.loader != null)
+        {
+            robot.loader.setGatePos(Loader.gatePos.CLOSE);
+        }
 
         ugrr = new UgRrRoute(robot, startPos, alliance);
         ShelbyBot.DriveDir startDdir = ShelbyBot.DriveDir.PUSHER;
