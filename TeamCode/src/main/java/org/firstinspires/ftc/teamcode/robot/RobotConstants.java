@@ -17,9 +17,9 @@ import java.util.Arrays;
 public class RobotConstants
 {
   //Wobblie Arm Clamp Servo positions
-  public static double WA_CLAMP_OPEN = 0.42;
-  public static double WA_CLAMP_MID  = 0.35;
-  public static double WA_CLAMP_GRAB = 0.25;
+  public static double WA_CLAMP_OPEN = 0.66;
+  public static double WA_CLAMP_MID  = 0.56;
+  public static double WA_CLAMP_GRAB = 0.46;
 
   //Wobblie AutonGuide Clamp Servo positions
   public static double WG_CLAMP_OPEN = 0.62;
@@ -129,9 +129,9 @@ public class RobotConstants
 
       case MEC2:
         RobotLog.dd(TAG, "Running as MEC2");
-        WA_CLAMP_OPEN = 0.42;
-        WA_CLAMP_MID  = 0.35;
-        WA_CLAMP_GRAB = 0.25;
+        WA_CLAMP_OPEN = 0.66;
+        WA_CLAMP_MID  = 0.56;
+        WA_CLAMP_GRAB = 0.46;
 
         WG_CLAMP_OPEN = 0.62;
         WG_CLAMP_MID  = 0.75;
@@ -141,10 +141,10 @@ public class RobotConstants
         LD_GATE_CLOSED = 0.56;
         LD_PUSH_DIR = DcMotorSimple.Direction.REVERSE;
 
-        SH_FAV_CPS = 1860;
+        SH_FAV_CPS = 1764;
 
         MAX_VEL = 50;
-        LATERAL_MULTIPLIER = 1.18;
+        LATERAL_MULTIPLIER = 1.21; //1.18;
         DT_MOTOR = Motors.MotorModel.GOBILDA_5202_19_2;
         DT_EXT_GEAR_RATIO = 1.025; //tuned by RR tuning
         DT_WHEEL_DIAM = 96.0/MMPERIN;

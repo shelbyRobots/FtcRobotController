@@ -105,8 +105,8 @@ public class Lifter
             }
 
             //safetycheck
-            if (lftCnts <= convLiftpos(LiftPos.STOW) - SAFE_DEG * LIFTER_CPD ||
-                lftCnts >= convLiftpos(LiftPos.GRAB) + SAFE_DEG * LIFTER_CPD) power = 0;
+//            if (lftCnts <= convLiftpos(LiftPos.STOW) - SAFE_DEG * LIFTER_CPD ||
+//                lftCnts >= convLiftpos(LiftPos.GRAB) + SAFE_DEG * LIFTER_CPD) power = 0;
 
             tgtVel = power * LIFTER_CPD * 45;
             if(liftMotor != null) liftMotor.setVelocity(tgtVel);

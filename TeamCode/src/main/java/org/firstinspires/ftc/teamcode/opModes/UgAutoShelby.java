@@ -346,6 +346,10 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
                     robot.loader.setGatePos(Loader.gatePos.CLOSE);
                     robot.loader.whlStp();
                 }
+                if(robot.intake != null)
+                {
+                    robot.intake.suck(0.0);
+                }
             }
         }
 

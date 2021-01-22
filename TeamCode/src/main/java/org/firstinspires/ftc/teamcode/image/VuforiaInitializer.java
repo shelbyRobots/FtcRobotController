@@ -87,26 +87,27 @@ public class VuforiaInitializer
         else          parameters = new VuforiaLocalizer.Parameters();
         //SJH Teams license
         parameters.vuforiaLicenseKey =
-                "AQgIvJ7/////AAAAGQSociXWO0kDvfP15zd4zOsS+fHJygDMLA" +
-                "1HhOJQ3FkeiPLGU6YW3ru+jzC6MGxM5tY1ajF4Y0plOpxhQGfS" +
-                "R4g3zFiP0IQavezWhGbjBCRMmYu8INy8KvoZ03crZe9wxxQJu9" +
-                "9KiNX3ZrbUevNXODKKzWyA9RqxxQHbJ3gpXoff4z1O9n211VOg" +
-                "EsJjrNZq8xJnznilyXwc8colJnZD/Adr6UmOzxoUGgaMrdPrlj" +
-                "McDJZU6uyoIrOjiv1G2r3iNjtd7LzKAANKrK/0IrO90MgRqQDr" +
-                "CAAJVHqqyyubMy8EqE5onzw/WFEcEwfQ6nolsNwYTEZb/JppU8" +
-                "9Q6DZmhz4FCT49shA+4PyNOzqsjhRC";
+                "Ad1tZYb/////AAABmRsetuUphUXqpBuf5eocfEtc6+xtUAlEgZ" +
+                "dr+kg9j+wJDb0Hg2JGHJb8w1aqff2V8Ro/dCjDGy8X1wh7eOwv" +
+                "+mj5/Gz8bnXSEDyfg9wxSKDkvQ6NZrAcUnRVXOS+AbsYTeu33r" +
+                "iebCEsBngaKmHbaubqQZW2QdExpZ6oD1WFOLJAcwEh3KQ3Vh5W" +
+                "K4ztj+L3N48IRubsCydDrGCsm34HBHrPckcBAqaUk5yYsF0708" +
+                "uukqtyAs7GDoad3/m89loHHWicYk4BSfcKydQ9KHDIImJ5Zc0l" +
+                "EdM3lXymuZdshGQCBOy3QoSP4sNskfOshR5O9Z+jnfE64fHUZK" +
+                "xNLJopSEOwHawUdMWNB3HYMAHEJfrc";
 
         parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
 
-        WebcamName webcamName = null;
+        WebcamName webcamName;
         boolean useWebCam = true;
         if(useWebCam)
         {
             try
             {
-                webcamName = hardwareMap.get(WebcamName.class, "webcam");
+                webcamName = cmu.getHardwareMap().get(WebcamName.class, "webcam");
                 if (webcamName != null) parameters.cameraName = webcamName;
                 hasCam = true;
+                RobotLog.dd(TAG, "Loaded webcam");
             }
             catch (Exception e)
             {
