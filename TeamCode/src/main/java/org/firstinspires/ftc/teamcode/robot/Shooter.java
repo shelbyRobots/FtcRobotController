@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.robot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import java.util.Locale;
@@ -26,6 +27,7 @@ public class Shooter
             shooter = hwMap.get(DcMotorEx.class, "shoot");
             shooter.setDirection(DcMotor.Direction.REVERSE);
             shooter.setPower(0);
+            shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             shooter.setMode(RUN_USING_ENCODER);
             success = true;
@@ -33,7 +35,16 @@ public class Shooter
         catch (Exception e)
         {
             RobotLog.ee(TAG, "ERROR get hardware map initShooter\n" + e.toString());
-        }   
+        }
+
+        PIDFCoefficients shtPid = new PIDFCoefficients(16.0, 0.0, 0.5,12);
+        shooter.setPIDFCoefficients(RUN_USING_ENCODER, shtPid);
+
+
+        PIDFCoefficients pid;
+        pid = shooter.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+        RobotLog.dd(TAG, "RUN_USING_ENC shooter PID. P:%.2f I:%.2f D:%.2f, F:%.2f",
+            pid.p, pid.i, pid.d, pid.f);
 
         return success;
     }

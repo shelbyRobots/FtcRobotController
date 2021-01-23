@@ -100,6 +100,7 @@ public class MecanumTeleop extends InitLinearOpMode
         dashboard.displayPrintf(l++,"L_IN %4.2f L %4.2f", raw_lr_x, lr_x);
         dashboard.displayPrintf(l++,"R_IN %4.2f R %4.2f", raw_fb_y, fb_y);
         dashboard.displayPrintf(l++,"T_IN %4.2f T %4.2f", raw_turn, turn);
+        RobotLog.dd(TAG, sStr);
     }
 
 
@@ -126,6 +127,7 @@ public class MecanumTeleop extends InitLinearOpMode
         if(toggleGrp) robot.liftyBoi.toggleClampPos();
     }
 
+    boolean lastShoot = false;
     private void controlIntake()
     {
         double intake = -gpad2.value(ManagedGamepad.AnalogInput.L_STICK_Y);
@@ -139,13 +141,16 @@ public class MecanumTeleop extends InitLinearOpMode
                 robot.loader.setGatePos(Loader.gatePos.OPEN);
                 robot.loader.whlFwd();
                 robot.loader.load(1.0);
+                if (lastShoot != shoot) RobotLog.dd(TAG, "Starting shoot");
             }
             else
             {
                 robot.loader.setGatePos(Loader.gatePos.CLOSE);
                 robot.loader.whlStp();
                 robot.loader.load(0.0);
+                if (lastShoot != shoot) RobotLog.dd(TAG, "Ending shoot");
             }
+            lastShoot = shoot;
         }
     }
 
@@ -365,7 +370,7 @@ public class MecanumTeleop extends InitLinearOpMode
     private static final double MIN_CPS = 0.0;
     //6000RPM/60 for RPS * 28 CPR for 1:1 goBilda motor = 2800
     private static final double MAX_CPS = (6000.0/60.0) * 28;
-    private static final double CPS_INC = 20.0;
+    private static final double CPS_INC = 10.0;
 
     private String lStr = "";
     private String sStr = "";

@@ -88,6 +88,7 @@ public class Testlifter extends InitLinearOpMode {
             // Display the current value
             String lStr = lifter.toString();
             dashboard.displayPrintf(p++, lStr);
+            dashboard.displayPrintf(p++, "usePctSpd: %s", usePctSpd);
             RobotLog.dd(TAG, lStr);
 
             dashboard.displayPrintf(p++, "Press Stop to end test.");

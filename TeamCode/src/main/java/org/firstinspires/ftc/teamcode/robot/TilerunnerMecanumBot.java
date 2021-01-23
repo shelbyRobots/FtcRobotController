@@ -145,11 +145,14 @@ public class TilerunnerMecanumBot extends ShelbyBot
 
     public void update()
     {
+        RobotLog.dd(TAG, "Calling robot update");
         super.update();
 
+        RobotLog.dd(TAG, "Calling component updates");
         if(liftyBoi != null) { liftyBoi.update(); }
         if(burr != null)     { burr.update(); }
         if(intake != null)   { intake.update(); }
         if(loader != null)   { loader.update(); }
+        RobotLog.dd(TAG, "Done component updates");
     }
 }

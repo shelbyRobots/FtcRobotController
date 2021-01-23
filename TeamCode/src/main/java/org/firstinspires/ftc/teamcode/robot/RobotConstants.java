@@ -29,7 +29,10 @@ public class RobotConstants
   public static double LD_GATE_OPEN   = 0.36;
   public static double LD_GATE_CLOSED = 0.56;
 
-  public static double SH_FAV_CPS = 1860;
+  public static double SH_FAV_CPS = 1920;
+  public static double SH_72_CPS = 1920;
+  public static double SH_96_CPS = 2060;
+  public static double SH_PS_CPS = 1840;
 
   public static DcMotorSimple.Direction LD_PUSH_DIR = DcMotorSimple.Direction.REVERSE;
 
@@ -141,7 +144,7 @@ public class RobotConstants
         LD_GATE_CLOSED = 0.56;
         LD_PUSH_DIR = DcMotorSimple.Direction.REVERSE;
 
-        SH_FAV_CPS = 1764;
+        SH_FAV_CPS = 1920;
 
         MAX_VEL = 50;
         LATERAL_MULTIPLIER = 1.21; //1.18;
