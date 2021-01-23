@@ -68,8 +68,8 @@ public class Lifter
     private int convLiftpos(LiftPos pos)
     {
         double degPos = pos.posDeg;
-        int encPos = (int)(degPos*LIFTER_CPD) - LIFTER_OFST;
-        if(pos == LiftPos.HERE) encPos = lftCnts;
+        int encPos = (int) (degPos * LIFTER_CPD) - LIFTER_OFST;
+        if (pos == LiftPos.HERE) encPos = lftCnts;
         return encPos;
     }
 
@@ -77,30 +77,30 @@ public class Lifter
     {
         tgtPos = pos;
         int encPos = convLiftpos(tgtPos);
-        if(liftMotor != null) liftMotor.setTargetPosition(encPos);
+        if (liftMotor != null) liftMotor.setTargetPosition(encPos);
 
-        if(lastRunMode != RUN_TO_POSITION)
+        if (lastRunMode != RUN_TO_POSITION)
         {
-            if(liftMotor != null) liftMotor.setMode(RUN_TO_POSITION);
+            if (liftMotor != null) liftMotor.setMode(RUN_TO_POSITION);
             lastRunMode = RUN_TO_POSITION;
         }
 
         tgtVel = LIFTER_CPD * 90;
-        if(liftMotor != null) liftMotor.setVelocity(tgtVel);
+        if (liftMotor != null) liftMotor.setVelocity(tgtVel);
     }
 
     public void setLiftSpd(double pwr)
     {
         double power = pwr;
-        if(Math.abs(power) < 0.05 && lastRunMode != RUN_TO_POSITION)
+        if (Math.abs(power) < 0.05 && lastRunMode != RUN_TO_POSITION)
         {
             setLiftPos(LiftPos.HERE);
         }
         else if (Math.abs(power) >= 0.05)
         {
-            if(lastRunMode != RUN_USING_ENCODER)
+            if (lastRunMode != RUN_USING_ENCODER)
             {
-                if(liftMotor != null) liftMotor.setMode(RUN_USING_ENCODER);
+                if (liftMotor != null) liftMotor.setMode(RUN_USING_ENCODER);
                 lastRunMode = RUN_USING_ENCODER;
             }
 
@@ -109,8 +109,13 @@ public class Lifter
 //                lftCnts >= convLiftpos(LiftPos.GRAB) + SAFE_DEG * LIFTER_CPD) power = 0;
 
             tgtVel = power * LIFTER_CPD * 45;
-            if(liftMotor != null) liftMotor.setVelocity(tgtVel);
+            if (liftMotor != null) liftMotor.setVelocity(tgtVel);
         }
+    }
+
+    public void setPctSpd(double pwr)
+    {
+        if (liftMotor != null) liftMotor.setVelocity(pwr*LIFTER_MAXCPS);
     }
 
     public void setClampPos(ClampPos pos)
@@ -219,6 +224,7 @@ public class Lifter
     private static final double LIFTER_EXT_GEAR = 1.0; //1:1 bevel
     private static final double LIFTER_CPR = LIFTER_CPER * LIFTER_INT_GEAR * LIFTER_EXT_GEAR; // cnts/outShaftRev
     private static final double LIFTER_CPD = LIFTER_CPR / 360.0;
+    private static final double LIFTER_MAXCPS = Motors.MotorModel.AM_NEVEREST_ORBITAL_20.getRpm();
     private static final int    LIFTER_OFST = (int)(LiftPos.STOW.posDeg * LIFTER_CPD);
 
     private static final String TAG = "SJH_LFT";

@@ -14,7 +14,7 @@ public class Testlifter extends InitLinearOpMode {
     private static final int CYCLE_MS = 20;       // period of each cycle
 
     // Define class members
-    private ElapsedTime period  = new ElapsedTime();
+    private final ElapsedTime period  = new ElapsedTime();
 
     private static final String TAG = "SJH_TLF";
 
@@ -44,6 +44,8 @@ public class Testlifter extends InitLinearOpMode {
         if (lifter.liftMotor == null || lifter.clampServo == null) return;
 
         // Ramp motor speeds till stop pressed.
+        boolean usePctSpd = false;
+        double pctSpdSafety = 0.25;
         while (opModeIsActive()) {
             p = 0;
 
@@ -59,13 +61,19 @@ public class Testlifter extends InitLinearOpMode {
             boolean lsrv = gpad1.just_pressed(ManagedGamepad.Button.D_LEFT);
             boolean rsrv = gpad1.just_pressed(ManagedGamepad.Button.D_RIGHT);
             boolean stop = gpad1.just_pressed(ManagedGamepad.Button.D_DOWN);
+            boolean tglS = gpad1.just_pressed(ManagedGamepad.Button.R_TRIGGER);
 
             if (grip) lifter.setClampPos(Lifter.ClampPos.CLOSED);
             else if (ungrip) lifter.setClampPos(Lifter.ClampPos.OPEN);
             else if (lsrv) lifter.adjClampPos(-srvIncr);
             else if (rsrv) lifter.adjClampPos(srvIncr);
 
-            if(stop) lifter.liftMotor.setVelocity(0.0);
+            if(tglS) usePctSpd = !usePctSpd;
+
+            if(usePctSpd)
+            {
+                lifter.setPctSpd(lftPwr * pctSpdSafety);
+            }
             else
             {
                 if (stow) lifter.setLiftPos(Lifter.LiftPos.STOW);
@@ -75,18 +83,25 @@ public class Testlifter extends InitLinearOpMode {
                 else lifter.setLiftSpd(lftPwr);
             }
 
+            if(stop) lifter.liftMotor.setVelocity(0.0);
+
             // Display the current value
             String lStr = lifter.toString();
             dashboard.displayPrintf(p++, lStr);
             RobotLog.dd(TAG, lStr);
 
             dashboard.displayPrintf(p++, "Press Stop to end test.");
-            dashboard.displayPrintf(p++, "Decr srv : Dpad left");
-            dashboard.displayPrintf(p++, "Incr srv : Dpad right");
+            dashboard.displayPrintf(p++, "Decr grip : Dpad left");
+            dashboard.displayPrintf(p++, "Incr grip : Dpad right");
+            dashboard.displayPrintf(p++, "Open  grp : L_BUMP");
+            dashboard.displayPrintf(p++, "Close grp : R_BUMP");
+            dashboard.displayPrintf(p++, "Toggle spdMod : R_TRG");
+            dashboard.displayPrintf(p++, "Arm Speed : L_Stick_Y");
             dashboard.displayPrintf(p++, "Stow : A");
             dashboard.displayPrintf(p++, "Grab : B");
             dashboard.displayPrintf(p++, "Hold : X");
             dashboard.displayPrintf(p++, "Drop : Y");
+
             dashboard.displayPrintf(p, "Zero power : Dpad down");
 
             waitForTick(CYCLE_MS);

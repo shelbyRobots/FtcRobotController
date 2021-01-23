@@ -58,17 +58,14 @@ public class Shooter
         if(shooter != null) shooter.setVelocity(0);
     }
 
-    private double calcCps(double distance){
-        double height = 35;
-        double heightOfShooter = 12;
-
-        double g = -9.81 *3.28084 *12;
-        //diameter of the wheels
-        double dia = 4;
-        //cicumference of the wheels
-        double cir = dia * Math.PI;
-
-        double theta = Math.toRadians(35);
+    private static final double g = -9.81 *3.28084 *12;
+    private static final double height = 35;
+    private static final double heightOfShooter = 10;
+    private static final double dia = 4; //diameter of the wheels
+    private static final double cir = dia * Math.PI; //cicumference of the wheels
+    private static final double theta = Math.toRadians(35);
+    private double calcCps(double distance)
+    {
         v0 = Math.sqrt((g*Math.pow(distance,2))/
             (2*Math.pow(Math.cos(theta),2)*(height-distance*Math.tan(theta)-heightOfShooter)));
         return 2 * (v0 / cir) * SHOOTER_CPR;
