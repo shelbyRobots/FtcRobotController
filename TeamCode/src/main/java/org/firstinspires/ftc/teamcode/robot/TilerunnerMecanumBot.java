@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.util.Units;
@@ -143,16 +144,35 @@ public class TilerunnerMecanumBot extends ShelbyBot
         loader.init();
     }
 
+    double botTime;
+    double lftTime;
+    double shtTime;
+    double intTime;
+    double ldrTime;
+    private final ElapsedTime updTimer = new ElapsedTime();
+    private static final boolean VERBOSE = true;
     public void update()
     {
-        RobotLog.dd(TAG, "Calling robot update");
+        updTimer.reset();
         super.update();
+        botTime = updTimer.milliseconds();
 
-        RobotLog.dd(TAG, "Calling component updates");
+        updTimer.reset();
         if(liftyBoi != null) { liftyBoi.update(); }
+        lftTime = updTimer.milliseconds();
+        updTimer.reset();
         if(burr != null)     { burr.update(); }
+        shtTime = updTimer.milliseconds();
+        updTimer.reset();
         if(intake != null)   { intake.update(); }
+        intTime = updTimer.milliseconds();
+        updTimer.reset();
         if(loader != null)   { loader.update(); }
-        RobotLog.dd(TAG, "Done component updates");
+        ldrTime = updTimer.milliseconds();
+        if(VERBOSE)
+        {
+            RobotLog.dd(TAG, "UPD BOT:%.2f LFT:%.2f SHT:%.2f ITK:%.2f LDR:%.2f",
+                botTime, lftTime, shtTime, intTime, ldrTime);
+        }
     }
 }

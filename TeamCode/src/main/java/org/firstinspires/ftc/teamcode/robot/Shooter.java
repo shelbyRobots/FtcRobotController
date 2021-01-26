@@ -37,14 +37,9 @@ public class Shooter
             RobotLog.ee(TAG, "ERROR get hardware map initShooter\n" + e.toString());
         }
 
-        PIDFCoefficients shtPid = new PIDFCoefficients(16.0, 0.0, 0.5,12);
-        shooter.setPIDFCoefficients(RUN_USING_ENCODER, shtPid);
+        setPIDF(shtPid);
 
-
-        PIDFCoefficients pid;
-        pid = shooter.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
-        RobotLog.dd(TAG, "RUN_USING_ENC shooter PID. P:%.2f I:%.2f D:%.2f, F:%.2f",
-            pid.p, pid.i, pid.d, pid.f);
+        RobotLog.dd(TAG, "RUN_USING_ENC shooter PID. %s", shtPid);
 
         return success;
     }
@@ -65,8 +60,10 @@ public class Shooter
                 encPos, curSpd, cps, dist);
     }
 
-    public void stop(){
-        if(shooter != null) shooter.setVelocity(0);
+    public void stop()
+    {
+        cps = 0.0;
+        if(shooter != null) shooter.setVelocity(cps);
     }
 
     private static final double g = -9.81 *3.28084 *12;
@@ -96,6 +93,17 @@ public class Shooter
     }
 
     public double getV0() {return v0;}
+    public int getEncPos() {return encPos;}
+    public double getCurSpd() {return curSpd;}
+    public double getCmdSpd() {return cps;}
+    public double getDist() {return dist;}
+
+    public PIDFCoefficients getPidf() {return shtPid;}
+    public void setPIDF(PIDFCoefficients pidf)
+    {
+        shtPid = pidf;
+        shooter.setPIDFCoefficients(RUN_USING_ENCODER, shtPid);
+    }
 
     private final double SHOOTER_CPER = 28; //quad encoder cnts/encoder rev
     private final double SHOOTER_INT_GEAR = 1; //1:1 motor - approx 6000 rpm (no load)
@@ -109,6 +117,8 @@ public class Shooter
     private double dist = 0;
     private double cps = 0;
     private double v0 = 0.0;
+
+    private PIDFCoefficients shtPid = RobotConstants.SH_PID;
 
     public static void main(String[] args)
     {

@@ -56,6 +56,7 @@ public class UgRrRoute
   }
 
   public EnumMap<State, Trajectory> stateTrajMap = new EnumMap<>(State.class);
+  public EnumMap<UgRrRoute.State, String> stateColMap = new EnumMap<>(State.class);
 
   final static int    MAX_SEGMENTS = 32;
 
@@ -154,6 +155,13 @@ public class UgRrRoute
 
     }
     stateTrajMap.put(State.PARK,    PRK);
+
+    stateColMap.put(State.DROP1,   "#F50505");
+    stateColMap.put(State.SHOOT,   "#F55505");
+    stateColMap.put(State.REVERSE, "#F5D505");
+    stateColMap.put(State.WOB2,    "#15F505");
+    stateColMap.put(State.DROP2,   "#05F5F5");
+    stateColMap.put(State.PARK,    "#0505F5");
   }
 
   public void initTrajectories()
@@ -348,11 +356,11 @@ public class UgRrRoute
     pPIN = new Pose2d(sx*  4.0,sy*-36.0, sh*Math.toRadians(0));  poses.add(pPIN);
     pPON = new Pose2d(sx*  4.0,sy*-36.0, sh*Math.toRadians(0));  poses.add(pPON);
 
-    startPose = pWON;
-    if(startPos == START_2) startPose = pWIN;
+    startPose = pBON;
+    if(startPos == START_2) startPose = pBIN;
 
     shtPose = pSON;
-    if(startPos == START_2) startPose = pSIN;
+    if(startPos == START_2) shtPose = pSIN;
   }
 
   @SuppressWarnings("unused")

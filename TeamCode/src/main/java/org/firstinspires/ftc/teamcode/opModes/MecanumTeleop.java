@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -82,6 +83,7 @@ public class MecanumTeleop extends InitLinearOpMode
         if(robot.burr != null)     sStr = robot.burr.toString();
     }
 
+    private static final boolean VERBOSE = true;
     private void printTelem()
     {
         String cntStr = String.format(Locale.US,"CNTS: %d %d %d %d",
@@ -97,10 +99,12 @@ public class MecanumTeleop extends InitLinearOpMode
         dashboard.displayText  (l++, velStr);
         dashboard.displayText  (l++, lStr);
         dashboard.displayPrintf(l++, sStr);
-        dashboard.displayPrintf(l++,"L_IN %4.2f L %4.2f", raw_lr_x, lr_x);
-        dashboard.displayPrintf(l++,"R_IN %4.2f R %4.2f", raw_fb_y, fb_y);
+        dashboard.displayPrintf(l++,"L_IN %4.2f L %4.2f", raw_lr, lr);
+        dashboard.displayPrintf(l++,"R_IN %4.2f R %4.2f", raw_fb, fb);
         dashboard.displayPrintf(l++,"T_IN %4.2f T %4.2f", raw_turn, turn);
-        RobotLog.dd(TAG, sStr);
+        if(VERBOSE) RobotLog.dd(TAG, sStr);
+        if(VERBOSE) RobotLog.dd(TAG, "TEL SHT:%.2f ARM:%.2f INT:%.2f DRV%.2f",
+            shtTime, armTime, intTime, drvTime);
     }
 
 
@@ -162,15 +166,19 @@ public class MecanumTeleop extends InitLinearOpMode
         boolean zeroize    = gpad2.just_pressed(ManagedGamepad.Button.D_LEFT);
         boolean normal     = gpad2.just_pressed(ManagedGamepad.Button.D_RIGHT);
 
-
-//        if (step_up && distance < MAX_DIST) {
-//            distance += INCREMENT;
-//            robot.burr.shotSpeed(distance);
-//        }
-//        if (step_down && distance > MIN_DIST) {
-//            distance -= INCREMENT;
-//            robot.burr.shotSpeed(distance);
-//        }
+        if(useDist)
+        {
+            if (step_up && distance < MAX_DIST)
+            {
+                distance += INCREMENT;
+                robot.burr.shotSpeed(distance);
+            }
+            if (step_down && distance > MIN_DIST)
+            {
+                distance -= INCREMENT;
+                robot.burr.shotSpeed(distance);
+            }
+        }
         if (step_up) {cps += CPS_INC; cps = Math.min(cps, MAX_CPS);}
         else if (step_down) {cps -=  CPS_INC; cps = Math.max(cps, MIN_CPS);}
         else if (normal)
@@ -196,8 +204,8 @@ public class MecanumTeleop extends InitLinearOpMode
     {
         if (robot.leftMotors.size() == 0 && robot.rightMotors.size() == 0) return;
 
-        raw_lr_x =  gpad1.value(ManagedGamepad.AnalogInput.R_STICK_X);
-        raw_fb_y = -gpad1.value(ManagedGamepad.AnalogInput.R_STICK_Y);
+        raw_lr =  gpad1.value(ManagedGamepad.AnalogInput.R_STICK_X);
+        raw_fb = -gpad1.value(ManagedGamepad.AnalogInput.R_STICK_Y);
         raw_turn =  gpad1.value(ManagedGamepad.AnalogInput.L_STICK_X);
 
         boolean rgt  = gpad1.pressed(ManagedGamepad.Button.D_RIGHT);
@@ -243,8 +251,8 @@ public class MecanumTeleop extends InitLinearOpMode
             return;
         }
 
-        lr_x = ishaper.shape(raw_lr_x, 0.1);
-        fb_y = ishaper.shape(raw_fb_y, 0.1);
+        lr = ishaper.shape(raw_lr, 0.1);
+        fb = ishaper.shape(raw_fb, 0.1);
         turn = ishaper.shape(raw_turn, 0.1);
 
         if      (incr) dSpd += dStp;
@@ -259,12 +267,12 @@ public class MecanumTeleop extends InitLinearOpMode
             }
             else
             {
-                lr_x = lft ? -dSpd : rgt ? dSpd : 0.0;
-                fb_y = bak ? -dSpd : fwd ? dSpd : 0.0;
+                lr = lft ? -dSpd : rgt ? dSpd : 0.0;
+                fb = bak ? -dSpd : fwd ? dSpd : 0.0;
                 if ((lft || rgt) && (fwd || bak))
                 {
-                    lr_x /= spdScl;
-                    fb_y /= spdScl;
+                    lr /= spdScl;
+                    fb /= spdScl;
                 }
             }
         }
@@ -273,11 +281,11 @@ public class MecanumTeleop extends InitLinearOpMode
         if(useField)
         {
             // Rotate input vector by the inverse of current bot heading
-            driveInput = new Vector2d(-lr_x, -fb_y).rotated(-poseEstimate.getHeading());
+            driveInput = new Vector2d(-lr, -fb).rotated(-poseEstimate.getHeading());
         }
         else
         {
-            driveInput = new Vector2d(fb_y, -lr_x);
+            driveInput = new Vector2d(fb, -lr);
         }
 
         double maxCPS = RobotConstants.DT_SAF_CPS;
@@ -293,18 +301,32 @@ public class MecanumTeleop extends InitLinearOpMode
             );
     }
 
+    double strTime;
+    double shtTime;
+    double armTime;
+    double intTime;
+    double drvTime;
+    private final ElapsedTime opTimer = new ElapsedTime();
     private void processControllerInputs()
     {
         gpad2.update();
+        opTimer.reset();
         controlShooter();
+        shtTime = opTimer.milliseconds();
+        opTimer.reset();
         controlArm();
+        armTime = opTimer.milliseconds();
+        opTimer.reset();
         controlIntake();
+        intTime = opTimer.milliseconds();
+        opTimer.reset();
     }
 
     private void processDriverInputs()
     {
         gpad1.update();
         controlDrive();
+        drvTime = opTimer.milliseconds() - intTime;
     }
 
     @SuppressWarnings("RedundantThrows")
@@ -327,14 +349,16 @@ public class MecanumTeleop extends InitLinearOpMode
 
         RobotLog.dd(TAG, "Mecanum_Driver starting");
 
+        opTimer.reset();
         while (opModeIsActive())
         {
+            strTime = opTimer.milliseconds();
             update();
             processControllerInputs();
             processDriverInputs();
 
             printTelem();
-            robot.waitForTick(10);
+            robot.waitForTick(20);
         }
     }
 
@@ -350,11 +374,11 @@ public class MecanumTeleop extends InitLinearOpMode
 
     Pose2d shtPose = UgRrRoute.shtPose;
 
-    double raw_lr_x;
-    double raw_fb_y;
+    double raw_lr;
+    double raw_fb;
     double raw_turn;
-    double lr_x;
-    double fb_y;
+    double lr;
+    double fb;
     double turn;
 
     Pose2d poseEstimate;
@@ -363,6 +387,7 @@ public class MecanumTeleop extends InitLinearOpMode
     double[] vels = {0,0,0,0};
     double hdg = 0;
 
+    private static final boolean useDist = false;
     private static final double MIN_DIST = 60;
     private static final double MAX_DIST = 136;
     private static final double INCREMENT = 6;

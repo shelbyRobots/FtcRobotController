@@ -27,7 +27,6 @@ import org.firstinspires.ftc.teamcode.util.Units;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -78,7 +77,7 @@ public class ShelbyBot
     public boolean initDirSensor = true;
     private Orientation angles;
     private ImuRunner imuRunner;
-    private final ElapsedTime imuTimer = new ElapsedTime();
+    private final ElapsedTime botTimer = new ElapsedTime();
     private final boolean useImuThread = false;
     public boolean gyroReady = false;
 
@@ -128,6 +127,8 @@ public class ShelbyBot
 
     private final ElapsedTime period  = new ElapsedTime();
 
+    private static final boolean VERBOSE = true;
+
     private static final String TAG = "SJH_BOT";
 
     /* Constructor */
@@ -166,10 +167,7 @@ public class ShelbyBot
         computeCPI();
         initOp(op);
         allHubs = hwMap.getAll(LynxModule.class);
-        for (LynxModule module : allHubs)
-        {
-            module.setBulkCachingMode(bulkCachingMode);
-        }
+        setBcm(bulkCachingMode);
     }
 
     /* Initialize standard Hardware interfaces */
@@ -430,15 +428,8 @@ public class ShelbyBot
 
     public double getGyroHdg()
     {
-        double startTime = imuTimer.milliseconds();
         getGyroAngles();
-        double yaw = Math.toDegrees(angles.firstAngle);
-        double endTime = imuTimer.milliseconds();
-        double imuTime = endTime - startTime;
-        RobotLog.dd("IMU", String.format(Locale.US,
-            "%.2f,%.4f", imuTime, yaw));
-
-        return yaw;
+        return Math.toDegrees(angles.firstAngle);
     }
 
     private void getGyroAngles()
@@ -524,8 +515,19 @@ public class ShelbyBot
 
     public DriveDir getDriveDir() { return ddir; }
 
+    double cbcTime;
+    double lrrTime;
+    double encTime;
+    boolean inInit = false;
+
+    public void setInInit(boolean inInit)
+    {
+        this.inInit = inInit;
+    }
+
     public void update()
     {
+        botTimer.reset();
         if(bulkCachingMode == LynxModule.BulkCachingMode.MANUAL)
         {
             for (LynxModule module : allHubs)
@@ -533,12 +535,16 @@ public class ShelbyBot
                 module.clearBulkCache();
             }
         }
+        cbcTime = botTimer.milliseconds();
+        botTimer.reset();
 
-        if (drive != null)
+        if (drive != null && !inInit)
         {
             if (drive instanceof MecanumDriveLRR) ((MecanumDriveLRR)drive).update();
             else drive.updatePoseEstimate();
         }
+        lrrTime = botTimer.milliseconds();
+        botTimer.reset();
 
         int c = 0;
         for (DcMotorEx m : motors.values())
@@ -546,8 +552,16 @@ public class ShelbyBot
             cnts[c] = m.getCurrentPosition();
             vels[c++] = m.getVelocity();
         }
+        encTime = botTimer.milliseconds();
+        botTimer.reset();
 
         hdg = getGyroFhdg();
+        double imuTime = botTimer.milliseconds();
+        if(VERBOSE)
+        {
+            RobotLog.dd(TAG, "UPD CBC:%.2f LRR:%.2f ENC:%.2f IMU:%.2f",
+                cbcTime, lrrTime, encTime, imuTime);
+        }
     }
 
     public int[] getCnts()    { return cnts; }

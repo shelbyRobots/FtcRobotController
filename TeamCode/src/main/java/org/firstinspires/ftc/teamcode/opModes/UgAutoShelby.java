@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode.opModes;
 
 import android.graphics.Bitmap;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.canvas.Canvas;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.hardware.lynx.LynxModule;
@@ -29,6 +32,7 @@ import org.firstinspires.ftc.teamcode.robot.ShelbyBot;
 import org.firstinspires.ftc.teamcode.robot.TilerunnerMecanumBot;
 import org.firstinspires.ftc.teamcode.util.AutoTransitioner;
 import org.firstinspires.ftc.teamcode.util.CommonUtil;
+import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 import org.firstinspires.ftc.teamcode.util.ManagedGamepad;
 import org.firstinspires.ftc.teamcode.util.Point2d;
 
@@ -67,17 +71,18 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         setup();
 
         int initCycle = 0;
-        int initSleep = 10;
+        int initSleep = 20;
         timer.reset();
+
+        drawRoute();
         while(!isStopRequested() && !isStarted())
         {
+            robot.setInInit(true);
+            robot.update();
+
             if(initCycle % 10 == 0)
             {
-                double shdg = robot.getGyroHdg();
-                double fhdg = robot.getGyroFhdg();
-                dashboard.displayPrintf(0, "HDG %4.2f FHDG %4.2f", shdg, fhdg);
-                dashboard.displayPrintf(10, "GyroReady %s RGyroReady %s",
-                        gyroReady, robot.gyroReady);
+                double fhdg = robot.getHdg();
                 StringBuilder motStr = new StringBuilder("ENCs:");
                 for (Map.Entry<String, DcMotorEx> e : robot.motors.entrySet())
                 {
@@ -86,14 +91,15 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
                     motStr.append(":");
                     motStr.append(e.getValue().getCurrentPosition());
                 }
-                dashboard.displayText(11, motStr.toString());
+                dashboard.displayText(6, motStr.toString());
+                dashboard.displayPrintf(7, "FHDG %4.2f", fhdg);
                 if (robot.colorSensor != null)
                 {
                     int r = robot.colorSensor.red();
                     int g = robot.colorSensor.green();
                     int b = robot.colorSensor.blue();
                     RobotLog.dd(TAG, "RGB = %d %d %d", r, g, b);
-                    dashboard.displayPrintf(15, "RGB %d %d %d", r, g, b);
+                    dashboard.displayPrintf(8, "RGB %d %d %d", r, g, b);
                 }
             }
 
@@ -101,6 +107,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
             robot.waitForTick(initSleep);
         }
+        robot.setInInit(false);
 
         if(!isStopRequested()) startMode();
         stopMode();
@@ -136,21 +143,37 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
             RobotLog.ee(TAG, "ParkPosition %s invalid.", pmgr.getParkPosition());
             parkPos = Route.ParkPos.CENTER_PARK;
         }
+    }
 
+    private void drawRoute()
+    {
+        TelemetryPacket packet = new TelemetryPacket();
+        Canvas fieldOverlay = packet.fieldOverlay();
+        fieldOverlay.setStrokeWidth(2);
+        for(Map.Entry<UgRrRoute.State, Trajectory> entry : ugrr.stateTrajMap.entrySet())
+        {
+            fieldOverlay.setStroke(ugrr.stateColMap.get(entry.getKey()));
+            DashboardUtil.drawSampledPath(fieldOverlay, entry.getValue().getPath());
+        }
+        ftcdbrd.sendTelemetryPacket(packet);
+    }
+
+    private FtcDashboard ftcdbrd;
+    private void setup()
+    {
+        ftcdbrd = FtcDashboard.getInstance();
+        ftcdbrd.setTelemetryTransmissionInterval(25);
+
+        getPrefs();
+        dashboard.displayPrintf(0, "PLEASE WAIT - STARTING - CHECK DEFAULTS");
+        dashboard.displayPrintf(1, "Pref Values:");
         dashboard.displayPrintf(2, "Pref BOT: %s", robotName);
         dashboard.displayPrintf(3, "Pref Alliance: %s", alliance);
         dashboard.displayPrintf(4, "Pref StartPos: %s %s", startPos, parkPos);
         dashboard.displayPrintf(5, "Pref Delay: %.2f Cps: %d", delay, cps);
-    }
-
-    private void setup()
-    {
-        getPrefs();
-        dashboard.displayPrintf(0, "PLEASE WAIT - STARTING - CHECK DEFAULTS");
-        logData = true;
-
         dashboard.displayPrintf(6, "HIT A TO ACCEPT VALUES");
         dashboard.displayPrintf(7, "HIT B FOR MENU");
+        logData = true;
         RobotLog.ii(TAG, "SETUP");
 
         ElapsedTime mTimer = new ElapsedTime();
@@ -173,8 +196,12 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
         if(doMen) doMenus();
 
-        dashboard.displayPrintf(0, "INITIALIZING");
+        dashboard.displayPrintf(0, "INITIALIZING - Please wait");
         dashboard.displayPrintf(1, "Prefs/Menu Done");
+        dashboard.displayPrintf(2, "NAME: %s", robotName);
+        dashboard.displayPrintf(3, "ALLIANCE: %s", alliance);
+        dashboard.displayPrintf(4, "Pref StartPos: %s %s", startPos, parkPos);
+        dashboard.displayPrintf(5, "Pref Delay: %.2f Cps: %d", delay, cps);
         dashboard.displayPrintf(6, "");
         dashboard.displayPrintf(7, "");
 
@@ -222,6 +249,10 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         robot.setInitHdg(initHdg);
         robot.setAlliance(alliance);
 
+        Pose2d ePose = robot.drive.getPoseEstimate();
+        robot.setAutonEndPos(new Point2d(ePose.getX(), ePose.getY()));
+        robot.setAutonEndHdg(ePose.getHeading());
+
         dashboard.displayPrintf(0, "GYRO CALIBRATING DO NOT TOUCH OR START");
         if (robot.imu != null)
         {
@@ -229,8 +260,6 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         }
         dashboard.displayPrintf(0, "GYRO CALIBATED: %s", gyroReady);
         dashboard.displayPrintf(1, "Robot Inited");
-
-        dashboard.displayPrintf(1, "Robot & DrvTrn Inited");
 
         det = new RingDetector(robotName);
         RobotLog.dd(TAG, "Setting up vuforia");
@@ -267,6 +296,8 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         RobotLog.dd(TAG, "CamFlen %f %f", camFlen.getData()[0], camFlen.getData()[1]);
         RobotLog.dd(TAG, "CamPpt %f %f", camPpt.getData()[0], camPpt.getData()[1]);
         RobotLog.dd(TAG, "CamSize %f %f", camSize.getData()[0], camSize.getData()[1]);
+
+        dashboard.displayText(0, "READY TO START");
     }
 
     private void do_main_loop()
@@ -336,7 +367,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
                     shootTimer.seconds() < shootWait)
                 {
                     robot.update();
-                    robot.waitForTick(10);
+                    robot.waitForTick(20);
                 }
 
                 if(robot.burr != null) robot.burr.stop();
@@ -507,7 +538,6 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
             if(rgbImage == null)
             {
                 RobotLog.dd(TAG, "getringPos - image from tracker is null");
-                //noinspection ConstantConditions
                 if(!tempTest) continue;
             }
             RobotLog.dd(TAG, "getringPos - loop calling det.setBitmap");
@@ -610,13 +640,6 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         robotName = robotNameMenu.getCurrentChoiceObject();
         parkPos   = parkMenu.getCurrentChoiceObject();
         delay     = delayMenu.getCurrentValue();
-
-        int lnum = 2;
-        dashboard.displayPrintf(lnum++, "NAME: %s", robotName);
-        dashboard.displayPrintf(lnum++, "ALLIANCE: %s", alliance);
-        dashboard.displayPrintf(lnum++, "START: %s", startPos);
-        //noinspection UnusedAssignment
-        dashboard.displayPrintf(lnum++, "Pref Delay: %.2f", delay);
     }
 
     private void setupLogger()

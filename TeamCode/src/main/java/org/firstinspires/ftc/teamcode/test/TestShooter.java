@@ -1,16 +1,21 @@
 package org.firstinspires.ftc.teamcode.test;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.opModes.InitLinearOpMode;
+import org.firstinspires.ftc.teamcode.robot.RobotConstants;
 import org.firstinspires.ftc.teamcode.robot.Shooter;
 import org.firstinspires.ftc.teamcode.util.ManagedGamepad;
 
 import java.util.List;
 
-
+@Config
 @TeleOp(name = "TestShooter", group = "Test")
 //@Disabled
 public class TestShooter extends InitLinearOpMode
@@ -26,15 +31,46 @@ public class TestShooter extends InitLinearOpMode
     private static final double MAX_CPS = (6000.0/60.0) * 28;
     private static final double CPS_INC = 20.0;
 
+    double lastKp = RobotConstants.SH_PID.p;
+    double lastKi = RobotConstants.SH_PID.i;
+    double lastKd = RobotConstants.SH_PID.d;
+    double lastKf = RobotConstants.SH_PID.f;
+    
+    public static PIDFCoefficients pidf = RobotConstants.SH_PID;
+
+    private FtcDashboard dbd;
+
+    private static Shooter shooter;
+
     private static final String TAG = "SJH_TSH";
+
+    private void doLogging()
+    {
+        TelemetryPacket packet = new TelemetryPacket();
+
+        packet.put("pos", shooter.getEncPos());
+        packet.put("spd", shooter.getCurSpd());
+        packet.put("cmd", cps);
+        packet.put("dst", shooter.getDist());
+        dbd.sendTelemetryPacket(packet);
+
+        String shtStr = shooter.toString();
+        RobotLog.dd(TAG, shtStr);
+        dashboard.displayText(0, shtStr);
+    }
 
     @Override
     public void runOpMode()
     {
         initCommon(this, false, false, false, false);
 
-        Shooter shooter = new Shooter(hardwareMap);
+        dbd = FtcDashboard.getInstance();
+        dbd.setTelemetryTransmissionInterval(25);
+
+        shooter = new Shooter(hardwareMap);
         shooter.init();
+
+        shooter.setPIDF(pidf);
 
         List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
         for (LynxModule module : allHubs)
@@ -45,10 +81,10 @@ public class TestShooter extends InitLinearOpMode
         double distance = FAV_DIST;
 
         // Wait for the start button
-        dashboard.displayPrintf(0, "Press Start to run Motors.");
-        while (!isStarted()) {
+        while (!isStarted())
+        {
             shooter.update();
-            dashboard.displayPrintf(1, shooter.toString());
+            doLogging();
             sleep(CYCLE_MS);
         }
         waitForStart();
@@ -61,13 +97,24 @@ public class TestShooter extends InitLinearOpMode
                 module.clearBulkCache();
             }
 
+            if (lastKp != pidf.p || lastKd != pidf.d || lastKi != pidf.i || lastKf != pidf.f)
+            {
+                shooter.setPIDF(pidf);
+
+                lastKp = pidf.p;
+                lastKi = pidf.i;
+                lastKd = pidf.d;
+                lastKf = pidf.f;
+            }
+
+
             shooter.update();
             gpad1.update();
 
             boolean step_up    = gpad1.just_pressed(ManagedGamepad.Button.D_UP);
             boolean step_down  = gpad1.just_pressed(ManagedGamepad.Button.D_DOWN);
-            boolean zeroize    = gpad1.just_pressed(ManagedGamepad.Button.D_RIGHT);
-            boolean normal     = gpad1.just_pressed(ManagedGamepad.Button.D_LEFT);
+            boolean zeroize    = gpad1.just_pressed(ManagedGamepad.Button.D_LEFT);
+            boolean normal     = gpad1.just_pressed(ManagedGamepad.Button.D_RIGHT);
             boolean shtInc     = gpad1.just_pressed(ManagedGamepad.Button.R_BUMP);
             boolean shtDec     = gpad1.just_pressed(ManagedGamepad.Button.L_BUMP);
 
@@ -79,22 +126,28 @@ public class TestShooter extends InitLinearOpMode
             if (step_up && distance < MAX_DIST) {
                 distance += INCREMENT;
                 shooter.shotSpeed(distance);
+                cps = shooter.getCmdSpd();
             }
             if (step_down && distance > MIN_DIST) {
                 distance -= INCREMENT;
                 shooter.shotSpeed(distance);
+                cps = shooter.getCmdSpd();
             }
-            if (zeroize) shooter.stop();
+            if (zeroize)
+            {
+                shooter.stop();
+                cps = shooter.getCmdSpd();
+            }
             if (normal){
                 distance = FAV_DIST;
                 shooter.shotSpeed(distance);
+                cps = shooter.getCmdSpd();
             }
 
-            dashboard.displayPrintf(1, shooter.toString());
-            RobotLog.dd(TAG, shooter.toString());
+            doLogging();
+
             sleep(CYCLE_MS);
         }
         shooter.stop();
-        dashboard.displayText(  1, "Done." );
     }
 }
