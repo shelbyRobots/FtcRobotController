@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.opModes;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
@@ -7,6 +10,8 @@ import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.RobotLog;
@@ -24,6 +29,7 @@ import org.firstinspires.ftc.teamcode.util.Point2d;
 
 import java.util.Locale;
 
+@Config
 @TeleOp(name = "Mecanum")
 //@Disabled
 public class MecanumTeleop extends InitLinearOpMode
@@ -65,6 +71,9 @@ public class MecanumTeleop extends InitLinearOpMode
         RobotLog.dd(TAG, "Start mode to %s", robot.leftMotors.get(0).getMode());
         if(robot.drive instanceof MecanumDriveLRR)
             ((MecanumDriveLRR)(robot.drive)).setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        dbd = FtcDashboard.getInstance();
+        dbd.setTelemetryTransmissionInterval(20);
     }
 
     private void update()
@@ -99,6 +108,7 @@ public class MecanumTeleop extends InitLinearOpMode
         dashboard.displayText  (l++, velStr);
         dashboard.displayText  (l++, lStr);
         dashboard.displayPrintf(l++, sStr);
+        dashboard.displayPrintf(l++, "V:%.1f SP:%s", strtV, vcmpPID);
         dashboard.displayPrintf(l++,"L_IN %4.2f L %4.2f", raw_lr, lr);
         dashboard.displayPrintf(l++,"R_IN %4.2f R %4.2f", raw_fb, fb);
         dashboard.displayPrintf(l++,"T_IN %4.2f T %4.2f", raw_turn, turn);
@@ -106,6 +116,21 @@ public class MecanumTeleop extends InitLinearOpMode
         if(VERBOSE) RobotLog.dd(TAG, "TEL SHT:%.2f ARM:%.2f INT:%.2f DRV%.2f",
             shtTime, armTime, intTime, drvTime);
     }
+
+    private void doLogging()
+    {
+        TelemetryPacket packet = new TelemetryPacket();
+
+        packet.put("pos", robot.burr.getEncPos());
+        packet.put("spd", robot.burr.getCurSpd());
+        packet.put("cmd", cps);
+        packet.put("dst", robot.burr.getDist());
+        if(!RobotConstants.logDrive) dbd.sendTelemetryPacket(packet);
+
+        String shtStr = robot.burr.toString();
+        RobotLog.dd(TAG, shtStr);
+    }
+
 
 
     private void controlArmElev()
@@ -178,6 +203,7 @@ public class MecanumTeleop extends InitLinearOpMode
                 distance -= INCREMENT;
                 robot.burr.shotSpeed(distance);
             }
+            cps = robot.burr.getCmdSpd();
         }
         if (step_up) {cps += CPS_INC; cps = Math.min(cps, MAX_CPS);}
         else if (step_down) {cps -=  CPS_INC; cps = Math.max(cps, MIN_CPS);}
@@ -188,8 +214,23 @@ public class MecanumTeleop extends InitLinearOpMode
             cps = RobotConstants.SH_FAV_CPS;
         }
         if(step_up || step_down || normal) robot.burr.shootCps(cps);
-        if (zeroize){
+        if (zeroize)
+        {
             robot.burr.stop();
+            cps = robot.burr.getCmdSpd();
+        }
+
+        if (lastKp != pidf.p || lastKd != pidf.d || lastKi != pidf.i || lastKf != pidf.f)
+        {
+            vcmpPID = new PIDFCoefficients(pidf.p, pidf.i, pidf.d,
+                pidf.f *12.0/strtV);
+            RobotLog.dd(TAG, "V: %.1f SHTPID: %s", vcmpPID);
+            robot.burr.setPIDF(vcmpPID);
+
+            lastKp = pidf.p;
+            lastKi = pidf.i;
+            lastKd = pidf.d;
+            lastKf = pidf.f;
         }
 
     }
@@ -329,6 +370,20 @@ public class MecanumTeleop extends InitLinearOpMode
         drvTime = opTimer.milliseconds() - intTime;
     }
 
+    double getBatteryVoltage()
+    {
+        double result = Double.POSITIVE_INFINITY;
+        for (VoltageSensor sensor : hardwareMap.voltageSensor)
+        {
+            double voltage = sensor.getVoltage();
+            if (voltage > 0)
+            {
+                result = Math.min(result, voltage);
+            }
+        }
+        return result;
+    }
+
     @SuppressWarnings("RedundantThrows")
     @Override
     public void runOpMode() throws InterruptedException
@@ -337,7 +392,14 @@ public class MecanumTeleop extends InitLinearOpMode
 
         initPreStart();
 
+        strtV = getBatteryVoltage();
+        vcmpPID = new PIDFCoefficients(pidf.p, pidf.i, pidf.d,
+            pidf.f * 12.0/strtV);
+        RobotLog.dd(TAG, "SHTPID: %s", vcmpPID);
+        robot.burr.setPIDF(vcmpPID);
+
         dashboard.displayPrintf(0, "%s is ready", robot.getName());
+        doLogging();
 
         // Wait for the game to start (driver presses PLAY)
         while(!isStarted() && !isStopRequested())
@@ -358,6 +420,7 @@ public class MecanumTeleop extends InitLinearOpMode
             processDriverInputs();
 
             printTelem();
+            doLogging();
             robot.waitForTick(20);
         }
     }
@@ -397,9 +460,21 @@ public class MecanumTeleop extends InitLinearOpMode
     private static final double MAX_CPS = (6000.0/60.0) * 28;
     private static final double CPS_INC = 10.0;
 
+    double lastKp = RobotConstants.SH_PID.p;
+    double lastKi = RobotConstants.SH_PID.i;
+    double lastKd = RobotConstants.SH_PID.d;
+    double lastKf = RobotConstants.SH_PID.f;
+
+    public static PIDFCoefficients pidf = RobotConstants.SH_PID;
+    private PIDFCoefficients vcmpPID;
+
+    private FtcDashboard dbd;
+
     private String lStr = "";
     private String sStr = "";
     private int l = 0;
+
+    private double strtV;
 
     private static final double FAV_DIST = 75;
     private double distance = FAV_DIST;

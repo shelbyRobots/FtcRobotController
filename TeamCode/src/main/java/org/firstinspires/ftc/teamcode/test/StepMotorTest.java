@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.RobotLog;
@@ -66,6 +67,8 @@ public class StepMotorTest extends InitLinearOpMode
         {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
+
+        double strtV = getBatteryVoltage();
 
         SparseArray<DcMotorEx> motors = new SparseArray<>(MAX_MOTORS);
         SparseBooleanArray   actLst = new SparseBooleanArray(MAX_MOTORS);
@@ -183,6 +186,7 @@ public class StepMotorTest extends InitLinearOpMode
         double cps = 0.0;
         ElapsedTime bumpTimer = new ElapsedTime();
         double lastBumpTime = 0.0;
+        double maxV = 0.0;
 
         while(opModeIsActive())
         {
@@ -317,6 +321,7 @@ public class StepMotorTest extends InitLinearOpMode
                             ntc = 0;
                             e0 = encPos;
                             tv = 0.0;
+                            motVel = 0.0;
                             t0 = timer.milliseconds();
                         }
 
@@ -328,6 +333,7 @@ public class StepMotorTest extends InitLinearOpMode
                             ntc++;
                             tv += motVel;
                             av = tv / ntc;
+                            if(motVel > maxV) maxV = motVel;
                         }
 
                         String rMode;
@@ -353,8 +359,8 @@ public class StepMotorTest extends InitLinearOpMode
                                 dirStr = "R";
                                 break;
                         }
-                        dashboard.displayPrintf(m, "C:%5d P:%.2f V:%.1f RM:%s D:%s",
-                            encPos, motPwrs.get(m), motVel, rMode, dirStr);
+                        dashboard.displayPrintf(m, "C:%5d P:%.2f V:%.1f RM:%s D:%s MX:%.1f",
+                            encPos, motPwrs.get(m), motVel, rMode, dirStr, maxV);
                     }
                     else
                     {
@@ -364,8 +370,11 @@ public class StepMotorTest extends InitLinearOpMode
             }
             numCycles++;
 
-            dashboard.displayPrintf(MAX_MOTORS + p++, "Pwr %4.2f BM:%s SM:%s",
-                power, bcmStr, useSpd);
+            double effKf = 32767/maxV;
+            double vcmpKf = effKf * strtV/12.0;
+            dashboard.displayPrintf(MAX_MOTORS + p++,
+                "Pwr %4.2f BM:%s SM:%s F:%.2f V:%.1f",
+                power, bcmStr, useSpd, vcmpKf, strtV);
 
             dashboard.displayPrintf(MAX_MOTORS + p++, "Avg G/S Time %.1f %.1f",
                 ttg / numCycles, tts / numCycles);
@@ -396,5 +405,19 @@ public class StepMotorTest extends InitLinearOpMode
         }
 
         dashboard.displayText(MAX_MOTORS + 1, "Done." );
+    }
+
+    double getBatteryVoltage()
+    {
+        double result = Double.POSITIVE_INFINITY;
+        for (VoltageSensor sensor : hardwareMap.voltageSensor)
+        {
+            double voltage = sensor.getVoltage();
+            if (voltage > 0)
+            {
+                result = Math.min(result, voltage);
+            }
+        }
+        return result;
     }
 }
