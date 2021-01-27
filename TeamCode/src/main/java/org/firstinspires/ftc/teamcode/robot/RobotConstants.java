@@ -32,7 +32,7 @@ public class RobotConstants
   public static double SH_FAV_CPS = 1820;
   public static double SH_72_CPS = 1820;
   public static double SH_96_CPS = 2060;
-  public static double SH_PS_CPS = 1740;
+  public static double SH_PS_CPS = 1750;
   public static PIDFCoefficients SH_PID = new PIDFCoefficients(20.0, 0.0, 0.3,15.0);
 
   public static DcMotorSimple.Direction LD_PUSH_DIR = DcMotorSimple.Direction.REVERSE;

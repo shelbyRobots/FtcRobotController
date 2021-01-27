@@ -10,6 +10,8 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.vuforia.CameraDevice;
@@ -158,6 +160,20 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         ftcdbrd.sendTelemetryPacket(packet);
     }
 
+    double getBatteryVoltage()
+    {
+        double result = Double.POSITIVE_INFINITY;
+        for (VoltageSensor sensor : hardwareMap.voltageSensor)
+        {
+            double voltage = sensor.getVoltage();
+            if (voltage > 0)
+            {
+                result = Math.min(result, voltage);
+            }
+        }
+        return result;
+    }
+
     private FtcDashboard ftcdbrd;
     private void setup()
     {
@@ -241,6 +257,11 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         {
             robot.loader.setGatePos(Loader.gatePos.CLOSE);
         }
+
+        strtV = getBatteryVoltage();
+        RobotLog.dd(TAG, "SHTPID: %s", vcmpPID);
+        vcmpPID = new PIDFCoefficients(pidf.p, pidf.i, pidf.d,
+            pidf.f *12.0/strtV);
 
         ugrr = new UgRrRoute(robot, startPos, alliance);
         ShelbyBot.DriveDir startDdir = ShelbyBot.DriveDir.PUSHER;
@@ -329,8 +350,11 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
         RobotLog.ii(TAG, "START CHDG %6.3f", robot.getGyroHdg());
 
-        double shootWait = 2.0;
+        double shootWait = 2.5;
+//        double intakeRunWait = 0.6;
+//        double intakePauseWait = 0.6;
         ElapsedTime shootTimer = new ElapsedTime();
+        ElapsedTime intakeTimer = new ElapsedTime();
 
         RobotLog.ii(TAG, "Action SCAN_IMAGE");
         doScan();
@@ -363,6 +387,8 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
             if(state == UgRrRoute.State.SHOOT)
             {
                 shootTimer.reset();
+                intakeTimer.reset();
+
                 while(opModeIsActive() && !isStopRequested() &&
                     shootTimer.seconds() < shootWait)
                 {
@@ -682,7 +708,11 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
     private double delay = 0.0;
 
-    private int cps = 1900;
+    private double strtV;
+    public static PIDFCoefficients pidf = RobotConstants.SH_PID;
+    private PIDFCoefficients vcmpPID;
+
+    private int cps = 1820;
 
     @SuppressWarnings("unused")
     private final boolean useImageLoc  = false;

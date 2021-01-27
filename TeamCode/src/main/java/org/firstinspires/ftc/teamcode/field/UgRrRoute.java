@@ -339,10 +339,10 @@ public class UgRrRoute
 
     pDIA = new Pose2d(sx*  3.0,sy*-47.0, sh*Math.toRadians(-35));  poses.add(pDIA);
     pDIB = new Pose2d(sx* 20.0,sy*-28.0, sh*Math.toRadians(-20));  poses.add(pDIB);
-    pDIC = new Pose2d(sx* 46.0,sy*-46.0, sh*Math.toRadians(-45));  poses.add(pDIC);
+    pDIC = new Pose2d(sx* 46.0,sy*-48.0, sh*Math.toRadians(-45));  poses.add(pDIC);
     pDOA = new Pose2d(sx*  5.0,sy*-56.0, sh*Math.toRadians(-30));  poses.add(pDOA);
-    pDOB = new Pose2d(sx* 28.0,sy*-46.0, sh*Math.toRadians(-35));  poses.add(pDOB);
-    pDOC = new Pose2d(sx* 52.0,sy*-59.0, sh*Math.toRadians(0));  poses.add(pDOC);
+    pDOB = new Pose2d(sx* 28.0,sy*-46.0, sh*Math.toRadians( 35));  poses.add(pDOB);
+    pDOC = new Pose2d(sx* 52.0,sy*-59.0, sh*Math.toRadians(  0));  poses.add(pDOC);
 
     pSIN = new Pose2d(sx* -6.0,sy*-18.0, sh*Math.toRadians(shtHdgI));  poses.add(pSIN);
     pSON = new Pose2d(sx* -6.0,sy*-54.0, sh*Math.toRadians(shtHdgO));  poses.add(pSON);
@@ -417,7 +417,7 @@ public class UgRrRoute
 
     if(robot.intake != null)
     {
-      robot.intake.suck(1.0);
+      robot.intake.suck(0.5);
     }
   }
 
