@@ -102,16 +102,16 @@ public class MecanumTeleop extends InitLinearOpMode
         String posStr = String.format(Locale.US, "X:%.2f Y:%.2f H:%.2f",
             poseEstimate.getX(), poseEstimate.getY(), Math.toDegrees(poseEstimate.getHeading()));
 
-        dashboard.displayPrintf(l++, "Dir %s", robot.getDriveDir());
-        dashboard.displayText  (l++, posStr);
-        dashboard.displayText  (l++, cntStr);
-        dashboard.displayText  (l++, velStr);
-        dashboard.displayText  (l++, lStr);
-        dashboard.displayPrintf(l++, sStr);
-        dashboard.displayPrintf(l++, "V:%.1f SP:%s", strtV, vcmpPID);
-        dashboard.displayPrintf(l++,"L_IN %4.2f L %4.2f", raw_lr, lr);
-        dashboard.displayPrintf(l++,"R_IN %4.2f R %4.2f", raw_fb, fb);
-        dashboard.displayPrintf(l++,"T_IN %4.2f T %4.2f", raw_turn, turn);
+        dashboard.displayText(l++, "Dir " + robot.getDriveDir());
+        dashboard.displayText(l++, posStr);
+        dashboard.displayText(l++, cntStr);
+        dashboard.displayText(l++, velStr);
+        dashboard.displayText(l++, lStr);
+        dashboard.displayText(l++, sStr);
+        dashboard.displayText(l++, String.format(Locale.US,"V:%.1f SP:%s", strtV, vcmpPID));
+        dashboard.displayText(l++, String.format(Locale.US,"L_IN %4.2f L %4.2f", raw_lr, lr));
+        dashboard.displayText(l++, String.format(Locale.US,"R_IN %4.2f R %4.2f", raw_fb, fb));
+        dashboard.displayText(l++, String.format(Locale.US,"T_IN %4.2f T %4.2f", raw_turn, turn));
         if(VERBOSE) RobotLog.dd(TAG, sStr);
         if(VERBOSE) RobotLog.dd(TAG, "TEL SHT:%.2f ARM:%.2f INT:%.2f DRV%.2f",
             shtTime, armTime, intTime, drvTime);
@@ -170,14 +170,14 @@ public class MecanumTeleop extends InitLinearOpMode
                 robot.loader.setGatePos(Loader.gatePos.OPEN);
                 robot.loader.whlFwd();
                 robot.loader.load(1.0);
-                if (lastShoot != shoot) RobotLog.dd(TAG, "Starting shoot");
+                if (!lastShoot) RobotLog.dd(TAG, "Starting shoot");
             }
             else
             {
                 robot.loader.setGatePos(Loader.gatePos.CLOSE);
                 robot.loader.whlStp();
                 robot.loader.load(0.0);
-                if (lastShoot != shoot) RobotLog.dd(TAG, "Ending shoot");
+                if (lastShoot) RobotLog.dd(TAG, "Ending shoot");
             }
             lastShoot = shoot;
         }
@@ -398,7 +398,7 @@ public class MecanumTeleop extends InitLinearOpMode
         RobotLog.dd(TAG, "SHTPID: %s", vcmpPID);
         robot.burr.setPIDF(vcmpPID);
 
-        dashboard.displayPrintf(0, "%s is ready", robot.getName());
+        dashboard.displayText(0, robot.getName() + " is ready");
         doLogging();
 
         // Wait for the game to start (driver presses PLAY)

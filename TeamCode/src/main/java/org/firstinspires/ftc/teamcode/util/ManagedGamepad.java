@@ -4,27 +4,26 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import java.util.EnumMap;
+import java.util.Locale;
 
 public class ManagedGamepad
 {
     private static final String TAG = "SJH_MGP";
     private static int cycle = 0;
-    private EnumMap<Button, Boolean> current       = new EnumMap<>(Button.class);
-    private EnumMap<Button, Boolean> previous      = new EnumMap<>(Button.class);
-    private EnumMap<Button, Boolean> just_pressed  = new EnumMap<>(Button.class);
-    private EnumMap<Button, Boolean> just_released = new EnumMap<>(Button.class);
-    private EnumMap<AnalogInput, Double>  scale    = new EnumMap<>(AnalogInput.class);
+    private final EnumMap<Button, Boolean> current       = new EnumMap<>(Button.class);
+    private final EnumMap<Button, Boolean> previous      = new EnumMap<>(Button.class);
+    private final EnumMap<Button, Boolean> just_pressed  = new EnumMap<>(Button.class);
+    private final EnumMap<Button, Boolean> just_released = new EnumMap<>(Button.class);
+    private final EnumMap<AnalogInput, Double>  scale    = new EnumMap<>(AnalogInput.class);
 
-    private CommonUtil cmu;
-    private HalDashboard dashboard;
+    private final HalDashboard dashboard;
 
     private final Gamepad gamepad;
 
     public ManagedGamepad(Gamepad gamepad)
     {
         this.gamepad = gamepad;
-        cmu = CommonUtil.getInstance();
-        dashboard = cmu.getDashboard();
+        dashboard = CommonUtil.getInstance().getDashboard();
         init();
     }
 
@@ -93,31 +92,35 @@ public class ManagedGamepad
         scale.put(AnalogInput.L_TRIGGER_VAL, (double)gamepad.left_trigger);
         scale.put(AnalogInput.R_TRIGGER_VAL, (double)gamepad.right_trigger);
 
-        boolean aaa = gamepad.left_stick_button;
-
         update_just_pressed();
     }
 
     public boolean just_pressed(Button b)
     {
-        return just_pressed.get(b);
+        final Boolean ret = just_pressed.get(b);
+        return ret == null ? false : ret;
     }
 
+    @SuppressWarnings("unused")
     public boolean just_released(Button b)
     {
-        return just_released.get(b);
+        final Boolean ret = just_released.get(b);
+        return ret == null ? false : ret;
     }
 
     public boolean pressed(Button b)
     {
-        return current.get(b);
+        final Boolean ret = current.get(b);
+        return ret == null ? false : ret;
     }
 
     public double value(AnalogInput a)
     {
-        return scale.get(a);
+        final Double ret = scale.get(a);
+        return ret == null ? 0.0 : ret;
     }
 
+    @SuppressWarnings("unused")
     public void log(int idx)
     {
         StringBuilder pressed = new StringBuilder("1_");
@@ -128,11 +131,12 @@ public class ManagedGamepad
                 pressed.append(b);
             }
         }
-        dashboard.displayPrintf(idx, "%s", pressed);
+        dashboard.displayText(idx, pressed.toString());
         for(AnalogInput a : AnalogInput.values())
         {
             idx +=2;
-            dashboard.displayPrintf(idx, "%s %4.3f", a, scale.get(a));
+            dashboard.displayText(idx,
+                String.format(Locale.US, "%s %4.3f", a, scale.get(a)));
         }
     }
 

@@ -28,13 +28,13 @@ public class Testlifter extends InitLinearOpMode {
         final double srvIncr = 0.05;
 
         // Wait for the start button
-        dashboard.displayPrintf(0, "Press Start to run Motors.");
+        dashboard.displayText(0, "Press Start to run Motors.");
 
         while (!isStarted()) {
             lifter.update();
 
             String lStr = lifter.toString();
-            dashboard.displayPrintf(3, lStr);
+            dashboard.displayText(3, lStr);
             RobotLog.dd(TAG, lStr);
 
             waitForTick(CYCLE_MS);
@@ -87,23 +87,23 @@ public class Testlifter extends InitLinearOpMode {
 
             // Display the current value
             String lStr = lifter.toString();
-            dashboard.displayPrintf(p++, lStr);
-            dashboard.displayPrintf(p++, "usePctSpd: %s", usePctSpd);
+            dashboard.displayText(p++, lStr);
+            dashboard.displayText(p++, "usePctSpd: " + usePctSpd);
             RobotLog.dd(TAG, lStr);
 
-            dashboard.displayPrintf(p++, "Press Stop to end test.");
-            dashboard.displayPrintf(p++, "Decr grip : Dpad left");
-            dashboard.displayPrintf(p++, "Incr grip : Dpad right");
-            dashboard.displayPrintf(p++, "Open  grp : L_BUMP");
-            dashboard.displayPrintf(p++, "Close grp : R_BUMP");
-            dashboard.displayPrintf(p++, "Toggle spdMod : R_TRG");
-            dashboard.displayPrintf(p++, "Arm Speed : L_Stick_Y");
-            dashboard.displayPrintf(p++, "Stow : A");
-            dashboard.displayPrintf(p++, "Grab : B");
-            dashboard.displayPrintf(p++, "Hold : X");
-            dashboard.displayPrintf(p++, "Drop : Y");
+            dashboard.displayText(p++, "Press Stop to end test.");
+            dashboard.displayText(p++, "Decr grip : Dpad left");
+            dashboard.displayText(p++, "Incr grip : Dpad right");
+            dashboard.displayText(p++, "Open  grp : L_BUMP");
+            dashboard.displayText(p++, "Close grp : R_BUMP");
+            dashboard.displayText(p++, "Toggle spdMod : R_TRG");
+            dashboard.displayText(p++, "Arm Speed : L_Stick_Y");
+            dashboard.displayText(p++, "Stow : A");
+            dashboard.displayText(p++, "Grab : B");
+            dashboard.displayText(p++, "Hold : X");
+            dashboard.displayText(p++, "Drop : Y");
 
-            dashboard.displayPrintf(p, "Zero power : Dpad down");
+            dashboard.displayText(p, "Zero power : Dpad down");
 
             waitForTick(CYCLE_MS);
         }

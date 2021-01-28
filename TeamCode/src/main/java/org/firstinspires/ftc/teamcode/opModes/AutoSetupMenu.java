@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.opModes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.util.PreferenceMgr;
@@ -23,8 +22,8 @@ public class AutoSetupMenu extends InitLinearOpMode implements FtcMenu.MenuButto
     private String startPosition;
     private String parkPosition;
     private int    delay;
-    private boolean useCps = true;
-    private int cps = 1900;
+    private static final boolean useCps = true;
+    private int cps = 1820;
 
     private int lnum = 1;
 
@@ -37,7 +36,7 @@ public class AutoSetupMenu extends InitLinearOpMode implements FtcMenu.MenuButto
     public void runOpMode() throws InterruptedException
     {
         initCommon(this, false, false, false, false);
-        dashboard.displayPrintf(0, "Starting Menu System");
+        dashboard.displayText(0, "Starting Menu System");
         setup();
 
         // Wait for the game to start (driver presses PLAY)
@@ -54,21 +53,9 @@ public class AutoSetupMenu extends InitLinearOpMode implements FtcMenu.MenuButto
     {
         prfMgr.readPrefs();
         getPrefs();
-        dashboard.displayPrintf(0, "INITIALIZING - Please wait for Menu");
+        dashboard.displayText(0, "INITIALIZING - Please wait for Menu");
         doMenus();
-        ElapsedTime offTimer = new ElapsedTime();
-        dashboard.displayPrintf(0, "Hit B to do offsetMenu");
-        boolean lastB = false;
-        while(!isStarted() && !isStopRequested() && offTimer.seconds() < 5.0)
-        {
-            boolean curB = gamepad1.b;
-            if(curB && !lastB)
-            {
-                doOffsets();
-            }
-            lastB = curB;
-        }
-        dashboard.displayPrintf(0, "COMPLETE - Settings Written");
+        dashboard.displayText(0, "COMPLETE - Settings Written");
     }
 
     private void getPrefs()
@@ -213,55 +200,11 @@ public class AutoSetupMenu extends InitLinearOpMode implements FtcMenu.MenuButto
         //read them back to ensure they were written
         getPrefs();
 
-        dashboard.displayPrintf(lnum++, "Bot:      " + bot);
-        dashboard.displayPrintf(lnum++, "Alliance: " + allianceColor);
-        dashboard.displayPrintf(lnum++, "Start:    " + startPosition);
-        dashboard.displayPrintf(lnum++, "Park:     " + parkPosition);
-        dashboard.displayPrintf(lnum++, "Delay:    " + delay);
-        dashboard.displayPrintf(lnum++, "Cps:      " + cps);
-    }
-
-    private void doOffsets()
-    {
-        double gOffDeflt = prfMgr.getGlyphOffset(bot);
-        double leftDeflt = prfMgr.getDropOffset(bot, allianceColor, startPosition, "LEFT");
-        double cntrDeflt = prfMgr.getDropOffset(bot, allianceColor, startPosition, "CENTER");
-        double rghtDeflt = prfMgr.getDropOffset(bot, allianceColor, startPosition, "RIGHT");
-
-        FtcValueMenu  glphOffsetMenu = new FtcValueMenu("Goff:", null, this,
-                                        9.0, 18.0, 0.25, gOffDeflt, "%5.2f");
-        FtcValueMenu  leftOffsetMenu = new FtcValueMenu("Left:", glphOffsetMenu, this,
-                                        -5.0, 5.0, 0.25, leftDeflt, "%5.2f");
-        FtcValueMenu  cntrOffsetMenu = new FtcValueMenu("Cntr:", leftOffsetMenu, this,
-                                        -5.0, 5.0, 0.25, cntrDeflt, "%5.2f");
-        FtcValueMenu  rghtOffsetMenu = new FtcValueMenu("Rght:", cntrOffsetMenu, this,
-                                        -5.0, 5.0, 0.25, rghtDeflt, "%5.2f");
-
-        glphOffsetMenu.setChildMenu(leftOffsetMenu);
-        leftOffsetMenu.setChildMenu(cntrOffsetMenu);
-        cntrOffsetMenu.setChildMenu(rghtOffsetMenu);
-
-        FtcMenu.walkMenuTree(glphOffsetMenu, this);
-
-        double gOff = glphOffsetMenu.getCurrentValue();
-        double lOff = leftOffsetMenu.getCurrentValue();
-        double cOff = cntrOffsetMenu.getCurrentValue();
-        double rOff = rghtOffsetMenu.getCurrentValue();
-
-        prfMgr.setGlyphOffset(gOff);
-        prfMgr.setLeftOffset(lOff);
-        prfMgr.setCenterOffset(cOff);
-        prfMgr.setRightOffset(rOff);
-        prfMgr.writeOffsets();
-
-        RobotLog.dd(TAG, "GlphOffset:    %.2f", gOff);
-        RobotLog.dd(TAG, "LeftOffset:    %.2f", lOff);
-        RobotLog.dd(TAG, "CntrOffset:    %.2f", cOff);
-        RobotLog.dd(TAG, "RghtOffset:    %.2f", rOff);
-
-        dashboard.displayPrintf(lnum++, "Goffset:      " + gOff);
-        dashboard.displayPrintf(lnum++, "Loffset:      " + lOff);
-        dashboard.displayPrintf(lnum++, "Coffset:      " + cOff);
-        dashboard.displayPrintf(lnum++, "Roffset:      " + rOff);
+        dashboard.displayText(lnum++, "Bot:      " + bot);
+        dashboard.displayText(lnum++, "Alliance: " + allianceColor);
+        dashboard.displayText(lnum++, "Start:    " + startPosition);
+        dashboard.displayText(lnum++, "Park:     " + parkPosition);
+        dashboard.displayText(lnum++, "Delay:    " + delay);
+        dashboard.displayText(lnum++, "Cps:      " + cps);
     }
 }

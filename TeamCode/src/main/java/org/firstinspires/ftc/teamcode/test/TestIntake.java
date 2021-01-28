@@ -7,6 +7,8 @@ import org.firstinspires.ftc.teamcode.opModes.InitLinearOpMode;
 import org.firstinspires.ftc.teamcode.robot.Intake;
 import org.firstinspires.ftc.teamcode.util.ManagedGamepad;
 
+import java.util.Locale;
+
 
 @TeleOp(name = "Testintake", group = "Test")
 //@Disabled
@@ -33,7 +35,7 @@ public class TestIntake extends InitLinearOpMode
         int p;
 
         // Wait for the start button
-        dashboard.displayPrintf(0, "Press Start to run Motors.");
+        dashboard.displayText(0, "Press Start to run Motors.");
 
         waitForStart();
 
@@ -56,13 +58,14 @@ public class TestIntake extends InitLinearOpMode
             intake.suck(power);
 
             // Display the current value
-            dashboard.displayPrintf(p++, "Motor Power %4.2f", power);
-            RobotLog.dd(TAG, "Motor Power %4.2f", power);
+            String mpStr = String.format(Locale.US,"Motor Power %4.2f", power);
+            dashboard.displayText(p++, mpStr);
+            RobotLog.dd(TAG, mpStr);
 
-            dashboard.displayPrintf(p++, "Press Stop to end test.");
-            dashboard.displayPrintf( p++, "Incr power : Dpad up");
-            dashboard.displayPrintf( p++, "Decr power : Dpad down");
-            dashboard.displayPrintf( p, "Zero power : Dpad right");
+            dashboard.displayText(p++, "Press Stop to end test.");
+            dashboard.displayText( p++, "Incr power : Dpad up");
+            dashboard.displayText( p++, "Decr power : Dpad down");
+            dashboard.displayText( p, "Zero power : Dpad right");
 
             sleep(CYCLE_MS);
         }

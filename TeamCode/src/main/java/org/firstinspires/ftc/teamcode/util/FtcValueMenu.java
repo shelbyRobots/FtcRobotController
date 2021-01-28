@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.util;
 
+import java.util.Locale;
+
 /**
  * This class implements a value menu where a default value is displayed. The user can press the UP and DOWN button
  * to increase or decrease the value and press the ENTER button to select the value. The user can also press the
@@ -136,7 +138,9 @@ public class FtcValueMenu extends FtcMenu
     public void displayMenu()
     {
         dashboard.clearDisplay();
-        dashboard.displayPrintf(0, "%s" + valueFormat + "%s", getTitle(), currValue, childMenu != null? " ...": "");
+        dashboard.displayText(0,
+            String.format(Locale.US, "%s" + valueFormat + "%s", getTitle(),
+                currValue, childMenu != null? " ...": ""));
     }   //displayMenu
 
 }   //class FtcValueMenu

@@ -11,6 +11,8 @@ import com.qualcomm.robotcore.util.RobotLog;
 import org.firstinspires.ftc.teamcode.opModes.InitLinearOpMode;
 import org.firstinspires.ftc.teamcode.util.ManagedGamepad;
 
+import java.util.Locale;
+
 /**
  * This OpMode steps n servos positions up and down based on D-Pad user inputs.
  * This code assumes a Servo configured with the name "testservo#".
@@ -71,7 +73,8 @@ public class StepServoTest extends InitLinearOpMode
             {
                 Servo srv = servos.get(m);
                 if(srv != null)
-                    dashboard.displayPrintf(m, "SRV_%d %.2f", m, srv.getPosition());
+                    dashboard.displayText(m,
+                        String.format(Locale.US, "SRV_%d %.2f", m, srv.getPosition()));
             }
             sleep(10);
         }
@@ -92,7 +95,8 @@ public class StepServoTest extends InitLinearOpMode
             else if(zeroize)                                  pos = 0.0;
             else if(fullize)                                  pos = 1.0;
             // Display the current value
-            dashboard.displayPrintf(MAX_SERVOS, "Servo pos %4.2f", pos);
+            dashboard.displayText(MAX_SERVOS,
+                String.format(Locale.US, "Servo pos %4.2f", pos));
             for(int m = 0; m < MAX_SERVOS; m++)
             {
                 Servo srv = servos.get(m);

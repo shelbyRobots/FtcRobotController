@@ -38,6 +38,7 @@ import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 import org.firstinspires.ftc.teamcode.util.ManagedGamepad;
 import org.firstinspires.ftc.teamcode.util.Point2d;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -94,14 +95,16 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
                     motStr.append(e.getValue().getCurrentPosition());
                 }
                 dashboard.displayText(6, motStr.toString());
-                dashboard.displayPrintf(7, "FHDG %4.2f", fhdg);
+                dashboard.displayText(7,
+                    String.format(Locale.US, "FHDG %4.2f", fhdg));
                 if (robot.colorSensor != null)
                 {
                     int r = robot.colorSensor.red();
                     int g = robot.colorSensor.green();
                     int b = robot.colorSensor.blue();
                     RobotLog.dd(TAG, "RGB = %d %d %d", r, g, b);
-                    dashboard.displayPrintf(8, "RGB %d %d %d", r, g, b);
+                    dashboard.displayText(8,
+                        String.format(Locale.US,"RGB %d %d %d", r, g, b));
                 }
             }
 
@@ -181,14 +184,15 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         ftcdbrd.setTelemetryTransmissionInterval(25);
 
         getPrefs();
-        dashboard.displayPrintf(0, "PLEASE WAIT - STARTING - CHECK DEFAULTS");
-        dashboard.displayPrintf(1, "Pref Values:");
-        dashboard.displayPrintf(2, "Pref BOT: %s", robotName);
-        dashboard.displayPrintf(3, "Pref Alliance: %s", alliance);
-        dashboard.displayPrintf(4, "Pref StartPos: %s %s", startPos, parkPos);
-        dashboard.displayPrintf(5, "Pref Delay: %.2f Cps: %d", delay, cps);
-        dashboard.displayPrintf(6, "HIT A TO ACCEPT VALUES");
-        dashboard.displayPrintf(7, "HIT B FOR MENU");
+        dashboard.displayText(0, "PLEASE WAIT - STARTING - CHECK DEFAULTS");
+        dashboard.displayText(1, "Pref Values:");
+        dashboard.displayText(2, "Pref BOT: " + robotName);
+        dashboard.displayText(3, "Pref Alliance: " + alliance);
+        dashboard.displayText(4, "Pref StartPos: " + startPos + " ParkPos: " + parkPos);
+        dashboard.displayText(5,
+            String.format(Locale.US, "Pref Delay: %.2f Cps: %d", delay, cps));
+        dashboard.displayText(6, "HIT A TO ACCEPT VALUES");
+        dashboard.displayText(7, "HIT B FOR MENU");
         logData = true;
         RobotLog.ii(TAG, "SETUP");
 
@@ -212,14 +216,15 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
         if(doMen) doMenus();
 
-        dashboard.displayPrintf(0, "INITIALIZING - Please wait");
-        dashboard.displayPrintf(1, "Prefs/Menu Done");
-        dashboard.displayPrintf(2, "NAME: %s", robotName);
-        dashboard.displayPrintf(3, "ALLIANCE: %s", alliance);
-        dashboard.displayPrintf(4, "Pref StartPos: %s %s", startPos, parkPos);
-        dashboard.displayPrintf(5, "Pref Delay: %.2f Cps: %d", delay, cps);
-        dashboard.displayPrintf(6, "");
-        dashboard.displayPrintf(7, "");
+        dashboard.displayText(0, "INITIALIZING - Please wait");
+        dashboard.displayText(1, "Prefs/Menu Done");
+        dashboard.displayText(2, "NAME: " + robotName);
+        dashboard.displayText(3, "ALLIANCE: " + alliance);
+        dashboard.displayText(4, "StartPos: " + startPos + " ParkPos: " + parkPos);
+        dashboard.displayText(5,
+            String.format(Locale.US, "Delay: %.2f Cps: %d", delay, cps));
+        dashboard.displayText(6, "");
+        dashboard.displayText(7, "");
 
         final String teleopName = "Mecanum";
         robot = new TilerunnerMecanumBot();
@@ -228,7 +233,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         //teleop opmode
         RobotLog.dd(TAG, "Setting up auto tele loader : %s", teleopName);
         AutoTransitioner.transitionOnStop(this, teleopName);
-        dashboard.displayPrintf(1, "AutoTrans setup");
+        dashboard.displayText(1, "AutoTrans setup");
 
         ShelbyBot.curOpModeType = ShelbyBot.OpModeType.AUTO;
 
@@ -258,7 +263,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
             robot.loader.setGatePos(Loader.gatePos.CLOSE);
         }
 
-        strtV = getBatteryVoltage();
+        double strtV = getBatteryVoltage();
         RobotLog.dd(TAG, "SHTPID: %s", vcmpPID);
         vcmpPID = new PIDFCoefficients(pidf.p, pidf.i, pidf.d,
             pidf.f *12.0/strtV);
@@ -274,13 +279,13 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         robot.setAutonEndPos(new Point2d(ePose.getX(), ePose.getY()));
         robot.setAutonEndHdg(ePose.getHeading());
 
-        dashboard.displayPrintf(0, "GYRO CALIBRATING DO NOT TOUCH OR START");
+        dashboard.displayText(0, "GYRO CALIBRATING DO NOT TOUCH OR START");
         if (robot.imu != null)
         {
             gyroReady = robot.calibrateGyro();
         }
-        dashboard.displayPrintf(0, "GYRO CALIBATED: %s", gyroReady);
-        dashboard.displayPrintf(1, "Robot Inited");
+        dashboard.displayText(0, "GYRO CALIBATED: " + gyroReady);
+        dashboard.displayText(1, "Robot Inited");
 
         det = new RingDetector(robotName);
         RobotLog.dd(TAG, "Setting up vuforia");
@@ -564,6 +569,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
             if(rgbImage == null)
             {
                 RobotLog.dd(TAG, "getringPos - image from tracker is null");
+                //noinspection ConstantConditions
                 if(!tempTest) continue;
             }
             RobotLog.dd(TAG, "getringPos - loop calling det.setBitmap");
@@ -584,7 +590,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         tracker.setFrameQueueSize(0);
         tracker.setActive(false);
 
-        dashboard.displayPrintf(1, "POS: " + ringPos);
+        dashboard.displayText(1, "POS: " + ringPos);
 
         if (ringPos == RingDetector.Position.NONE)
         {
@@ -708,7 +714,6 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
     private double delay = 0.0;
 
-    private double strtV;
     public static PIDFCoefficients pidf = RobotConstants.SH_PID;
     private PIDFCoefficients vcmpPID;
 

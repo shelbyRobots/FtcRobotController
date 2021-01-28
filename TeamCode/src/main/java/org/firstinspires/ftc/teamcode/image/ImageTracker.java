@@ -75,9 +75,10 @@ public class ImageTracker
             VuforiaTrackableDefaultListener l =
                     (VuforiaTrackableDefaultListener) trackable.getListener();
 
-            RobotLog.dd(TAG, "Trackable " + trackable.getName() + " " + l.isVisible());
-            dashboard.displayPrintf(5, "%s", trackable.getName(),
-                                             l.isVisible() ? "Visible" : "Not Visible");
+            String tStr = "Trackable " + trackable.getName() + " " +
+                (l.isVisible() ? "Visible" : "Not Visible");
+            RobotLog.dd(TAG, tStr);
+            dashboard.displayText(5, tStr);
 
             robotLocationTransform = l.getUpdatedRobotLocation();
             if (robotLocationTransform != null)
@@ -160,7 +161,7 @@ public class ImageTracker
                     keyLoc = RelicRecoveryVuMark.from(trackable);
                     RobotLog.ii("SJH", "VuMark KEY = " + keyLoc);
                     rawPose = getImagePose(trackable, true);
-                    dashboard.displayPrintf(6, "VuMark key = %s", keyLoc);
+                    dashboard.displayText(6, "VuMark key " + keyLoc);
                     RobotLog.dd(TAG, "Rawpose: " + format(rawPose));
 
                     List<Point2d>  trackablePixCorners =
@@ -497,7 +498,7 @@ public class ImageTracker
     private int target_width  = Field.target_width;
     private int target_height = Field.target_height;
     CommonUtil cmu;
-    private Field field;
+    private final Field field;
     private VuforiaLocalizer vuforia;
     private VuforiaLocalizer.Parameters parameters;
     private List<VuforiaTrackable> trackables;
@@ -505,20 +506,20 @@ public class ImageTracker
 
     VuforiaInitializer vInit = null;
 
-    private boolean breakOnVumarkFound = true;
+    private final boolean breakOnVumarkFound = true;
 
     private Point2d currPos = null;
     private Double  currYaw = null;
     private Orientation currOri = null;
     private OpenGLMatrix rawPose = null;
     private String lastVisName = "UNKNOWN";
-    private boolean useScreen = true;
+    private final boolean useScreen = true;
 
     private Bitmap rgbImage = null;
     private Bitmap lastImage = null;
     private Bitmap lastCroppedImage = null;
-    private HalDashboard dashboard;
-    private boolean configureLayout = false;
+    private final HalDashboard dashboard;
+    private final boolean configureLayout = false;
 
     private static final int TL = 0;
     private static final int TR = 1;

@@ -209,7 +209,8 @@ public class FtcChoiceMenu<T> extends FtcMenu
                 currChoice = 0;
             }
 
-            int lastDisplayedChoice = Math.min(firstDisplayedChoice + numDashboardLines - 2, choiceItems.size() - 1);
+            int lastDisplayedChoice =
+                Math.min(firstDisplayedChoice + numDashboardLines - 2, choiceItems.size() - 1);
             if (currChoice > lastDisplayedChoice)
             {
                 //
@@ -263,15 +264,16 @@ public class FtcChoiceMenu<T> extends FtcMenu
         //
         int lastDisplayedChoice = Math.min(firstDisplayedChoice + numDashboardLines - 2, choiceItems.size() - 1);
         dashboard.clearDisplay();
-        dashboard.displayPrintf(0, getTitle());
+        dashboard.displayText(0, getTitle());
         //
         // Display all the choices that will fit on the dashboard.
         //
         for (int i = firstDisplayedChoice; i <= lastDisplayedChoice; i++)
         {
             ChoiceItem item = choiceItems.get(i);
-            dashboard.displayPrintf(i - firstDisplayedChoice + 1, i == currChoice? ">>\t%s%s": "%s%s",
-                                    item.getText(), item.getChildMenu() != null? " ...": "");
+            dashboard.displayText(i - firstDisplayedChoice + 1,
+                (i == currChoice ? ">>\t" : "") +
+                item.getText() + (item.getChildMenu() != null? " ...": ""));
         }
     }   //displayMenu
 

@@ -9,6 +9,7 @@ import org.firstinspires.ftc.teamcode.robot.Loader;
 import org.firstinspires.ftc.teamcode.util.ManagedGamepad;
 
 import java.util.List;
+import java.util.Locale;
 
 
 @TeleOp(name = "Testloader", group = "Test")
@@ -43,7 +44,7 @@ public class Testloader extends InitLinearOpMode
 
 
         // Wait for the start button
-        dashboard.displayPrintf(0, "Press Start to run Motors.");
+        dashboard.displayText(0, "Press Start to run Motors.");
 
         waitForStart();
 
@@ -78,7 +79,9 @@ public class Testloader extends InitLinearOpMode
 
             if(gatePass){
                 loader.setGatePos(Loader.gatePos.OPEN);
-            }else if (!gatePass){
+            }
+            else
+            {
                 loader.setGatePos(Loader.gatePos.CLOSE);
             }
 
@@ -98,14 +101,15 @@ public class Testloader extends InitLinearOpMode
             }
 
             // Display the current value
-            dashboard.displayPrintf(p++, "Motor Power %4.2f", power);
-            RobotLog.dd(TAG, "Motor Power %4.2f", power);
+            String mpStr = String.format(Locale.US, "Motor Power %4.2f", power);
+            dashboard.displayText(p++, mpStr);
+            RobotLog.dd(TAG, mpStr);
 
-            dashboard.displayPrintf(p++, "Bak %s Fwd %s", whlBak, whlFwd);
-            dashboard.displayPrintf(p++, "Press Stop to end test.");
-            dashboard.displayPrintf( p++, "Incr power : Dpad up");
-            dashboard.displayPrintf( p++, "Decr power : Dpad down");
-            dashboard.displayPrintf( p, "Zero power : Dpad right");
+            dashboard.displayText(p++, "Bak " + whlBak + " Fwd " + whlFwd);
+            dashboard.displayText(p++, "Press Stop to end test.");
+            dashboard.displayText( p++, "Incr power : Dpad up");
+            dashboard.displayText( p++, "Decr power : Dpad down");
+            dashboard.displayText( p, "Zero power : Dpad right");
 
             sleep(CYCLE_MS);
         }

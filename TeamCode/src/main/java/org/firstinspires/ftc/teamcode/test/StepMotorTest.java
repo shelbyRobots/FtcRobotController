@@ -20,6 +20,7 @@ import org.firstinspires.ftc.teamcode.util.ManagedGamepad;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
 
@@ -111,7 +112,7 @@ public class StepMotorTest extends InitLinearOpMode
         }
 
         // Wait for the start button
-        dashboard.displayPrintf(0, "Press Start to run Motors.");
+        dashboard.displayText(0, "Press Start to run Motors.");
         ElapsedTime timer = new ElapsedTime();
         double t1;
         double t2;
@@ -162,13 +163,15 @@ public class StepMotorTest extends InitLinearOpMode
                     encPos = mot.getCurrentPosition();
                     t2 = timer.milliseconds();
                     dt = t2 - t1;
-                    dashboard.displayPrintf(m, "CNT_%d %d encTime=%4.3f", m, encPos, dt);
+                    dashboard.displayText(m,
+                        String.format(Locale.US, "CNT_%d %d encTime=%4.3f", m, encPos, dt));
                     tt += dt;
                 }
             }
             at = tt / ++numCycles;
-            dashboard.displayPrintf(MAX_MOTORS + p++, "AvgEncTime %4.3f", at);
-            dashboard.displayPrintf(MAX_MOTORS + p, "Tgl Blk mode: L plunge");
+            dashboard.displayText(MAX_MOTORS + p++,
+                String.format(Locale.US, "AvgEncTime %4.3f", at));
+            dashboard.displayText(MAX_MOTORS + p,"Tgl Blk mode: L plunge");
 
             sleep(10);
         }
@@ -359,12 +362,13 @@ public class StepMotorTest extends InitLinearOpMode
                                 dirStr = "R";
                                 break;
                         }
-                        dashboard.displayPrintf(m, "C:%5d P:%.2f V:%.1f RM:%s D:%s MX:%.1f",
-                            encPos, motPwrs.get(m), motVel, rMode, dirStr, maxV);
+                        dashboard.displayText(m,
+                            String.format(Locale.US,"C:%5d P:%.2f V:%.1f RM:%s D:%s MX:%.1f",
+                            encPos, motPwrs.get(m), motVel, rMode, dirStr, maxV));
                     }
                     else
                     {
-                        dashboard.displayPrintf(m, "");
+                        dashboard.displayText(m, "");
                     }
                 }
             }
@@ -372,25 +376,27 @@ public class StepMotorTest extends InitLinearOpMode
 
             double effKf = 32767/maxV;
             double vcmpKf = effKf * strtV/12.0;
-            dashboard.displayPrintf(MAX_MOTORS + p++,
-                "Pwr %4.2f BM:%s SM:%s F:%.2f V:%.1f",
-                power, bcmStr, useSpd, vcmpKf, strtV);
+            dashboard.displayText(MAX_MOTORS + p++,
+                String.format(Locale.US,"Pwr %4.2f BM:%s SM:%s F:%.2f V:%.1f",
+                    power, bcmStr, useSpd, vcmpKf, strtV));
 
-            dashboard.displayPrintf(MAX_MOTORS + p++, "Avg G/S Time %.1f %.1f",
-                ttg / numCycles, tts / numCycles);
+            dashboard.displayText(MAX_MOTORS + p++,
+                String.format(Locale.US,"Avg G/S Time %.1f %.1f",
+                    ttg / numCycles, tts / numCycles));
 
-            dashboard.displayPrintf(MAX_MOTORS + p++, "T: %.1f C: %d CPS: %.1f AV: %.1f",
-                dtt, denc, cps, av);
+            dashboard.displayText(MAX_MOTORS + p++,
+                String.format(Locale.US,"T: %.1f C: %d CPS: %.1f AV: %.1f",
+                    dtt, denc, cps, av));
 
-            dashboard.displayPrintf(MAX_MOTORS + p++, "Press Stop to end test.");
-            dashboard.displayPrintf(MAX_MOTORS + p++, "Decr/Incr pwr : L/R bump");
-            dashboard.displayPrintf(MAX_MOTORS + p++, "TglAct 0,1,2,3 : A,B,X,Y");
-            dashboard.displayPrintf(MAX_MOTORS + p++, "FWD/Rev : Dpad Up/Down");
-            dashboard.displayPrintf(MAX_MOTORS + p++, "L/R Turn : Dpad Left/Right");
-            dashboard.displayPrintf(MAX_MOTORS + p++, "Tgl Tmr     : L plunge");
-            dashboard.displayPrintf(MAX_MOTORS + p++, "Tgl Dirs    : R plunge");
-            dashboard.displayPrintf(MAX_MOTORS + p++, "Tgl Run mode: L trig");
-            dashboard.displayPrintf(MAX_MOTORS + p,   "Tgl Spd mode: R trig");
+            dashboard.displayText(MAX_MOTORS + p++, "Press Stop to end test.");
+            dashboard.displayText(MAX_MOTORS + p++, "Decr/Incr pwr : L/R bump");
+            dashboard.displayText(MAX_MOTORS + p++, "TglAct 0,1,2,3 : A,B,X,Y");
+            dashboard.displayText(MAX_MOTORS + p++, "FWD/Rev : Dpad Up/Down");
+            dashboard.displayText(MAX_MOTORS + p++, "L/R Turn : Dpad Left/Right");
+            dashboard.displayText(MAX_MOTORS + p++, "Tgl Tmr     : L plunge");
+            dashboard.displayText(MAX_MOTORS + p++, "Tgl Dirs    : R plunge");
+            dashboard.displayText(MAX_MOTORS + p++, "Tgl Run mode: L trig");
+            dashboard.displayText(MAX_MOTORS + p,   "Tgl Spd mode: R trig");
 
             sleep(CYCLE_MS);
         }

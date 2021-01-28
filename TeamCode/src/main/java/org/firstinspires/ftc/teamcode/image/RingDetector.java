@@ -25,15 +25,15 @@ public class RingDetector extends Detector {
 
     private static RingDetector.Position foundPosition = RingDetector.Position.NONE;
 
-    private HalDashboard dashboard;
+    private final HalDashboard dashboard;
     private static final String TAG = "SJH_SCD";
 
     @SuppressWarnings("FieldCanBeLocal")
-    private boolean saveSizedImage  = true;
+    private final boolean saveSizedImage  = true;
     @SuppressWarnings("FieldCanBeLocal")
-    private boolean saveMaskedImage = true;
+    private final boolean saveMaskedImage = true;
     @SuppressWarnings("FieldCanBeLocal")
-    private boolean saveThreshImage = true;
+    private final boolean saveThreshImage = true;
 
     @SuppressWarnings("WeakerAccess")
     public RingDetector()
@@ -50,7 +50,7 @@ public class RingDetector extends Detector {
 
     public void logTelemetry()
     {
-        dashboard.displayPrintf(4,"Ring Location Detected: %s", foundPosition);
+        dashboard.displayText(4,"Ring Location Detected: " + foundPosition);
     }
 
     public void logDebug()
@@ -141,9 +141,9 @@ public class RingDetector extends Detector {
             }
 
         }
-        else if (goldcntrs.size() >= 2)
+        else
         {
-            RobotLog.ee(TAG, " found 2 contours, defaulting to C box",
+            RobotLog.ee(TAG, " found >1 contour, defaulting to C box",
                     goldcntrs.size());
             foundPosition = RingDetector.Position.RIGHT;
         }
