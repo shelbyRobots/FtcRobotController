@@ -171,10 +171,10 @@ public class Lifter
 
     public enum LiftPos
     {
-        STOW(-45.0),
-        GRAB(180.0),
-        DROP(150.0),
-        HOLD(90.0),
+        STOW(RobotConstants.WA_ARM_STOW),
+        GRAB(RobotConstants.WA_ARM_GRAB),
+        DROP(RobotConstants.WA_ARM_DROP),
+        HOLD(RobotConstants.WA_ARM_HOLD),
         HERE(0.0);
 
         public final double posDeg;
