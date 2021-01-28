@@ -6,7 +6,6 @@ import android.content.pm.ActivityInfo;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-import android.widget.TextView;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -36,7 +35,7 @@ public class CommonUtil
 
     private boolean cfgLayout = false;
     private boolean layoutModified = false;
-    private boolean logData   = true;
+    private final boolean logData   = true;
 
     private boolean useOpenCV  = false;
     private boolean useManualFedOpenCv = false;
@@ -44,7 +43,7 @@ public class CommonUtil
     private OpenCvInitializer ocvInit;
 
     private boolean useVuforia = false;
-    private boolean vuforiaUseScreen = true;
+    private final boolean vuforiaUseScreen = true;
     private VuforiaInitializer vufInit;
     private static VuforiaLocalizer vuforia = null;
 
@@ -114,16 +113,6 @@ public class CommonUtil
 
     private void initContextAct()
     {
-        Context context = h.appContext;
-        if(context instanceof Activity)
-        {
-            Activity act = (Activity)context;
-            CommonUtil.d.setTextView((TextView)act.findViewById(R.id.textOpMode));
-        }
-        else
-        {
-            RobotLog.ee(TAG, "h.appContext is not an Activity");
-        }
     }
 
     private void initVuforia()
@@ -302,6 +291,7 @@ public class CommonUtil
            { public void run() { act.setRequestedOrientation(actInfo); }});
     }
 
+    @SuppressWarnings("SameParameterValue")
     private void setupImageLayout(final int topId, final int botId)
     {
         if(!cfgLayout || layoutModified) return;
@@ -395,7 +385,6 @@ public class CommonUtil
         return mainView;
     }
 
-    @SuppressWarnings("ConstantConditions")
     private View getMainView()
     {
         final Activity act = getActivity();
