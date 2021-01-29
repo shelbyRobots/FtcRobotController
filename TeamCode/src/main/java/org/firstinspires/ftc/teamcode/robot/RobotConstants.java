@@ -38,7 +38,7 @@ public class RobotConstants
   public static double SH_72_CPS = 1820;
   public static double SH_96_CPS = 2060;
   public static double SH_PS_CPS = 1750;
-  public static PIDFCoefficients SH_PID = new PIDFCoefficients(20.0, 0.0, 0.3,15.0);
+  public static PIDFCoefficients SH_PID = new PIDFCoefficients(20.0, 0.0, 0.3,14.9);
 
   public static DcMotorSimple.Direction LD_PUSH_DIR = DcMotorSimple.Direction.REVERSE;
 
@@ -110,7 +110,7 @@ public class RobotConstants
   public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(7.5, 0, 0);
   public static PIDCoefficients HEADING_PID = new PIDCoefficients(8, 0, 0);
 
-  public static final boolean logDrive = true;
+  public static final boolean logDrive = false;
 
   public static final String TAG = "SJH_RBC";
 
@@ -171,6 +171,7 @@ public class RobotConstants
         break;
 
       case MEC3:
+        MAX_VEL = 50;
         DT_MOTOR = Motors.MotorModel.GOBILDA_5202_19_2;
         DT_EXT_GEAR_RATIO = 1.025; //tuned by RR tuning
         DT_WHEEL_DIAM = 96.0/MMPERIN;

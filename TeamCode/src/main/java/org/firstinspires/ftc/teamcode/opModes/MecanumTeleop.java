@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.opModes;
 
-import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -69,11 +68,7 @@ public class MecanumTeleop extends InitLinearOpMode
         RobotLog.dd(TAG, "Start Pos %s", autonEndPos.toString());
 
         RobotLog.dd(TAG, "Start mode to %s", robot.leftMotors.get(0).getMode());
-        if(robot.drive instanceof MecanumDriveLRR)
-            ((MecanumDriveLRR)(robot.drive)).setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        dbd = FtcDashboard.getInstance();
-        dbd.setTelemetryTransmissionInterval(20);
+        mechDrv.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     private void update()
@@ -119,19 +114,14 @@ public class MecanumTeleop extends InitLinearOpMode
 
     private void doLogging()
     {
-        TelemetryPacket packet = new TelemetryPacket();
+        TelemetryPacket packet = cmu.getTelemetryPacket();
+        if(packet == null) packet = new TelemetryPacket();
 
         packet.put("pos", robot.burr.getEncPos());
         packet.put("spd", robot.burr.getCurSpd());
         packet.put("cmd", cps);
         packet.put("dst", robot.burr.getDist());
-        if(!RobotConstants.logDrive) dbd.sendTelemetryPacket(packet);
-
-        String shtStr = robot.burr.toString();
-        RobotLog.dd(TAG, shtStr);
     }
-
-
 
     private void controlArmElev()
     {
@@ -161,6 +151,8 @@ public class MecanumTeleop extends InitLinearOpMode
     {
         double intake = -gpad2.value(ManagedGamepad.AnalogInput.L_STICK_Y);
         boolean shoot = gpad2.pressed(ManagedGamepad.Button.R_TRIGGER);
+        boolean bkWhl = gpad2.pressed(ManagedGamepad.Button.L_BUMP);
+        boolean bkFwd = gpad2.pressed(ManagedGamepad.Button.R_BUMP);
 
         if(robot.intake != null) robot.intake.suck(intake);
         if(robot.loader != null)
@@ -180,6 +172,8 @@ public class MecanumTeleop extends InitLinearOpMode
                 if (lastShoot) RobotLog.dd(TAG, "Ending shoot");
             }
             lastShoot = shoot;
+            if(bkWhl) robot.loader.whlBak();
+            if(bkFwd) robot.loader.whlFwd();
         }
     }
 
@@ -222,9 +216,10 @@ public class MecanumTeleop extends InitLinearOpMode
 
         if (lastKp != pidf.p || lastKd != pidf.d || lastKi != pidf.i || lastKf != pidf.f)
         {
+            double volt = getBatteryVoltage();
             vcmpPID = new PIDFCoefficients(pidf.p, pidf.i, pidf.d,
-                pidf.f *12.0/strtV);
-            RobotLog.dd(TAG, "V: %.1f SHTPID: %s", vcmpPID);
+                pidf.f *12.0/volt);
+            RobotLog.dd(TAG, "V: %.1f SHTPID: %s", volt, vcmpPID);
             robot.burr.setPIDF(vcmpPID);
 
             lastKp = pidf.p;
@@ -271,23 +266,23 @@ public class MecanumTeleop extends InitLinearOpMode
                 .lineToLinearHeading(shtPose)
                 .build();
 
-            ((MecanumDriveLRR)(robot.drive)).followTrajectoryAsync(traj);
+            mechDrv.followTrajectoryAsync(traj);
             return;
         }
 
         if (trnS)
         {
-            ((MecanumDriveLRR)(robot.drive)).turnAsync(Math.toRadians(180.0));
+            mechDrv.turnAsync(Math.toRadians(180.0));
             return;
         }
 
         if (canA)
         {
-            ((MecanumDriveLRR)(robot.drive)).cancelFollowing();
+            mechDrv.cancelFollowing();
             return;
         }
 
-        if(((MecanumDriveLRR)(robot.drive)).isBusy())
+        if(mechDrv.isBusy())
         {
             return;
         }
@@ -322,7 +317,7 @@ public class MecanumTeleop extends InitLinearOpMode
         if(useField)
         {
             // Rotate input vector by the inverse of current bot heading
-            driveInput = new Vector2d(-lr, -fb).rotated(-poseEstimate.getHeading());
+            driveInput = new Vector2d(lr, fb).rotated(-poseEstimate.getHeading());
         }
         else
         {
@@ -332,14 +327,14 @@ public class MecanumTeleop extends InitLinearOpMode
         double maxCPS = RobotConstants.DT_SAF_CPS;
         if(hspd) maxCPS = RobotConstants.DT_MAX_CPS;
         double spdScl = maxCPS/RobotConstants.DT_MAX_CPS;
-        if(robot.drive instanceof MecanumDriveLRR)
-            ((MecanumDriveLRR)(robot.drive)).setWeightedDrivePower(
-                new Pose2d(
-                    driveInput.getX() * spdScl,
-                    driveInput.getY() * spdScl,
-                    -turn *spdScl
-                )
-            );
+
+        mechDrv.setWeightedDrivePower(
+            new Pose2d(
+                driveInput.getX() * spdScl,
+                driveInput.getY() * spdScl,
+                -turn *spdScl
+            )
+        );
     }
 
     double strTime;
@@ -399,14 +394,16 @@ public class MecanumTeleop extends InitLinearOpMode
         robot.burr.setPIDF(vcmpPID);
 
         dashboard.displayText(0, robot.getName() + " is ready");
-        doLogging();
+
 
         // Wait for the game to start (driver presses PLAY)
         while(!isStarted() && !isStopRequested())
         {
             update();
             printTelem();
-            robot.waitForTick(10);
+            doLogging();
+            robot.finishFrame();
+            robot.waitForTick(20);
         }
 
         RobotLog.dd(TAG, "Mecanum_Driver starting");
@@ -421,6 +418,9 @@ public class MecanumTeleop extends InitLinearOpMode
 
             printTelem();
             doLogging();
+            String shtStr = robot.burr.toString();
+            RobotLog.dd(TAG, shtStr);
+            robot.finishFrame();
             robot.waitForTick(20);
         }
     }
@@ -434,6 +434,7 @@ public class MecanumTeleop extends InitLinearOpMode
 
     private boolean useField = false;
     private final TilerunnerMecanumBot robot = new TilerunnerMecanumBot();
+    private final MecanumDriveLRR  mechDrv= (MecanumDriveLRR)(robot.drive);
 
     Pose2d shtPose = UgRrRoute.shtPose;
 
@@ -467,8 +468,6 @@ public class MecanumTeleop extends InitLinearOpMode
 
     public static PIDFCoefficients pidf = RobotConstants.SH_PID;
     private PIDFCoefficients vcmpPID;
-
-    private FtcDashboard dbd;
 
     private String lStr = "";
     private String sStr = "";

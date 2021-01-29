@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.robot;
 
-import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -73,7 +72,6 @@ public class MecanumDriveLRR extends MecanumDrive
         FOLLOW_TRAJECTORY
     }
 
-    private FtcDashboard dashboard;
     private NanoClock clock;
 
     private Mode mode;
@@ -96,6 +94,8 @@ public class MecanumDriveLRR extends MecanumDrive
 
     private Pose2d lastPoseOnTurn;
 
+    private double followerTimeout = 0.5;
+
     private final static String TAG = "SJH_MDL";
 
     public MecanumDriveLRR(BNO055IMU imu)
@@ -104,9 +104,6 @@ public class MecanumDriveLRR extends MecanumDrive
 
         this.imu = imu;
         HardwareMap hardwareMap = CommonUtil.getInstance().getHardwareMap();
-
-        dashboard = FtcDashboard.getInstance();
-        dashboard.setTelemetryTransmissionInterval(25);
 
         clock = NanoClock.system();
 
@@ -118,7 +115,7 @@ public class MecanumDriveLRR extends MecanumDrive
         velConstraint = defVelConstraint;
         accelConstraint = defAccelConstraint;
         follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID,
-                new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
+                new Pose2d(0.5, 0.5, Math.toRadians(5.0)), followerTimeout);
 
         poseHistory = new LinkedList<>();
 
@@ -187,6 +184,16 @@ public class MecanumDriveLRR extends MecanumDrive
         return new TrajectoryBuilder(startPose, startHeading, velConstraint, accelConstraint);
     }
 
+    public void setFollowerTimeout(double timeout)
+    {
+        if(followerTimeout != timeout)
+        {
+            followerTimeout = timeout;
+            follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID,
+                new Pose2d(0.5, 0.5, Math.toRadians(5.0)), followerTimeout);
+        }
+    }
+
     public void turnAsync(double angle) {
         double heading = getPoseEstimate().getHeading();
 
@@ -242,7 +249,8 @@ public class MecanumDriveLRR extends MecanumDrive
             poseHistory.removeFirst();
         }
 
-        TelemetryPacket packet = new TelemetryPacket();
+        TelemetryPacket packet = CommonUtil.getInstance().getTelemetryPacket();
+        if(packet == null) packet = new TelemetryPacket();
         Canvas fieldOverlay = packet.fieldOverlay();
 
         packet.put("mode", mode);
@@ -313,8 +321,6 @@ public class MecanumDriveLRR extends MecanumDrive
 
         fieldOverlay.setStroke("#3F51B5");
         DashboardUtil.drawRobot(fieldOverlay, currentPose);
-
-        if(RobotConstants.logDrive) dashboard.sendTelemetryPacket(packet);
     }
 
     public void waitForIdle() {

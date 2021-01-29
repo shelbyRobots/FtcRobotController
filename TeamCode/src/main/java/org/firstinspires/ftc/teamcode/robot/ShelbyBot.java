@@ -1,6 +1,7 @@
 
 package org.firstinspires.ftc.teamcode.robot;
 
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.drive.Drive;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
@@ -527,6 +528,7 @@ public class ShelbyBot
 
     public void update()
     {
+        cmu.setTelemetryPacket(new TelemetryPacket());
         botTimer.reset();
         if(bulkCachingMode == LynxModule.BulkCachingMode.MANUAL)
         {
@@ -562,6 +564,11 @@ public class ShelbyBot
             RobotLog.dd(TAG, "UPD CBC:%.2f LRR:%.2f ENC:%.2f IMU:%.2f",
                 cbcTime, lrrTime, encTime, imuTime);
         }
+    }
+
+    public void finishFrame()
+    {
+        cmu.getFtcDashboard().sendTelemetryPacket(cmu.getTelemetryPacket());
     }
 
     public int[] getCnts()    { return cnts; }

@@ -356,6 +356,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         RobotLog.ii(TAG, "START CHDG %6.3f", robot.getGyroHdg());
 
         double shootWait = 2.5;
+        if(UgRrRoute.shootPS) shootWait = 1.5;
 //        double intakeRunWait = 0.6;
 //        double intakePauseWait = 0.6;
         ElapsedTime shootTimer = new ElapsedTime();
@@ -372,10 +373,21 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
             Trajectory traj = entry.getValue();
             if(state == UgRrRoute.State.IDLE) break;
 
+            ugrr.setState(state);
+
             RobotLog.ii(TAG, "Driving trajectory %s", state);
-            ((MecanumDriveLRR)(robot.drive)).followTrajectoryAsync(traj);
+
+            double mechTimeOut = 0.5;
+            if(state == UgRrRoute.State.REVERSE || state == UgRrRoute.State.WOB2)
+            {
+                mechTimeOut = 1.0;
+            }
+
+            mechDrv.setFollowerTimeout(mechTimeOut);
+
+            mechDrv.followTrajectoryAsync(traj);
             while(opModeIsActive() && !isStopRequested() &&
-                ((MecanumDriveLRR)(robot.drive)).isBusy())
+                mechDrv.isBusy())
             {
                 robot.update();
 
@@ -389,7 +401,10 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
             RobotLog.ii(TAG, "Finished %s at %s at %.2f in %.2f",
                 state, ePose, startTimer.seconds(), timer.seconds());
 
-            if(state == UgRrRoute.State.SHOOT)
+            if((state == UgRrRoute.State.SHOOT && !UgRrRoute.shootPS) &&
+               ((state == UgRrRoute.State.SHT1 ||
+                 state == UgRrRoute.State.SHT1 ||
+                 state == UgRrRoute.State.SHT3)   &&  UgRrRoute.shootPS))
             {
                 shootTimer.reset();
                 intakeTimer.reset();
@@ -401,7 +416,9 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
                     robot.waitForTick(20);
                 }
 
-                if(robot.burr != null) robot.burr.stop();
+                if(robot.burr != null  &&
+                    (state == UgRrRoute.State.SHOOT ||
+                        state == UgRrRoute.State.SHT3)) robot.burr.stop();
                 if(robot.loader != null)
                 {
                     robot.loader.load(0.0);
@@ -420,6 +437,18 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         robot.setAutonEndHdg(ePose.getHeading());
         RobotLog.dd(TAG, "Finished auton segments at X:%.2f Y:%.2f H:%.2f",
             ePose.getX(), ePose.getY(), Math.toDegrees(ePose.getHeading()));
+
+        if(robot.burr != null) robot.burr.stop();
+        if(robot.loader != null)
+        {
+            robot.loader.load(0.0);
+            robot.loader.setGatePos(Loader.gatePos.CLOSE);
+            robot.loader.whlStp();
+        }
+        if(robot.intake != null)
+        {
+            robot.intake.suck(0.0);
+        }
 
         while(opModeIsActive() && !isStopRequested())
         {
@@ -569,7 +598,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
             if(rgbImage == null)
             {
                 RobotLog.dd(TAG, "getringPos - image from tracker is null");
-                //noinspection ConstantConditions
+                // //noinspection ConstantConditions
                 if(!tempTest) continue;
             }
             RobotLog.dd(TAG, "getringPos - loop calling det.setBitmap");
@@ -696,6 +725,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
     }
 
     private TilerunnerMecanumBot   robot;
+    private final MecanumDriveLRR mechDrv = (MecanumDriveLRR)(robot.drive);
 
     private final ElapsedTime timer = new ElapsedTime();
     private final ElapsedTime startTimer = new ElapsedTime();

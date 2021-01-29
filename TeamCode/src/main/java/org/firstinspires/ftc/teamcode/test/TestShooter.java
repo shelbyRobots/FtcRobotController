@@ -56,7 +56,7 @@ public class TestShooter extends InitLinearOpMode
 
         String shtStr = shooter.toString();
         RobotLog.dd(TAG, shtStr);
-        dashboard.displayText(0, shtStr);
+        //dashboard.displayText(0, shtStr);
     }
 
     @Override

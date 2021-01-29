@@ -48,6 +48,10 @@ public class UgRrRoute
   {
     DROP1,
     SHOOT,
+    SHT1,
+    SHT2,
+    SHT3,
+    SHTR,
     REVERSE,
     WOB2,
     DROP2,
@@ -56,7 +60,7 @@ public class UgRrRoute
   }
 
   public EnumMap<State, Trajectory> stateTrajMap = new EnumMap<>(State.class);
-  public EnumMap<UgRrRoute.State, String> stateColMap = new EnumMap<>(State.class);
+  public EnumMap<State, String> stateColMap = new EnumMap<>(State.class);
 
   final static int    MAX_SEGMENTS = 32;
 
@@ -64,6 +68,8 @@ public class UgRrRoute
 
   public static Pose2d startPose;
   public static Pose2d shtPose;
+
+  public static double shtCps;
 
   //char1: p=Pose2d, t=Trajectory
   //char2: W=Wobble, M=Mid, D=Drop, S=Shoot, R=Return, P=Park, B=Begin
@@ -86,6 +92,10 @@ public class UgRrRoute
   Pose2d pDIC;
   Pose2d pPIN;
 
+  Pose2d pSO1;
+  Pose2d pSO2;
+  Pose2d pSO3;
+
   Pose2d pSIN;
   Pose2d pMIR;
   Pose2d pRIN;
@@ -104,6 +114,11 @@ public class UgRrRoute
   public Trajectory tSOA;
   public Trajectory tSOB;
   public Trajectory tSOC;
+
+  public Trajectory tSO1;
+  public Trajectory tSO2;
+  public Trajectory tSO3;
+  public Trajectory tSOR;
 
   public Trajectory tRIN;
   public Trajectory tRON;
@@ -133,6 +148,8 @@ public class UgRrRoute
 
   private static final String TAG = "SJH_URR";
 
+  public static boolean shootPS = true;
+
   public UgRrRoute(TilerunnerMecanumBot robot,
                    PositionOption startPos,
                    Field.Alliance alliance)
@@ -145,14 +162,25 @@ public class UgRrRoute
     initPoses();
     initTrajectories();
 
+    shtCps = RobotConstants.SH_FAV_CPS;
+    if(shootPS) shtCps = 1740;
+
     stateTrajMap.put(State.DROP1,  WD1);
     stateTrajMap.put(State.SHOOT,  SHT);
+
+    if(shootPS)
+    {
+      stateTrajMap.put(State.SHT1,  tSO1);
+      stateTrajMap.put(State.SHT2,  tSO2);
+      stateTrajMap.put(State.SHT3,  tSO3);
+      stateTrajMap.put(State.SHTR,  tSOR);
+    }
+
     if(GO_FOR_TWO)
     {
       stateTrajMap.put(State.REVERSE, REV);
       stateTrajMap.put(State.WOB2,    WPU);
       stateTrajMap.put(State.DROP2,   WD2);
-
     }
     stateTrajMap.put(State.PARK,    PRK);
 
@@ -234,6 +262,19 @@ public class UgRrRoute
         .addDisplacementMarker(this::doShoot).build();
     tSOC = new TrajectoryBuilder(tDOC.end(), Math.toRadians(180), defVelLim, defAccelLim)
         .lineToLinearHeading(pSON)
+        .addDisplacementMarker(this::doShoot).build();
+
+    tSO1 = new TrajectoryBuilder(tSOA.end(), Math.toRadians(0), defVelLim, defAccelLim)
+        .lineToConstantHeading(pSO1.vec(), defVelLim, defAccelLim)
+        .addDisplacementMarker(this::doShoot).build();
+    tSO2 = new TrajectoryBuilder(tSO1.end(), Math.toRadians(0), defVelLim, defAccelLim)
+        .lineToConstantHeading(pSO2.vec(), defVelLim, defAccelLim)
+        .addDisplacementMarker(this::doShoot).build();
+    tSO3 = new TrajectoryBuilder(tSO2.end(), Math.toRadians(0), defVelLim, defAccelLim)
+        .lineToConstantHeading(pSO3.vec(), defVelLim, defAccelLim)
+        .addDisplacementMarker(this::doShoot).build();
+    tSOR = new TrajectoryBuilder(tSO3.end(), Math.toRadians(0), defVelLim, defAccelLim)
+        .lineToConstantHeading(pSON.vec(), defVelLim, defAccelLim)
         .addDisplacementMarker(this::doShoot).build();
 
     tRIN = new TrajectoryBuilder(tSIA.end(), Math.toRadians(180), defVelLim, defAccelLim)
@@ -324,10 +365,6 @@ public class UgRrRoute
     double shtHdgO = sh*15.0;
     double shtHdgI = -shtHdgO;
 
-    double shtP1O = sh*35.0;
-    double shtP2O = sh*30.0;
-    double shtP3O = sh*25.0;
-
     pBIN = new Pose2d(sx*-61.5,sy*-24.0, sh*Math.toRadians(0));  poses.add(pWIN);
     pBON = new Pose2d(sx*-61.5,sy*-48.0, sh*Math.toRadians(0));  poses.add(pWON);
 
@@ -346,6 +383,10 @@ public class UgRrRoute
 
     pSIN = new Pose2d(sx* -6.0,sy*-18.0, sh*Math.toRadians(shtHdgI));  poses.add(pSIN);
     pSON = new Pose2d(sx* -6.0,sy*-54.0, sh*Math.toRadians(shtHdgO));  poses.add(pSON);
+
+    pSO1 = new Pose2d(sx* -6.0,sy*-4.0,  sh*Math.toRadians(shtHdgO));  poses.add(pSO1);
+    pSO2 = new Pose2d(sx* -6.0,sy*-12.0, sh*Math.toRadians(shtHdgO));  poses.add(pSO2);
+    pSO3 = new Pose2d(sx* -6.0,sy*-20.0, sh*Math.toRadians(shtHdgO));  poses.add(pSO3);
 
     pMIR = new Pose2d(sx*-30.0,sy*-18.0, sh*Math.toRadians(180.0-shtHdgI));  poses.add(pMIR);
     pMOR = new Pose2d(sx*-30.0,sy*-54.0, sh*Math.toRadians(180.0-shtHdgO));  poses.add(pMOR);
@@ -406,7 +447,7 @@ public class UgRrRoute
     //double shotdist = DEF_SHT_DST;
     RobotLog.dd(TAG, "Shooting");
     //if(robot.burr != null) robot.burr.shotSpeed(shotdist);
-    if(robot.burr != null) robot.burr.shootCps(RobotConstants.SH_FAV_CPS);
+    if(robot.burr != null) robot.burr.shootCps(shtCps);
 
     if(robot.loader != null)
     {
@@ -414,6 +455,9 @@ public class UgRrRoute
       robot.loader.setGatePos(Loader.gatePos.OPEN);
       robot.loader.whlFwd();
     }
+
+    double iPwr = 0.5;
+    if(state != State.SHOOT) iPwr = 1.0;
 
     if(robot.intake != null)
     {
@@ -428,8 +472,11 @@ public class UgRrRoute
     firstShoot = false;
     RobotLog.dd(TAG, "Starting shooter");
     //if(robot.burr != null) robot.burr.shotSpeed(DEF_SHT_DST);
-    if(robot.burr != null) robot.burr.shootCps(RobotConstants.SH_FAV_CPS);
+    if(robot.burr != null) robot.burr.shootCps(shtCps);
   }
+
+  private State state = State.IDLE;
+  public void setState(State state) { this.state = state; }
 
 //  public static void main(String[] args)
 //  {

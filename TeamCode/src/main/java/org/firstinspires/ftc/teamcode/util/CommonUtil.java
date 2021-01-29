@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -29,6 +31,8 @@ public class CommonUtil
     private static Telemetry    t;
     private static HalDashboard d;
     private static DataLogger   dl;
+    private static TelemetryPacket tp;
+    private static FtcDashboard dbd;
 
     private static final int topLayoutViewId = R.id.entire_screen;
     private static final int cameraViewId = R.id.cameraMonitorViewId;
@@ -109,6 +113,8 @@ public class CommonUtil
     private void initDashboard()
     {
         CommonUtil.d = HalDashboard.createInstance(t);
+        CommonUtil.dbd = FtcDashboard.getInstance();
+        CommonUtil.dbd.setTelemetryTransmissionInterval(20);
     }
 
     private void initContextAct()
@@ -184,6 +190,21 @@ public class CommonUtil
     public HalDashboard getDashboard()
     {
         return d;
+    }
+
+    public FtcDashboard getFtcDashboard()
+    {
+        return dbd;
+    }
+
+    public TelemetryPacket getTelemetryPacket()
+    {
+        return tp;
+    }
+
+    public void setTelemetryPacket(TelemetryPacket telemPacket)
+    {
+        tp = telemPacket;
     }
 
     public DataLogger getDataLogger()
