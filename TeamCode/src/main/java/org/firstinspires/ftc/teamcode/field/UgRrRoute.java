@@ -265,7 +265,7 @@ public class UgRrRoute
         .addDisplacementMarker(this::doShoot).build();
 
     tSO1 = new TrajectoryBuilder(tSOA.end(), Math.toRadians(0), defVelLim, defAccelLim)
-        .lineToConstantHeading(pSO1.vec(), defVelLim, defAccelLim)
+        .lineToLinearHeading(pSO1, defVelLim, defAccelLim)
         .addDisplacementMarker(this::doShoot).build();
     tSO2 = new TrajectoryBuilder(tSO1.end(), Math.toRadians(0), defVelLim, defAccelLim)
         .lineToConstantHeading(pSO2.vec(), defVelLim, defAccelLim)
@@ -274,7 +274,7 @@ public class UgRrRoute
         .lineToConstantHeading(pSO3.vec(), defVelLim, defAccelLim)
         .addDisplacementMarker(this::doShoot).build();
     tSOR = new TrajectoryBuilder(tSO3.end(), Math.toRadians(0), defVelLim, defAccelLim)
-        .lineToConstantHeading(pSON.vec(), defVelLim, defAccelLim)
+        .lineToLinearHeading(pSON, defVelLim, defAccelLim)
         .addDisplacementMarker(this::doShoot).build();
 
     tRIN = new TrajectoryBuilder(tSIA.end(), Math.toRadians(180), defVelLim, defAccelLim)
@@ -384,9 +384,9 @@ public class UgRrRoute
     pSIN = new Pose2d(sx* -6.0,sy*-18.0, sh*Math.toRadians(shtHdgI));  poses.add(pSIN);
     pSON = new Pose2d(sx* -6.0,sy*-54.0, sh*Math.toRadians(shtHdgO));  poses.add(pSON);
 
-    pSO1 = new Pose2d(sx* -6.0,sy*-4.0,  sh*Math.toRadians(shtHdgO));  poses.add(pSO1);
-    pSO2 = new Pose2d(sx* -6.0,sy*-12.0, sh*Math.toRadians(shtHdgO));  poses.add(pSO2);
-    pSO3 = new Pose2d(sx* -6.0,sy*-20.0, sh*Math.toRadians(shtHdgO));  poses.add(pSO3);
+    pSO1 = new Pose2d(sx* -6.0,sy*-4.0,  sh*Math.toRadians(0));  poses.add(pSO1);
+    pSO2 = new Pose2d(sx* -6.0,sy*-12.0, sh*Math.toRadians(0));  poses.add(pSO2);
+    pSO3 = new Pose2d(sx* -6.0,sy*-20.0, sh*Math.toRadians(0));  poses.add(pSO3);
 
     pMIR = new Pose2d(sx*-30.0,sy*-18.0, sh*Math.toRadians(180.0-shtHdgI));  poses.add(pMIR);
     pMOR = new Pose2d(sx*-30.0,sy*-54.0, sh*Math.toRadians(180.0-shtHdgO));  poses.add(pMOR);
