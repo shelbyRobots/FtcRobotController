@@ -24,7 +24,7 @@ public class Loader
         try
         {
             loadMotor = hwMap.get(DcMotorEx.class, "loader");
-            loadMotor.setDirection(DcMotor.Direction.REVERSE);
+            loadMotor.setDirection(RobotConstants.LD_PUSH_DIR);
             loadMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             loadMotor.setPower(0);
 

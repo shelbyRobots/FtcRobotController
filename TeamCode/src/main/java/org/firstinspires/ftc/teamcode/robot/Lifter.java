@@ -30,6 +30,7 @@ public class Lifter
             liftMotor.setPower(0);
             liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             liftMotor.setMode(RUN_USING_ENCODER);
+            liftMotor.setDirection(RobotConstants.WA_DIR);
             lastRunMode = RUN_USING_ENCODER;
         }
         catch (Exception e)

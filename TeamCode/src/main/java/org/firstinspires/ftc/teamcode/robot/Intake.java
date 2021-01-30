@@ -21,7 +21,7 @@ public class Intake
         try
         {
             intaker = hwMap.get(DcMotorEx.class, "intake");
-            intaker.setDirection(DcMotor.Direction.REVERSE);
+            intaker.setDirection(RobotConstants.IN_PUSH_DIR);
             intaker.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             intaker.setPower(0);
             success = true;
@@ -93,9 +93,9 @@ public class Intake
 
     public enum DropPos
     {
-        OPEN(0.3),
-        CLOSED(0.6),
-        MID(0.5);
+        OPEN(RobotConstants.LD_DROP_OPEN),
+        CLOSED(RobotConstants.LD_DROP_CLOSE),
+        MID(RobotConstants.LD_DROP_MID);
 
         public final double srvPos;
 
