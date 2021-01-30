@@ -148,7 +148,7 @@ public class UgRrRoute
 
   private static final String TAG = "SJH_URR";
 
-  public static boolean shootPS = true;
+  public static boolean shootPS = false;
 
   public UgRrRoute(TilerunnerMecanumBot robot,
                    PositionOption startPos,
