@@ -262,17 +262,17 @@ public class UgRrRoute
         .lineToLinearHeading(pSON)
         .addDisplacementMarker(this::doShoot).build();
 
-    tSO1 = new TrajectoryBuilder(tSOA.end(), Math.toRadians(0), defVelLim, defAccelLim)
-        .lineToLinearHeading(pSO1, defVelLim, defAccelLim)
+    tSO1 = new TrajectoryBuilder(tSOA.end(), Math.toRadians(0), wobVelLim, wobAccelLim)
+        .lineToLinearHeading(pSO1, wobVelLim, wobAccelLim)
         .addDisplacementMarker(this::doShoot).build();
-    tSO2 = new TrajectoryBuilder(tSO1.end(), Math.toRadians(0), defVelLim, defAccelLim)
-        .lineToConstantHeading(pSO2.vec(), defVelLim, defAccelLim)
+    tSO2 = new TrajectoryBuilder(tSO1.end(), Math.toRadians(0), wobVelLim, wobAccelLim)
+        .lineToConstantHeading(pSO2.vec(), wobVelLim, wobAccelLim)
         .addDisplacementMarker(this::doShoot).build();
-    tSO3 = new TrajectoryBuilder(tSO2.end(), Math.toRadians(0), defVelLim, defAccelLim)
-        .lineToConstantHeading(pSO3.vec(), defVelLim, defAccelLim)
+    tSO3 = new TrajectoryBuilder(tSO2.end(), Math.toRadians(0), wobVelLim, wobAccelLim)
+        .lineToConstantHeading(pSO3.vec(), wobVelLim, wobAccelLim)
         .addDisplacementMarker(this::doShoot).build();
-    tSOR = new TrajectoryBuilder(tSO3.end(), Math.toRadians(0), defVelLim, defAccelLim)
-        .lineToLinearHeading(pSON, defVelLim, defAccelLim)
+    tSOR = new TrajectoryBuilder(tSO3.end(), Math.toRadians(0), wobVelLim, wobAccelLim)
+        .lineToLinearHeading(pSON, wobVelLim, wobAccelLim)
         .addDisplacementMarker(this::doShoot).build();
 
     tRIN = new TrajectoryBuilder(tSIA.end(), Math.toRadians(180), defVelLim, defAccelLim)
@@ -282,10 +282,10 @@ public class UgRrRoute
         .splineTo(pMOR.vec(), pMOR.getHeading(), defVelLim, defAccelLim)
         .splineTo(pRON.vec(), pRON.getHeading(), wobVelLim, wobAccelLim).build();
 
-    tWIN = new TrajectoryBuilder(tRON.end(), Math.toRadians(180), defVelLim, defAccelLim)
-        .splineToConstantHeading(pWIN.vec(), pWIN.getHeading(), wobVelLim, wobAccelLim).build();
-    tWON = new TrajectoryBuilder(tRIN.end(), Math.toRadians(180), defVelLim, defAccelLim)
-        .splineToConstantHeading(pWON.vec(), pWON.getHeading(), wobVelLim, wobAccelLim).build();
+    tWIN = new TrajectoryBuilder(tRON.end(), Math.toRadians(180), wobVelLim, wobAccelLim)
+        .lineToConstantHeading(pWIN.vec(), wobVelLim, wobAccelLim).build();
+    tWON = new TrajectoryBuilder(tRIN.end(), Math.toRadians(180), wobVelLim, wobAccelLim)
+        .lineToConstantHeading(pWON.vec(), wobVelLim, wobAccelLim).build();
 
     if(startPos == START_2)
     {
@@ -366,8 +366,8 @@ public class UgRrRoute
     pBIN = new Pose2d(sx*-61.5,sy*-24.0, sh*Math.toRadians(0));  poses.add(pBIN);
     pBON = new Pose2d(sx*-61.5,sy*-48.0, sh*Math.toRadians(0));  poses.add(pBON);
 
-    pWIN = new Pose2d(sx*-61.25,sy*-24.0, sh*Math.toRadians(0));  poses.add(pWIN);
-    pWON = new Pose2d(sx*-61.25,sy*-48.0, sh*Math.toRadians(0));  poses.add(pWON);
+    pWIN = new Pose2d(sx*-61.00,sy*-24.0, sh*Math.toRadians(0));  poses.add(pWIN);
+    pWON = new Pose2d(sx*-61.00,sy*-48.0, sh*Math.toRadians(0));  poses.add(pWON);
 
     pMID = new Pose2d(sx*-24.0,sy*-21.0, sh*Math.toRadians(0));  poses.add(pMID);
     pMOD = new Pose2d(sx*-18.0,sy*-53.0, sh*Math.toRadians(0));  poses.add(pMOD);
@@ -452,6 +452,8 @@ public class UgRrRoute
     //if(robot.burr != null) robot.burr.shotSpeed(shotdist);
     if(robot.burr != null) robot.burr.shootCps(shtCps);
 
+    if(RobotConstants.SH_PS && state == State.SHOOT) return;
+
     if(robot.loader != null)
     {
       robot.loader.load(1.0);
@@ -459,7 +461,7 @@ public class UgRrRoute
       robot.loader.whlFwd();
     }
 
-    double iPwr = 0.5;
+    double iPwr = 0.7;
     if(state != State.SHOOT) iPwr = 1.0;
 
     if(robot.intake != null)

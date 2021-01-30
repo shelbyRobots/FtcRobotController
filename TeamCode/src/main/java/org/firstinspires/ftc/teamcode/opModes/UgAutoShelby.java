@@ -358,10 +358,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
         double shootWait = 2.5;
         if(RobotConstants.SH_PS) shootWait = 1.5;
-//        double intakeRunWait = 0.6;
-//        double intakePauseWait = 0.6;
         ElapsedTime shootTimer = new ElapsedTime();
-        ElapsedTime intakeTimer = new ElapsedTime();
 
         RobotLog.ii(TAG, "Action SCAN_IMAGE");
         doScan();
@@ -377,6 +374,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
             ugrr.setState(state);
 
             RobotLog.ii(TAG, "Driving trajectory %s", state);
+            RobotLog.ii(TAG, "From %s to %s", traj.start(), traj.end());
 
 //            double mechTimeOut = 0.5;
 //            if(state == UgRrRoute.State.REVERSE || state == UgRrRoute.State.WOB2)
@@ -408,7 +406,6 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
                  state == UgRrRoute.State.SHT3)   &&  RobotConstants.SH_PS))
             {
                 shootTimer.reset();
-                intakeTimer.reset();
 
                 while(opModeIsActive() && !isStopRequested() &&
                     shootTimer.seconds() < shootWait)
