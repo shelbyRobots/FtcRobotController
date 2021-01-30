@@ -58,6 +58,8 @@ public class MecanumTeleop extends InitLinearOpMode
             prevOpModeType, initSensors);
         robot.init(this, chas, initSensors);
 
+        mechDrv = (MecanumDriveLRR)(robot.drive);
+
         robot.setBcm(LynxModule.BulkCachingMode.MANUAL);
 
         Point2d autonEndPos = robot.getAutonEndPos();
@@ -434,7 +436,7 @@ public class MecanumTeleop extends InitLinearOpMode
 
     private boolean useField = false;
     private final TilerunnerMecanumBot robot = new TilerunnerMecanumBot();
-    private final MecanumDriveLRR  mechDrv= (MecanumDriveLRR)(robot.drive);
+    private MecanumDriveLRR  mechDrv;
 
     Pose2d shtPose = UgRrRoute.shtPose;
 

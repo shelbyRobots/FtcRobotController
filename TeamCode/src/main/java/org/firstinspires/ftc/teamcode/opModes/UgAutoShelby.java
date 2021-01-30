@@ -251,6 +251,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         robot.init(this, chas, true);
 
         robot.setBcm(LynxModule.BulkCachingMode.MANUAL);
+        mechDrv = (MecanumDriveLRR)(robot.drive);
 
         if(robot.liftyBoi != null)
         {
@@ -725,7 +726,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
     }
 
     private TilerunnerMecanumBot   robot;
-    private final MecanumDriveLRR mechDrv = (MecanumDriveLRR)(robot.drive);
+    private MecanumDriveLRR mechDrv;
 
     private final ElapsedTime timer = new ElapsedTime();
     private final ElapsedTime startTimer = new ElapsedTime();
