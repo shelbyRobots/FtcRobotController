@@ -30,9 +30,14 @@ public class RobotConstants
   public static double WA_ARM_GRAB = 180.0;
   public static double WA_ARM_DROP = 150.0;
   public static double WA_ARM_HOLD =  60.0;
+  public static DcMotorSimple.Direction WA_DIR = DcMotorSimple.Direction.FORWARD;
 
   public static double LD_GATE_OPEN   = 0.36;
   public static double LD_GATE_CLOSED = 0.56;
+
+  public static double LD_DROP_OPEN   = 0.536; //1550
+  public static double LD_DROP_CLOSE = 0.7; //1780
+  public static double LD_DROP_MID   = 0.6; //1550
 
   public static double SH_FAV_CPS = 1820;
   public static double SH_72_CPS = 1820;
@@ -41,6 +46,7 @@ public class RobotConstants
   public static PIDFCoefficients SH_PID = new PIDFCoefficients(20.0, 0.0, 0.3,14.9);
 
   public static DcMotorSimple.Direction LD_PUSH_DIR = DcMotorSimple.Direction.REVERSE;
+  public static DcMotorSimple.Direction IN_PUSH_DIR = DcMotorSimple.Direction.REVERSE;
 
   public static final double MMPERIN = 25.4;
   public static Motors.MotorModel DT_MOTOR = Motors.MotorModel.GOBILDA_5202_19_2;
@@ -131,6 +137,26 @@ public class RobotConstants
     switch (bot)
     {
       case MEC1:
+        LD_DROP_OPEN   = 0.536; //1550
+        LD_DROP_CLOSE = 0.7; //1780
+        LD_DROP_MID   = 0.6; //1550
+
+        WA_CLAMP_OPEN = 0.143;
+        WA_CLAMP_MID  = 0.3;
+        WA_CLAMP_GRAB = 0.446;
+
+        WA_ARM_STOW = -15.0;
+        WA_ARM_GRAB = 180.0;
+        WA_ARM_DROP = 120.0;
+        WA_ARM_HOLD =  60.0;
+
+        WA_DIR = DcMotorSimple.Direction.REVERSE;
+
+        LD_GATE_OPEN   = 0.34;
+        LD_GATE_CLOSED = 0.26;
+
+        IN_PUSH_DIR = DcMotorSimple.Direction.FORWARD;
+
         DT_MOTOR = Motors.MotorModel.AM_NEVEREST_ORBITAL_20;
         DT_EXT_GEAR_RATIO = 1.0; //need RR tuning
         DT_WHEEL_DIAM = 4.0;
@@ -150,12 +176,14 @@ public class RobotConstants
 
         WA_ARM_STOW = -45.0;
         WA_ARM_GRAB = 180.0;
-        WA_ARM_DROP = 150.0;
+        WA_ARM_DROP = 120.0;
         WA_ARM_HOLD =  60.0;
 
         LD_GATE_OPEN   = 0.36;
         LD_GATE_CLOSED = 0.56;
         LD_PUSH_DIR = DcMotorSimple.Direction.REVERSE;
+
+        IN_PUSH_DIR = DcMotorSimple.Direction.REVERSE;
 
         SH_FAV_CPS = 1820;
 
@@ -171,6 +199,21 @@ public class RobotConstants
         break;
 
       case MEC3:
+        WA_CLAMP_OPEN = 0.66;
+        WA_CLAMP_MID  = 0.56;
+        WA_CLAMP_GRAB = 0.46;
+
+        WG_CLAMP_OPEN = 0.62;
+        WG_CLAMP_MID  = 0.75;
+        WG_CLAMP_GRAB = 0.90;
+
+        WA_ARM_STOW = -10.0;
+        WA_ARM_GRAB = 180.0;
+        WA_ARM_DROP = 120.0;
+        WA_ARM_HOLD =  60.0;
+
+        IN_PUSH_DIR = DcMotorSimple.Direction.REVERSE;
+
         MAX_VEL = 50;
         DT_MOTOR = Motors.MotorModel.GOBILDA_5202_19_2;
         DT_EXT_GEAR_RATIO = 1.025; //tuned by RR tuning
