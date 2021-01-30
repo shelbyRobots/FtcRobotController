@@ -39,11 +39,13 @@ public class RobotConstants
   public static double LD_DROP_CLOSE = 0.7; //1780
   public static double LD_DROP_MID   = 0.6; //1550
 
-  public static double SH_FAV_CPS = 1820;
+  public static double SH_FAV_CPS = 1840;
   public static double SH_72_CPS = 1820;
   public static double SH_96_CPS = 2060;
   public static double SH_PS_CPS = 1750;
   public static PIDFCoefficients SH_PID = new PIDFCoefficients(20.0, 0.0, 0.3,14.9);
+
+  public static boolean SH_PS = false;
 
   public static DcMotorSimple.Direction LD_PUSH_DIR = DcMotorSimple.Direction.REVERSE;
   public static DcMotorSimple.Direction IN_PUSH_DIR = DcMotorSimple.Direction.REVERSE;
@@ -145,15 +147,15 @@ public class RobotConstants
         WA_CLAMP_MID  = 0.3;
         WA_CLAMP_GRAB = 0.446;
 
-        WA_ARM_STOW = -15.0;
+        WA_ARM_STOW = 34.0;
         WA_ARM_GRAB = 180.0;
         WA_ARM_DROP = 120.0;
         WA_ARM_HOLD =  60.0;
 
         WA_DIR = DcMotorSimple.Direction.REVERSE;
 
-        LD_GATE_OPEN   = 0.34;
-        LD_GATE_CLOSED = 0.26;
+        LD_GATE_OPEN   = 0.40;
+        LD_GATE_CLOSED = 0.32;
 
         IN_PUSH_DIR = DcMotorSimple.Direction.FORWARD;
 
@@ -174,7 +176,7 @@ public class RobotConstants
         WG_CLAMP_MID  = 0.75;
         WG_CLAMP_GRAB = 0.90;
 
-        WA_ARM_STOW = -45.0;
+        WA_ARM_STOW = .0;
         WA_ARM_GRAB = 180.0;
         WA_ARM_DROP = 120.0;
         WA_ARM_HOLD =  60.0;
@@ -185,7 +187,7 @@ public class RobotConstants
 
         IN_PUSH_DIR = DcMotorSimple.Direction.REVERSE;
 
-        SH_FAV_CPS = 1820;
+        SH_FAV_CPS = 1840;
 
         MAX_VEL = 50;
         LATERAL_MULTIPLIER = 1.21; //1.18;
@@ -199,18 +201,22 @@ public class RobotConstants
         break;
 
       case MEC3:
-        WA_CLAMP_OPEN = 0.66;
-        WA_CLAMP_MID  = 0.56;
-        WA_CLAMP_GRAB = 0.46;
+        WA_CLAMP_OPEN = 0.50;
+        WA_CLAMP_MID  = 0.65;
+        WA_CLAMP_GRAB = 0.85;
 
-        WG_CLAMP_OPEN = 0.62;
+        WG_CLAMP_OPEN = 0.51;
         WG_CLAMP_MID  = 0.75;
-        WG_CLAMP_GRAB = 0.90;
+        WG_CLAMP_GRAB = 0.97;
 
-        WA_ARM_STOW = -10.0;
+        WA_ARM_STOW = -15.0;
         WA_ARM_GRAB = 180.0;
         WA_ARM_DROP = 120.0;
         WA_ARM_HOLD =  60.0;
+
+        LD_GATE_OPEN   = 0.71;
+        LD_GATE_CLOSED = 0.98;
+        LD_PUSH_DIR = DcMotorSimple.Direction.REVERSE;
 
         IN_PUSH_DIR = DcMotorSimple.Direction.REVERSE;
 

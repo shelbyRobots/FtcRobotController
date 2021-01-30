@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.Vector;
 
+import static org.firstinspires.ftc.teamcode.field.Route.StartPos.START_1;
 import static org.firstinspires.ftc.teamcode.field.Route.StartPos.START_2;
 import static org.firstinspires.ftc.teamcode.robot.RobotConstants.MAX_ANG_VEL;
 import static org.firstinspires.ftc.teamcode.robot.RobotConstants.DT_TRACK_WIDTH;
@@ -148,8 +149,6 @@ public class UgRrRoute
 
   private static final String TAG = "SJH_URR";
 
-  public static boolean shootPS = false;
-
   public UgRrRoute(TilerunnerMecanumBot robot,
                    PositionOption startPos,
                    Field.Alliance alliance)
@@ -163,12 +162,12 @@ public class UgRrRoute
     initTrajectories();
 
     shtCps = RobotConstants.SH_FAV_CPS;
-    if(shootPS) shtCps = 1740;
+    if(RobotConstants.SH_PS) shtCps = 1740;
 
     stateTrajMap.put(State.DROP1,  WD1);
     stateTrajMap.put(State.SHOOT,  SHT);
 
-    if(shootPS)
+    if(RobotConstants.SH_PS)
     {
       stateTrajMap.put(State.SHT1,  tSO1);
       stateTrajMap.put(State.SHT2,  tSO2);
@@ -206,7 +205,6 @@ public class UgRrRoute
       grabDistO = 0.0;
     }
     RobotLog.dd(TAG, "Building trajectories");
-    drive.setPoseEstimate(startPose);
 
     tDIA = new TrajectoryBuilder(pBIN, wobVelLim, wobAccelLim)
         .addDisplacementMarker(grabDistI, this::doGrab)
@@ -287,7 +285,7 @@ public class UgRrRoute
     tWIN = new TrajectoryBuilder(tRON.end(), Math.toRadians(180), defVelLim, defAccelLim)
         .splineToConstantHeading(pWIN.vec(), pWIN.getHeading(), wobVelLim, wobAccelLim).build();
     tWON = new TrajectoryBuilder(tRIN.end(), Math.toRadians(180), defVelLim, defAccelLim)
-        .splineToConstantHeading(pWON.vec(), pWIN.getHeading(), wobVelLim, wobAccelLim).build();
+        .splineToConstantHeading(pWON.vec(), pWON.getHeading(), wobVelLim, wobAccelLim).build();
 
     if(startPos == START_2)
     {
@@ -365,8 +363,8 @@ public class UgRrRoute
     double shtHdgO = sh*15.0;
     double shtHdgI = -shtHdgO;
 
-    pBIN = new Pose2d(sx*-61.5,sy*-24.0, sh*Math.toRadians(0));  poses.add(pWIN);
-    pBON = new Pose2d(sx*-61.5,sy*-48.0, sh*Math.toRadians(0));  poses.add(pWON);
+    pBIN = new Pose2d(sx*-61.5,sy*-24.0, sh*Math.toRadians(0));  poses.add(pBIN);
+    pBON = new Pose2d(sx*-61.5,sy*-48.0, sh*Math.toRadians(0));  poses.add(pBON);
 
     pWIN = new Pose2d(sx*-61.25,sy*-24.0, sh*Math.toRadians(0));  poses.add(pWIN);
     pWON = new Pose2d(sx*-61.25,sy*-48.0, sh*Math.toRadians(0));  poses.add(pWON);
@@ -384,9 +382,9 @@ public class UgRrRoute
     pSIN = new Pose2d(sx* -6.0,sy*-18.0, sh*Math.toRadians(shtHdgI));  poses.add(pSIN);
     pSON = new Pose2d(sx* -6.0,sy*-54.0, sh*Math.toRadians(shtHdgO));  poses.add(pSON);
 
-    pSO1 = new Pose2d(sx* -6.0,sy*-4.0,  sh*Math.toRadians(0));  poses.add(pSO1);
+    pSO1 = new Pose2d(sx* -6.0,sy*-20.0, sh*Math.toRadians(0));  poses.add(pSO1);
     pSO2 = new Pose2d(sx* -6.0,sy*-12.0, sh*Math.toRadians(0));  poses.add(pSO2);
-    pSO3 = new Pose2d(sx* -6.0,sy*-20.0, sh*Math.toRadians(0));  poses.add(pSO3);
+    pSO3 = new Pose2d(sx* -6.0,sy*-4.0,  sh*Math.toRadians(0));  poses.add(pSO3);
 
     pMIR = new Pose2d(sx*-30.0,sy*-18.0, sh*Math.toRadians(180.0-shtHdgI));  poses.add(pMIR);
     pMOR = new Pose2d(sx*-30.0,sy*-54.0, sh*Math.toRadians(180.0-shtHdgO));  poses.add(pMOR);
@@ -400,8 +398,13 @@ public class UgRrRoute
     startPose = pBON;
     if(startPos == START_2) startPose = pBIN;
 
+    drive.setPoseEstimate(startPose);
+
     shtPose = pSON;
     if(startPos == START_2) shtPose = pSIN;
+
+    if(startPos == START_1) pBIN = pWIN;
+    if(startPos == START_2) pBON = pWON;
   }
 
   @SuppressWarnings("unused")
@@ -461,7 +464,7 @@ public class UgRrRoute
 
     if(robot.intake != null)
     {
-      robot.intake.suck(0.5);
+      robot.intake.suck(iPwr);
     }
   }
 

@@ -23,7 +23,7 @@ public class AutoSetupMenu extends InitLinearOpMode implements FtcMenu.MenuButto
     private String parkPosition;
     private int    delay;
     private static final boolean useCps = true;
-    private int cps = 1820;
+    private int cps = 1840;
 
     private int lnum = 1;
 

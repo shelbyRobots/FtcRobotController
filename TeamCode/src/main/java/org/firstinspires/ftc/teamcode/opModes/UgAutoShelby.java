@@ -357,7 +357,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         RobotLog.ii(TAG, "START CHDG %6.3f", robot.getGyroHdg());
 
         double shootWait = 2.5;
-        if(UgRrRoute.shootPS) shootWait = 1.5;
+        if(RobotConstants.SH_PS) shootWait = 1.5;
 //        double intakeRunWait = 0.6;
 //        double intakePauseWait = 0.6;
         ElapsedTime shootTimer = new ElapsedTime();
@@ -378,13 +378,13 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
             RobotLog.ii(TAG, "Driving trajectory %s", state);
 
-            double mechTimeOut = 0.5;
-            if(state == UgRrRoute.State.REVERSE || state == UgRrRoute.State.WOB2)
-            {
-                mechTimeOut = 1.0;
-            }
-
-            mechDrv.setFollowerTimeout(mechTimeOut);
+//            double mechTimeOut = 0.5;
+//            if(state == UgRrRoute.State.REVERSE || state == UgRrRoute.State.WOB2)
+//            {
+//                mechTimeOut = 1.0;
+//            }
+//
+//            mechDrv.setFollowerTimeout(mechTimeOut);
 
             mechDrv.followTrajectoryAsync(traj);
             while(opModeIsActive() && !isStopRequested() &&
@@ -402,10 +402,10 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
             RobotLog.ii(TAG, "Finished %s at %s at %.2f in %.2f",
                 state, ePose, startTimer.seconds(), timer.seconds());
 
-            if((state == UgRrRoute.State.SHOOT && !UgRrRoute.shootPS) &&
+            if((state == UgRrRoute.State.SHOOT && !RobotConstants.SH_PS) ||
                ((state == UgRrRoute.State.SHT1 ||
-                 state == UgRrRoute.State.SHT1 ||
-                 state == UgRrRoute.State.SHT3)   &&  UgRrRoute.shootPS))
+                 state == UgRrRoute.State.SHT2 ||
+                 state == UgRrRoute.State.SHT3)   &&  RobotConstants.SH_PS))
             {
                 shootTimer.reset();
                 intakeTimer.reset();
