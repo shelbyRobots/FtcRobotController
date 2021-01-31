@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -303,8 +304,7 @@ public class ShelbyBot
 
         try
         {
-            //imu = (BNO055IMU) cmu.getHardwareMap().get("imu");
-            imu = cmu.getHardwareMap().get(BNO055IMU.class, "imu");
+            imu = hwMap.get(BNO055IMU.class, "imu");
             if(initDirSensor) imu.initialize(parameters);
 
             if(useImuThread)
@@ -353,6 +353,20 @@ public class ShelbyBot
         double gr = 1.0;
         for(double g : DRIVE_GEARS) gr *= g;
         return gr;
+    }
+
+    public double getBatteryVoltage()
+    {
+        double result = Double.POSITIVE_INFINITY;
+        for (VoltageSensor sensor : hwMap.voltageSensor)
+        {
+            double voltage = sensor.getVoltage();
+            if (voltage > 0)
+            {
+                result = Math.min(result, voltage);
+            }
+        }
+        return result;
     }
 
     protected void computeCPI()

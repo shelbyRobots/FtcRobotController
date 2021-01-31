@@ -9,6 +9,7 @@ import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.robot.Lifter;
@@ -475,6 +476,11 @@ public class UgRrRoute
   {
     if(!firstShoot) return;
     firstShoot = false;
+    double vlt = robot.getBatteryVoltage();
+    PIDFCoefficients pidf = RobotConstants.SH_PID;
+    PIDFCoefficients vcmpPID = new PIDFCoefficients(pidf.p, pidf.i, pidf.d,
+        pidf.f *12.0/vlt);
+    robot.burr.setPIDF(vcmpPID);
     RobotLog.dd(TAG, "Starting shooter");
     //if(robot.burr != null) robot.burr.shotSpeed(DEF_SHT_DST);
     if(robot.burr != null) robot.burr.shootCps(shtCps);

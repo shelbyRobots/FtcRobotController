@@ -10,7 +10,6 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.RobotLog;
@@ -218,7 +217,7 @@ public class MecanumTeleop extends InitLinearOpMode
 
         if (lastKp != pidf.p || lastKd != pidf.d || lastKi != pidf.i || lastKf != pidf.f)
         {
-            double volt = getBatteryVoltage();
+            double volt = robot.getBatteryVoltage();
             vcmpPID = new PIDFCoefficients(pidf.p, pidf.i, pidf.d,
                 pidf.f *12.0/volt);
             RobotLog.dd(TAG, "V: %.1f SHTPID: %s", volt, vcmpPID);
@@ -367,20 +366,6 @@ public class MecanumTeleop extends InitLinearOpMode
         drvTime = opTimer.milliseconds() - intTime;
     }
 
-    double getBatteryVoltage()
-    {
-        double result = Double.POSITIVE_INFINITY;
-        for (VoltageSensor sensor : hardwareMap.voltageSensor)
-        {
-            double voltage = sensor.getVoltage();
-            if (voltage > 0)
-            {
-                result = Math.min(result, voltage);
-            }
-        }
-        return result;
-    }
-
     @SuppressWarnings("RedundantThrows")
     @Override
     public void runOpMode() throws InterruptedException
@@ -389,7 +374,7 @@ public class MecanumTeleop extends InitLinearOpMode
 
         initPreStart();
 
-        strtV = getBatteryVoltage();
+        strtV = robot.getBatteryVoltage();
         vcmpPID = new PIDFCoefficients(pidf.p, pidf.i, pidf.d,
             pidf.f * 12.0/strtV);
         RobotLog.dd(TAG, "SHTPID: %s", vcmpPID);

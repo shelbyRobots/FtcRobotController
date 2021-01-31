@@ -11,7 +11,6 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.vuforia.CameraDevice;
@@ -163,20 +162,6 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         ftcdbrd.sendTelemetryPacket(packet);
     }
 
-    double getBatteryVoltage()
-    {
-        double result = Double.POSITIVE_INFINITY;
-        for (VoltageSensor sensor : hardwareMap.voltageSensor)
-        {
-            double voltage = sensor.getVoltage();
-            if (voltage > 0)
-            {
-                result = Math.min(result, voltage);
-            }
-        }
-        return result;
-    }
-
     private FtcDashboard ftcdbrd;
     private void setup()
     {
@@ -264,10 +249,11 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
             robot.loader.setGatePos(Loader.gatePos.CLOSE);
         }
 
-        double strtV = getBatteryVoltage();
+        double strtV = robot.getBatteryVoltage();
         RobotLog.dd(TAG, "SHTPID: %s", vcmpPID);
         vcmpPID = new PIDFCoefficients(pidf.p, pidf.i, pidf.d,
             pidf.f *12.0/strtV);
+        robot.burr.setPIDF(vcmpPID);
 
         ugrr = new UgRrRoute(robot, startPos, alliance);
         ShelbyBot.DriveDir startDdir = ShelbyBot.DriveDir.PUSHER;
