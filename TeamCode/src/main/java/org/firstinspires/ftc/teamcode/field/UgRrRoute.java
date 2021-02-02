@@ -71,6 +71,7 @@ public class UgRrRoute
   public static Pose2d startPose;
   public static Pose2d shtPose;
 
+  private final double vlt;
   public static double shtCps;
 
   //char1: p=Pose2d, t=Trajectory
@@ -161,6 +162,8 @@ public class UgRrRoute
 
     initPoses();
     initTrajectories();
+
+    vlt = robot.getBatteryVoltage();
 
     shtCps = RobotConstants.SH_FAV_CPS;
     if(RobotConstants.SH_PS) shtCps = 1740;
@@ -367,8 +370,8 @@ public class UgRrRoute
     pBIN = new Pose2d(sx*-61.5,sy*-24.0, sh*Math.toRadians(0));  poses.add(pBIN);
     pBON = new Pose2d(sx*-61.5,sy*-48.0, sh*Math.toRadians(0));  poses.add(pBON);
 
-    pWIN = new Pose2d(sx*-61.00,sy*-24.0, sh*Math.toRadians(0));  poses.add(pWIN);
-    pWON = new Pose2d(sx*-61.00,sy*-48.0, sh*Math.toRadians(0));  poses.add(pWON);
+    pWIN = new Pose2d(sx*-61.20,sy*-24.0, sh*Math.toRadians(0));  poses.add(pWIN);
+    pWON = new Pose2d(sx*-61.20,sy*-48.0, sh*Math.toRadians(0));  poses.add(pWON);
 
     pMID = new Pose2d(sx*-24.0,sy*-21.0, sh*Math.toRadians(0));  poses.add(pMID);
     pMOD = new Pose2d(sx*-18.0,sy*-53.0, sh*Math.toRadians(0));  poses.add(pMOD);
@@ -390,8 +393,8 @@ public class UgRrRoute
     pMIR = new Pose2d(sx*-30.0,sy*-18.0, sh*Math.toRadians(180.0-shtHdgI));  poses.add(pMIR);
     pMOR = new Pose2d(sx*-30.0,sy*-54.0, sh*Math.toRadians(180.0-shtHdgO));  poses.add(pMOR);
 
-    pRIN = new Pose2d(sx*-60.0,sy*-28.0, sh*Math.toRadians(180.0-shtHdgI));  poses.add(pRIN);
-    pRON = new Pose2d(sx*-60.0,sy*-44.0, sh*Math.toRadians(180.0-shtHdgO));  poses.add(pRON);
+    pRIN = new Pose2d(sx*-60.5,sy*-28.0, sh*Math.toRadians(180.0-shtHdgI));  poses.add(pRIN);
+    pRON = new Pose2d(sx*-60.5,sy*-44.0, sh*Math.toRadians(180.0-shtHdgO));  poses.add(pRON);
 
     pPIN = new Pose2d(sx*  4.0,sy*-36.0, sh*Math.toRadians(0));  poses.add(pPIN);
     pPON = new Pose2d(sx*  4.0,sy*-36.0, sh*Math.toRadians(0));  poses.add(pPON);
@@ -476,7 +479,7 @@ public class UgRrRoute
   {
     if(!firstShoot) return;
     firstShoot = false;
-    double vlt = robot.getBatteryVoltage();
+
     PIDFCoefficients pidf = RobotConstants.SH_PID;
     PIDFCoefficients vcmpPID = new PIDFCoefficients(pidf.p, pidf.i, pidf.d,
         pidf.f *12.0/vlt);

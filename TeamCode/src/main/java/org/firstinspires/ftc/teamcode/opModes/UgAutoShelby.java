@@ -359,8 +359,9 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
             ugrr.setState(state);
 
-            RobotLog.ii(TAG, "Driving trajectory %s", state);
+            RobotLog.ii(TAG, "Driving trajectory %s at %.2f", state, startTimer.seconds());
             RobotLog.ii(TAG, "From %s to %s", traj.start(), traj.end());
+            RobotLog.dd(TAG, "EstPose = %s", ePose);
 
 //            double mechTimeOut = 0.5;
 //            if(state == UgRrRoute.State.REVERSE || state == UgRrRoute.State.WOB2)
@@ -379,8 +380,8 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
                 ePose = robot.drive.getPoseEstimate();
                 robot.setAutonEndPos(new Point2d(ePose.getX(), ePose.getY()));
                 robot.setAutonEndHdg(ePose.getHeading());
-                RobotLog.dd(TAG, "Drive %s from %s at %.2f",
-                    state, ePose, startTimer.seconds());
+//                RobotLog.dd(TAG, "Drive %s from %s at %.2f",
+//                    state, ePose, startTimer.seconds());
             }
 
             RobotLog.ii(TAG, "Finished %s at %s at %.2f in %.2f",
@@ -397,6 +398,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
                     shootTimer.seconds() < shootWait)
                 {
                     robot.update();
+                    RobotLog.dd(TAG, robot.burr.toString());
                     robot.waitForTick(20);
                 }
 
