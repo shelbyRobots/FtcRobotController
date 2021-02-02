@@ -32,6 +32,8 @@ public class RobotConstants
   public static double WA_ARM_HOLD =  60.0;
   public static DcMotorSimple.Direction WA_DIR = DcMotorSimple.Direction.FORWARD;
 
+  public static double LF_GEAR = 1.0;
+
   public static double LD_GATE_OPEN   = 0.36;
   public static double LD_GATE_CLOSED = 0.56;
 
@@ -181,6 +183,8 @@ public class RobotConstants
         WA_ARM_DROP = 120.0;
         WA_ARM_HOLD =  60.0;
 
+        LF_GEAR = 2.0;
+
         LD_GATE_OPEN   = 0.36;
         LD_GATE_CLOSED = 0.56;
         LD_PUSH_DIR = DcMotorSimple.Direction.REVERSE;
@@ -214,8 +218,8 @@ public class RobotConstants
         WA_ARM_DROP = 120.0;
         WA_ARM_HOLD =  60.0;
 
-        LD_GATE_OPEN   = 0.71;
-        LD_GATE_CLOSED = 0.98;
+        LD_GATE_OPEN   = 0.42;
+        LD_GATE_CLOSED = 0.62;
         LD_PUSH_DIR = DcMotorSimple.Direction.REVERSE;
 
         IN_PUSH_DIR = DcMotorSimple.Direction.REVERSE;

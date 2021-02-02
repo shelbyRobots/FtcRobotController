@@ -222,7 +222,7 @@ public class Lifter
 
     private static final double LIFTER_CPER = 28; //quad encoder cnts/encoder rev
     private static final double LIFTER_INT_GEAR = 19.2; //Neverest 20
-    private static final double LIFTER_EXT_GEAR = 1.0; //1:1 bevel
+    private static final double LIFTER_EXT_GEAR = RobotConstants.LF_GEAR; //1:1 bevel
     private static final double LIFTER_CPR = LIFTER_CPER * LIFTER_INT_GEAR * LIFTER_EXT_GEAR; // cnts/outShaftRev
     private static final double LIFTER_CPD = LIFTER_CPR / 360.0;
     private static final double LIFTER_MAXCPS = Motors.MotorModel.AM_NEVEREST_ORBITAL_20.getRpm();
