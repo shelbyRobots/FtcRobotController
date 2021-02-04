@@ -44,8 +44,7 @@ public class Testlifter extends InitLinearOpMode {
         if (lifter.liftMotor == null || lifter.clampServo == null) return;
 
         // Ramp motor speeds till stop pressed.
-        boolean usePctSpd = false;
-        double pctSpdSafety = 0.25;
+        boolean usePower = false;
         while (opModeIsActive()) {
             p = 0;
 
@@ -68,11 +67,15 @@ public class Testlifter extends InitLinearOpMode {
             else if (lsrv) lifter.adjClampPos(-srvIncr);
             else if (rsrv) lifter.adjClampPos(srvIncr);
 
-            if(tglS) usePctSpd = !usePctSpd;
-
-            if(usePctSpd)
+            if(tglS)
             {
-                lifter.setPctSpd(lftPwr * pctSpdSafety);
+                usePower = !usePower;
+                if(usePower) lifter.setPwrMode();
+            }
+
+            if(usePower)
+            {
+                lifter.setLiftPwr(lftPwr);
             }
             else
             {
@@ -88,7 +91,7 @@ public class Testlifter extends InitLinearOpMode {
             // Display the current value
             String lStr = lifter.toString();
             dashboard.displayText(p++, lStr);
-            dashboard.displayText(p++, "usePctSpd: " + usePctSpd);
+            dashboard.displayText(p++, "usePower: " + usePower);
             RobotLog.dd(TAG, lStr);
 
             dashboard.displayText(p++, "Press Stop to end test.");

@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_TO_POSITION;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
+import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_WITHOUT_ENCODER;
 
 public class Lifter
 {
@@ -113,9 +114,14 @@ public class Lifter
         }
     }
 
-    public void setPctSpd(double pwr)
+    public void setPwrMode()
     {
-        if (liftMotor != null) liftMotor.setVelocity(pwr*LIFTER_MAXCPS);
+        if (liftMotor != null) liftMotor.setMode(RUN_WITHOUT_ENCODER);
+    }
+
+    public void setLiftPwr(double pwr)
+    {
+        if (liftMotor != null) liftMotor.setPower(pwr);
     }
 
     public void setClampPos(ClampPos pos)
@@ -144,12 +150,14 @@ public class Lifter
         if(wobGuide != null) wobGuide.setPosition(guideLoc);
     }
 
+    @SuppressWarnings("unused")
     public void adjGuidePos(double incr)
     {
         guideLoc +=incr;
         if(wobGuide != null) wobGuide.setPosition(guideLoc);
     }
 
+    @SuppressWarnings("unused")
     public void toggleGuidePos ()
     {
         if (guidePos == GuidePos.OPEN) setGuidePos(GuidePos.CLOSED);
