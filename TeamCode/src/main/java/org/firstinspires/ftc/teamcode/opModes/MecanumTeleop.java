@@ -154,8 +154,13 @@ public class MecanumTeleop extends InitLinearOpMode
         boolean shoot = gpad2.pressed(ManagedGamepad.Button.R_TRIGGER);
         boolean bkWhl = gpad2.pressed(ManagedGamepad.Button.L_BUMP);
         boolean bkFwd = gpad2.pressed(ManagedGamepad.Button.R_BUMP);
+        boolean drop  = gpad2.pressed(ManagedGamepad.Button.L_STICK_BUTTON);
 
-        if(robot.intake != null) robot.intake.suck(intake);
+        if(robot.intake != null)
+        {
+            robot.intake.suck(intake);
+            if(drop) robot.intake.toggleDropPos();
+        }
         if(robot.loader != null)
         {
             if(shoot)

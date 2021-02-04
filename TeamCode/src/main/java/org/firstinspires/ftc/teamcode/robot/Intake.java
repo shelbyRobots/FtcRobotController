@@ -93,7 +93,7 @@ public class Intake
     public void toggleDropPos ()
     {
         if (dropPos == DropPos.OPEN) setDropPos(DropPos.CLOSED);
-        else                          setDropPos(DropPos.OPEN);
+        else                         setDropPos(DropPos.OPEN);
     }
 
     public enum DropPos
