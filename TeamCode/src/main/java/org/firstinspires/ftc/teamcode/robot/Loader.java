@@ -26,7 +26,8 @@ public class Loader
             loadMotor = hwMap.get(DcMotorEx.class, "loader");
             loadMotor.setDirection(RobotConstants.LD_PUSH_DIR);
             loadMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            loadMotor.setPower(0);
+            loadMotor.setPower(0.0);
+            curLdrMotorPwr = 0.0;
 
             success = true;
         }
@@ -38,7 +39,8 @@ public class Loader
         try
         {
             ringGate = hwMap.get(Servo.class, "ringGate");
-            setGatePos(gatePos.CLOSE);
+            ringGate.setPosition(gatePos.CLOSE.srvPos);
+            curGatePos = gatePos.CLOSE;
         }
         catch (Exception e)
         {
@@ -50,7 +52,8 @@ public class Loader
         {
             ldrSrvo = hwMap.get(CRServo.class, "ldrSrvo");
             ldrSrvo.setDirection(DcMotorSimple.Direction.REVERSE);
-            whlStp();
+            ldrSrvo.setPower(0.0);
+            curLdrSrvoPwr = 0.0;
         }
         catch (Exception e)
         {
@@ -72,8 +75,11 @@ public class Loader
 
     public void setGatePos(gatePos pos)
     {
-        curGatePos = pos;
-        if(ringGate != null) ringGate.setPosition(curGatePos.srvPos);
+        if(ringGate != null && pos != curGatePos)
+        {
+            ringGate.setPosition(pos.srvPos);
+            curGatePos = pos;
+        }
     }
 
     public void pass()
@@ -83,25 +89,35 @@ public class Loader
 
     public void load(double pwr)
     {
-        if(loadMotor != null) loadMotor.setPower(pwr);
+        if(loadMotor != null && pwr != curLdrMotorPwr)
+        {
+            loadMotor.setPower(pwr);
+            curLdrMotorPwr = pwr;
+        }
+    }
+
+    public void whlLoad(double pwr)
+    {
+        if(ldrSrvo != null && pwr != curLdrSrvoPwr)
+        {
+            ldrSrvo.setPower(pwr);
+            curLdrSrvoPwr = pwr;
+        }
     }
 
     public void whlFwd()
     {
-        if(ldrSrvo == null) return;
-        ldrSrvo.setPower(1.0);
+        whlLoad(1.0);
     }
 
     public void whlBak()
     {
-        if(ldrSrvo == null) return;
-        ldrSrvo.setPower(-1.0);
+        whlLoad(-1.0);
     }
 
     public void whlStp()
     {
-        if(ldrSrvo == null) return;
-        ldrSrvo.setPower(0.0);
+        whlLoad(0.0);
     }
 
     @NonNull
@@ -123,6 +139,8 @@ public class Loader
     }
 
     private gatePos curGatePos;
+    private double curLdrMotorPwr;
+    private double curLdrSrvoPwr;
     private DcMotorEx loadMotor;
     protected HardwareMap hwMap;
     public Servo ringGate;

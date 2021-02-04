@@ -24,6 +24,7 @@ public class Intake
             intaker.setDirection(RobotConstants.IN_PUSH_DIR);
             intaker.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             intaker.setPower(0);
+            lastIntakePwr = 0.0;
             success = true;
         }
         catch (Exception e)
@@ -59,18 +60,22 @@ public class Intake
         {
             encPos = intaker.getCurrentPosition();
             curSpd = intaker.getVelocity();
+            intaker.getPower();
         }
     }
 
     public void stop(){
-        intaker.setPower(0);
+        suck(0.0);
     }
 
     public void suck(double pwr)
     {
-        if(intaker != null) intaker.setPower(pwr);
+        if(intaker != null && pwr != lastIntakePwr)
+        {
+            intaker.setPower(pwr);
+            lastIntakePwr = pwr;
+        }
     }
-
 
     public void setDropPos(DropPos pos)
     {
@@ -112,4 +117,5 @@ public class Intake
     private static final String TAG = "SJH_INT";
     private int encPos;
     private double curSpd;
+    private double lastIntakePwr = 0.0;
 }

@@ -26,11 +26,11 @@ public class Lifter
         try
         {
             liftMotor = hwMap.get(DcMotorEx.class, "lift");
-            liftMotor.setDirection(DcMotor.Direction.FORWARD); //bevel gear reverses
+            liftMotor.setDirection(RobotConstants.WA_DIR);
             liftMotor.setPower(0);
             liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             liftMotor.setMode(RUN_USING_ENCODER);
-            liftMotor.setDirection(RobotConstants.WA_DIR);
+
             lastRunMode = RUN_USING_ENCODER;
         }
         catch (Exception e)
@@ -86,18 +86,17 @@ public class Lifter
             lastRunMode = RUN_TO_POSITION;
         }
 
-        tgtVel = LIFTER_CPD * 90;
+        tgtVel = LIFTER_CPD * 180;
         if (liftMotor != null) liftMotor.setVelocity(tgtVel);
     }
 
     public void setLiftSpd(double pwr)
     {
-        double power = pwr;
-        if (Math.abs(power) < 0.05 && lastRunMode != RUN_TO_POSITION)
+        if (Math.abs(pwr) < 0.05 && lastRunMode != RUN_TO_POSITION)
         {
             setLiftPos(LiftPos.HERE);
         }
-        else if (Math.abs(power) >= 0.05)
+        else if (Math.abs(pwr) >= 0.05)
         {
             if (lastRunMode != RUN_USING_ENCODER)
             {
@@ -109,7 +108,7 @@ public class Lifter
 //            if (lftCnts <= convLiftpos(LiftPos.STOW) - SAFE_DEG * LIFTER_CPD ||
 //                lftCnts >= convLiftpos(LiftPos.GRAB) + SAFE_DEG * LIFTER_CPD) power = 0;
 
-            tgtVel = power * LIFTER_CPD * 45;
+            tgtVel = pwr * LIFTER_CPD * 180;
             if (liftMotor != null) liftMotor.setVelocity(tgtVel);
         }
     }
@@ -222,7 +221,7 @@ public class Lifter
 
     private static final double LIFTER_CPER = 28; //quad encoder cnts/encoder rev
     private static final double LIFTER_INT_GEAR = 19.2; //Neverest 20
-    private static final double LIFTER_EXT_GEAR = RobotConstants.LF_GEAR; //1:1 bevel
+    private static final double LIFTER_EXT_GEAR = RobotConstants.WA_GEAR; //1:1 bevel
     private static final double LIFTER_CPR = LIFTER_CPER * LIFTER_INT_GEAR * LIFTER_EXT_GEAR; // cnts/outShaftRev
     private static final double LIFTER_CPD = LIFTER_CPR / 360.0;
     private static final double LIFTER_MAXCPS = Motors.MotorModel.AM_NEVEREST_ORBITAL_20.getRpm();
