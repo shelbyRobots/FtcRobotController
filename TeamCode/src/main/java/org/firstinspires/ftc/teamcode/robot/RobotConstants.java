@@ -94,6 +94,8 @@ public class RobotConstants
   public static double kA = 0;
   public static double kStatic = 0;
 
+  private static boolean kVsetManual = false;
+
   /*
    * Set RUN_USING_ENCODER to true to enable built-in hub velocity control using drive encoders.
    * Set this flag to false if drive encoders are not present and an alternative localization
@@ -102,7 +104,7 @@ public class RobotConstants
    * If using the built-in motor velocity PID, update MOTOR_VELO_PID with the tuned coefficients
    * from DriveVelocityPIDTuner.
    */
-  public static final boolean RUN_USING_ENCODER = true;
+  public static boolean RUN_USING_ENCODER = true;
 
   /*
    * These values are used to generate the trajectories for you robot. To ensure proper operation,
@@ -112,7 +114,7 @@ public class RobotConstants
    * inches.
    */
 
-  public static double MAX_VEL = 59; //RR tune  maxVel 59.96
+  public static double MAX_VEL = 50; //RR tune  maxVel 59.96
   public static double MAX_ACCEL = 40;
   public static double MAX_ANG_VEL = Math.toRadians(180);
   public static double MAX_ANG_ACCEL = Math.toRadians(180);
@@ -120,7 +122,7 @@ public class RobotConstants
   public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(7.5, 0, 0);
   public static PIDCoefficients HEADING_PID = new PIDCoefficients(8, 0, 0);
 
-  public static final boolean logDrive = false;
+  public static final boolean logVerbose = true;
 
   public static final String TAG = "SJH_RBC";
 
@@ -157,6 +159,9 @@ public class RobotConstants
         WA_DIR = DcMotorSimple.Direction.REVERSE;
         WA_GEAR = 2.0;
 
+        SH_PID = new PIDFCoefficients(80.0, 0.0, 0.0,14.9);
+        SH_FAV_CPS = 1830;
+
         LD_GATE_OPEN   = 0.40;
         LD_GATE_CLOSED = 0.32;
 
@@ -173,16 +178,16 @@ public class RobotConstants
         RobotLog.dd(TAG, "Running as MEC2");
         WA_CLAMP_OPEN = 0.66;
         WA_CLAMP_MID  = 0.56;
-        WA_CLAMP_GRAB = 0.46;
+        WA_CLAMP_GRAB = 0.48;
 
-        WG_CLAMP_OPEN = 0.62;
+        WG_CLAMP_OPEN = 0.66;
         WG_CLAMP_MID  = 0.75;
-        WG_CLAMP_GRAB = 0.90;
+        WG_CLAMP_GRAB = 0.92;
 
         WA_DIR = DcMotorSimple.Direction.REVERSE;
         WA_GEAR = 2.0;
 
-        WA_ARM_STOW = .0;
+        WA_ARM_STOW = -40.0;
         WA_ARM_GRAB = 180.0;
         WA_ARM_DROP = 120.0;
         WA_ARM_HOLD =  60.0;
@@ -193,7 +198,8 @@ public class RobotConstants
 
         IN_PUSH_DIR = DcMotorSimple.Direction.REVERSE;
 
-        SH_FAV_CPS = 1840;
+        SH_PID = new PIDFCoefficients(80.0, 0.0, 0.0,14.9);
+        SH_FAV_CPS = 1830;
 
         MAX_VEL = 50;
         LATERAL_MULTIPLIER = 1.21; //1.18;
@@ -201,9 +207,14 @@ public class RobotConstants
         DT_EXT_GEAR_RATIO = 1.025; //tuned by RR tuning
         DT_WHEEL_DIAM = 96.0/MMPERIN;
         DT_TRACK_WIDTH = 16.4; //tuned by RR tuning
-        MOTOR_VELO_PID = new PIDFCoefficients(14.4, 0, 0.4, 13.4); //RR tuning
-        TRANSLATIONAL_PID = new PIDCoefficients(5, 0, 0);
-        HEADING_PID = new PIDCoefficients(5, 0, 0);
+        MOTOR_VELO_PID = new PIDFCoefficients(24.0, 0, 2.5, 12.8); //RR tuning
+        TRANSLATIONAL_PID = new PIDCoefficients(15, 0, 0.01582);
+        HEADING_PID = new PIDCoefficients(3.5, 0, 0);
+        kV = 0.01582;
+        kA = 0.002;
+        kStatic = 0.07448;
+        kVsetManual = true;
+        RUN_USING_ENCODER = false;
         break;
 
       case MEC3:
@@ -228,6 +239,9 @@ public class RobotConstants
         LD_PUSH_DIR = DcMotorSimple.Direction.REVERSE;
 
         IN_PUSH_DIR = DcMotorSimple.Direction.REVERSE;
+
+        SH_PID = new PIDFCoefficients(80.0, 0.0, 0.0,14.9);
+        SH_FAV_CPS = 1830;
 
         MAX_VEL = 50;
         DT_MOTOR = Motors.MotorModel.GOBILDA_5202_19_2;
@@ -260,7 +274,7 @@ public class RobotConstants
     DT_LDIR = DcMotorSimple.Direction.REVERSE;
     DT_RDIR = DcMotorSimple.Direction.FORWARD;
 
-    kV = 1.0 / rpmToVelocity(DT_MAX_RPM);
+    if(!kVsetManual) kV = 1.0 / rpmToVelocity(DT_MAX_RPM);
   }
 
   public enum Chassis
@@ -278,17 +292,18 @@ public class RobotConstants
   public final static TrajectoryAccelerationConstraint defAccelConstraint
       = new ProfileAccelerationConstraint(MAX_ACCEL);
 
-  public static double encoderTicksToInches(double ticks) {
-//        return WHEEL_RADIUS * 2 * Math.PI * GEAR_RATIO * ticks / TICKS_PER_REV;
+  public static double encoderTicksToInches(double ticks)
+  {
     return ticks * DT_IPC;
   }
 
-  public static double rpmToVelocity(double rpm) {
-//        return rpm * GEAR_RATIO * 2 * Math.PI * WHEEL_RADIUS / 60.0;
+  public static double rpmToVelocity(double rpm)
+  {
     return rpm * DC_RPM2VEL;
   }
 
-  public static double getMotorVelocityF(double ticksPerSecond) {
+  public static double getMotorVelocityF(double ticksPerSecond)
+  {
     // see https://docs.google.com/document/d/1tyWrXDfMidwYyP_5H4mZyVgaEswhOC35gvdmP-V-5hA/edit#heading=h.61g9ixenznbx
     return 32767 / ticksPerSecond;
   }
