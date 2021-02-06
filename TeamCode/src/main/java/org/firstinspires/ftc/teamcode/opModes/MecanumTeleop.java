@@ -24,6 +24,7 @@ import org.firstinspires.ftc.teamcode.robot.TilerunnerMecanumBot;
 import org.firstinspires.ftc.teamcode.util.Input_Shaper;
 import org.firstinspires.ftc.teamcode.util.ManagedGamepad;
 import org.firstinspires.ftc.teamcode.util.Point2d;
+import org.firstinspires.ftc.teamcode.util.RateChangeLimiter;
 
 import java.util.Locale;
 
@@ -70,6 +71,13 @@ public class MecanumTeleop extends InitLinearOpMode
 
         RobotLog.dd(TAG, "Start mode to %s", robot.leftMotors.get(0).getMode());
         mechDrv.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        transRcl =
+            new RateChangeLimiter(RobotConstants.MAX_ACCEL/RobotConstants.DT_MAX_IPS);
+        double maxDltAng =
+            RobotConstants.DT_TRACK_WIDTH * RobotConstants.MAX_ANG_ACCEL / (2*Math.PI);
+        rotRcl =
+            new RateChangeLimiter(maxDltAng/RobotConstants.DT_MAX_IPS);
     }
 
     private void update()
@@ -293,9 +301,9 @@ public class MecanumTeleop extends InitLinearOpMode
             return;
         }
 
-        lr = ishaper.shape(raw_lr, 0.1);
-        fb = ishaper.shape(raw_fb, 0.1);
-        turn = ishaper.shape(raw_turn, 0.1);
+        lr = ishaper.shape(raw_lr, 0.02);
+        fb = ishaper.shape(raw_fb, 0.02);
+        turn = ishaper.shape(raw_turn, 0.02);
 
         if      (incr) dSpd += dStp;
         else if (decr) dSpd -= dStp;
@@ -334,13 +342,14 @@ public class MecanumTeleop extends InitLinearOpMode
         if(hspd) maxCPS = RobotConstants.DT_MAX_CPS;
         double spdScl = maxCPS/RobotConstants.DT_MAX_CPS;
 
-        mechDrv.setWeightedDrivePower(
-            new Pose2d(
-                driveInput.getX() * spdScl,
-                driveInput.getY() * spdScl,
-                -turn *spdScl
-            )
-        );
+        driveInput = driveInput.times(spdScl);
+        turn = turn * spdScl;
+
+//        Pose2d velPose =
+//            new Pose2d(transRcl.calculate(driveInput.norm()), -rotRcl.calculate(turn));
+        Pose2d velPose = new Pose2d(driveInput, -turn);
+
+        mechDrv.setWeightedDrivePower(velPose);
     }
 
     double strTime;
@@ -466,6 +475,9 @@ public class MecanumTeleop extends InitLinearOpMode
     private int l = 0;
 
     private double strtV;
+
+    private RateChangeLimiter transRcl;
+    private RateChangeLimiter rotRcl;
 
     private static final double FAV_DIST = 75;
     private double distance = FAV_DIST;
