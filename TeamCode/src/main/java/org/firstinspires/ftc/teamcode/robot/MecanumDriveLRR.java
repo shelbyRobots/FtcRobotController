@@ -25,6 +25,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.util.CommonUtil;
@@ -237,9 +238,14 @@ public class MecanumDriveLRR extends MecanumDrive
         throw new AssertionError();
     }
 
-    public void update() {
+    private final ElapsedTime lrrTimer = new ElapsedTime();
+    public void update()
+    {
+        lrrTimer.reset();
         updatePoseEstimate();
+        double upeTime = lrrTimer.milliseconds();
 
+        lrrTimer.reset();
         Pose2d currentPose = getPoseEstimate();
         Pose2d lastError = getLastError();
 
@@ -248,7 +254,9 @@ public class MecanumDriveLRR extends MecanumDrive
         if (POSE_HISTORY_LIMIT > -1 && poseHistory.size() > POSE_HISTORY_LIMIT) {
             poseHistory.removeFirst();
         }
+        double gpeTime = lrrTimer.milliseconds();
 
+        lrrTimer.reset();
         TelemetryPacket packet = CommonUtil.getInstance().getTelemetryPacket();
         if(packet == null) packet = new TelemetryPacket();
         Canvas fieldOverlay = packet.fieldOverlay();
@@ -262,7 +270,14 @@ public class MecanumDriveLRR extends MecanumDrive
         packet.put("xError", lastError.getX());
         packet.put("yError", lastError.getY());
         packet.put("headingError", lastError.getHeading());
+        double telTime = lrrTimer.milliseconds();
 
+        double sdsTime = 0.0;
+        double fgtTime = 0.0;
+        double db1Time = 0.0;
+        double db2Time = 0.0;
+
+        lrrTimer.reset();
         switch (mode) {
             case IDLE:
                 // do nothing
@@ -297,10 +312,15 @@ public class MecanumDriveLRR extends MecanumDrive
                 break;
             }
             case FOLLOW_TRAJECTORY: {
+                lrrTimer.reset();
                 setDriveSignal(follower.update(currentPose));
+                sdsTime = lrrTimer.milliseconds();
 
+                lrrTimer.reset();
                 Trajectory trajectory = follower.getTrajectory();
+                fgtTime = lrrTimer.milliseconds();
 
+                lrrTimer.reset();
                 fieldOverlay.setStrokeWidth(1);
                 fieldOverlay.setStroke("#4CAF50");
                 DashboardUtil.drawSampledPath(fieldOverlay, trajectory.getPath());
@@ -309,6 +329,7 @@ public class MecanumDriveLRR extends MecanumDrive
 
                 fieldOverlay.setStroke("#3F51B5");
                 DashboardUtil.drawPoseHistory(fieldOverlay, poseHistory);
+                db1Time = lrrTimer.milliseconds();
 
                 if (!follower.isFollowing()) {
                     mode = Mode.IDLE;
@@ -319,8 +340,16 @@ public class MecanumDriveLRR extends MecanumDrive
             }
         }
 
+        lrrTimer.reset();
         fieldOverlay.setStroke("#3F51B5");
         DashboardUtil.drawRobot(fieldOverlay, currentPose);
+        db2Time = lrrTimer.milliseconds();
+        if(RobotConstants.logVerbose)
+        {
+            RobotLog.dd(TAG,
+                "UPD LRR: UPE:%.1f GPE:%.1f TEL:%.1f SDS:%.1f FGT:%.1f DB1:%.1f DB2:%.1f",
+                upeTime, gpeTime, telTime, sdsTime, fgtTime, db1Time, db2Time);
+        }
     }
 
     public void waitForIdle() {
