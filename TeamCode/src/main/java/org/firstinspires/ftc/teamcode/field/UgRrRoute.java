@@ -364,14 +364,14 @@ public class UgRrRoute
       sh = -1;
     }
 
-    double shtHdgO = sh*15.0;
+    double shtHdgO = sh*12.0;
     double shtHdgI = -shtHdgO;
 
     pBIN = new Pose2d(sx*-61.5,sy*-24.0, sh*Math.toRadians(0));  poses.add(pBIN);
     pBON = new Pose2d(sx*-61.5,sy*-48.0, sh*Math.toRadians(0));  poses.add(pBON);
 
-    pWIN = new Pose2d(sx*-61.20,sy*-24.0, sh*Math.toRadians(0));  poses.add(pWIN);
-    pWON = new Pose2d(sx*-61.20,sy*-48.0, sh*Math.toRadians(0));  poses.add(pWON);
+    pWIN = new Pose2d(sx*-61.40,sy*-24.0, sh*Math.toRadians(0));  poses.add(pWIN);
+    pWON = new Pose2d(sx*-61.40,sy*-48.0, sh*Math.toRadians(0));  poses.add(pWON);
 
     pMID = new Pose2d(sx*-24.0,sy*-21.0, sh*Math.toRadians(0));  poses.add(pMID);
     pMOD = new Pose2d(sx*-18.0,sy*-53.0, sh*Math.toRadians(0));  poses.add(pMOD);
@@ -383,8 +383,8 @@ public class UgRrRoute
     pDOB = new Pose2d(sx* 28.0,sy*-46.0, sh*Math.toRadians( 35));  poses.add(pDOB);
     pDOC = new Pose2d(sx* 52.0,sy*-59.0, sh*Math.toRadians(  0));  poses.add(pDOC);
 
-    pSIN = new Pose2d(sx* -6.0,sy*-18.0, sh*Math.toRadians(shtHdgI));  poses.add(pSIN);
-    pSON = new Pose2d(sx* -6.0,sy*-54.0, sh*Math.toRadians(shtHdgO));  poses.add(pSON);
+    pSIN = new Pose2d(sx* -16.0,sy*-18.0, sh*Math.toRadians(shtHdgI));  poses.add(pSIN);
+    pSON = new Pose2d(sx* -16.0,sy*-54.0, sh*Math.toRadians(shtHdgO));  poses.add(pSON);
 
     pSO1 = new Pose2d(sx* -6.0,sy*-20.0, sh*Math.toRadians(0));  poses.add(pSO1);
     pSO2 = new Pose2d(sx* -6.0,sy*-12.0, sh*Math.toRadians(0));  poses.add(pSO2);
@@ -393,8 +393,8 @@ public class UgRrRoute
     pMIR = new Pose2d(sx*-30.0,sy*-18.0, sh*Math.toRadians(180.0-shtHdgI));  poses.add(pMIR);
     pMOR = new Pose2d(sx*-30.0,sy*-54.0, sh*Math.toRadians(180.0-shtHdgO));  poses.add(pMOR);
 
-    pRIN = new Pose2d(sx*-60.5,sy*-28.0, sh*Math.toRadians(180.0-shtHdgI));  poses.add(pRIN);
-    pRON = new Pose2d(sx*-60.5,sy*-44.0, sh*Math.toRadians(180.0-shtHdgO));  poses.add(pRON);
+    pRIN = new Pose2d(sx*-61.0,sy*-28.0, sh*Math.toRadians(180.0-shtHdgI));  poses.add(pRIN);
+    pRON = new Pose2d(sx*-61.0,sy*-44.0, sh*Math.toRadians(180.0-shtHdgO));  poses.add(pRON);
 
     pPIN = new Pose2d(sx*  4.0,sy*-36.0, sh*Math.toRadians(0));  poses.add(pPIN);
     pPON = new Pose2d(sx*  4.0,sy*-36.0, sh*Math.toRadians(0));  poses.add(pPON);
