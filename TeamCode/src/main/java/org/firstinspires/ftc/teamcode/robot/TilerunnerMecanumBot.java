@@ -150,7 +150,6 @@ public class TilerunnerMecanumBot extends ShelbyBot
     double intTime;
     double ldrTime;
     private final ElapsedTime updTimer = new ElapsedTime();
-    private static final boolean VERBOSE = true;
     public void update()
     {
         updTimer.reset();

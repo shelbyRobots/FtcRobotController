@@ -129,7 +129,7 @@ public class ShelbyBot
 
     private final ElapsedTime period  = new ElapsedTime();
 
-    private static final boolean VERBOSE = true;
+    protected static final boolean VERBOSE = RobotConstants.logVerbose;
 
     private static final String TAG = "SJH_BOT";
 
