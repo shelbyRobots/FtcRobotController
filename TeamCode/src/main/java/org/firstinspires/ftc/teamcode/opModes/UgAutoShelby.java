@@ -60,6 +60,12 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
     private void startMode()
     {
         dashboard.clearDisplay();
+        double strtV = robot.getBatteryVoltage();
+        pidf = RobotConstants.SH_PID;
+        vcmpPID = new PIDFCoefficients(pidf.p, pidf.i, pidf.d,
+            pidf.f *12.0/strtV);
+        robot.burr.setPIDF(vcmpPID);
+        RobotLog.dd(TAG, "SHTPID: %s", vcmpPID);
         do_main_loop();
     }
 
@@ -248,12 +254,6 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         {
             robot.loader.setGatePos(Loader.gatePos.CLOSE);
         }
-
-        double strtV = robot.getBatteryVoltage();
-        RobotLog.dd(TAG, "SHTPID: %s", vcmpPID);
-        vcmpPID = new PIDFCoefficients(pidf.p, pidf.i, pidf.d,
-            pidf.f *12.0/strtV);
-        robot.burr.setPIDF(vcmpPID);
 
         ugrr = new UgRrRoute(robot, startPos, alliance);
         ShelbyBot.DriveDir startDdir = ShelbyBot.DriveDir.PUSHER;

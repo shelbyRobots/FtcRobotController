@@ -173,17 +173,33 @@ public class MecanumTeleop extends InitLinearOpMode
         {
             if(shoot)
             {
-                robot.loader.setGatePos(Loader.gatePos.OPEN);
-                robot.loader.whlFwd();
-                robot.loader.load(1.0);
-                if (!lastShoot) RobotLog.dd(TAG, "Starting shoot");
+                if (!lastShoot)
+                {
+                    RobotLog.dd(TAG, "Starting shoot");
+                    robot.loader.setGatePos(Loader.gatePos.OPEN);
+                    robot.loader.whlFwd();
+                    robot.loader.load(1.0);
+                    if(RobotConstants.bot == RobotConstants.Chassis.MEC3 &&
+                        Math.abs(intake) < 0.05)
+                    {
+                        robot.intake.suck(0.5);
+                    }
+                }
             }
             else
             {
-                robot.loader.setGatePos(Loader.gatePos.CLOSE);
-                robot.loader.whlStp();
-                robot.loader.load(0.0);
-                if (lastShoot) RobotLog.dd(TAG, "Ending shoot");
+                if (lastShoot)
+                {
+                    RobotLog.dd(TAG, "Ending shoot");
+                    robot.loader.setGatePos(Loader.gatePos.CLOSE);
+                    robot.loader.whlStp();
+                    robot.loader.load(0.0);
+                    if(RobotConstants.bot == RobotConstants.Chassis.MEC3 &&
+                        Math.abs(intake) < 0.05)
+                    {
+                        robot.intake.suck(0.0);
+                    }
+                }
             }
             lastShoot = shoot;
             if(bkWhl) robot.loader.whlBak();
@@ -388,14 +404,7 @@ public class MecanumTeleop extends InitLinearOpMode
 
         initPreStart();
 
-        strtV = robot.getBatteryVoltage();
-        vcmpPID = new PIDFCoefficients(pidf.p, pidf.i, pidf.d,
-            pidf.f * 12.0/strtV);
-        RobotLog.dd(TAG, "SHTPID: %s", vcmpPID);
-        robot.burr.setPIDF(vcmpPID);
-
         dashboard.displayText(0, robot.getName() + " is ready");
-
 
         // Wait for the game to start (driver presses PLAY)
         while(!isStarted() && !isStopRequested())
@@ -406,6 +415,13 @@ public class MecanumTeleop extends InitLinearOpMode
             robot.finishFrame();
             robot.waitForTick(20);
         }
+
+        strtV = robot.getBatteryVoltage();
+        pidf = RobotConstants.SH_PID;
+        vcmpPID = new PIDFCoefficients(pidf.p, pidf.i, pidf.d,
+            pidf.f * 12.0/strtV);
+        RobotLog.dd(TAG, "SHTPID: %s", vcmpPID);
+        robot.burr.setPIDF(vcmpPID);
 
         RobotLog.dd(TAG, "Mecanum_Driver starting");
 

@@ -45,7 +45,7 @@ public class RobotConstants
   public static double SH_72_CPS = 1820;
   public static double SH_96_CPS = 2060;
   public static double SH_PS_CPS = 1750;
-  public static PIDFCoefficients SH_PID = new PIDFCoefficients(20.0, 0.0, 0.3,14.9);
+  public static PIDFCoefficients SH_PID = new PIDFCoefficients(80.0, 0.0, 0.0,14.9);
 
   public static boolean SH_PS = false;
 
@@ -244,11 +244,20 @@ public class RobotConstants
         SH_FAV_CPS = 1830;
 
         MAX_VEL = 50;
+        LATERAL_MULTIPLIER = 1.2;
         DT_MOTOR = Motors.MotorModel.GOBILDA_5202_19_2;
         DT_EXT_GEAR_RATIO = 1.025; //tuned by RR tuning
         DT_WHEEL_DIAM = 96.0/MMPERIN;
         DT_TRACK_WIDTH = 16.8; //tuned by RR tuning
-        MOTOR_VELO_PID = new PIDFCoefficients(14, 0, 0.3, 12.8); //RR tuning
+        //MOTOR_VELO_PID = new PIDFCoefficients(14, 0, 0.3, 12.8); //RR tuning
+        MOTOR_VELO_PID = new PIDFCoefficients(24.0, 0, 2.5, 12.8); //RR tuning
+        TRANSLATIONAL_PID = new PIDCoefficients(15, 0, 0.01582);
+        HEADING_PID = new PIDCoefficients(3.5, 0, 0);
+        kV = 0.01582;
+        kA = 0.002;
+        kStatic = 0.07448;
+        kVsetManual = true;
+        RUN_USING_ENCODER = false;
         break;
 
       default:
