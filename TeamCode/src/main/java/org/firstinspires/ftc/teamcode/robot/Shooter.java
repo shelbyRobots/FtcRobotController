@@ -37,7 +37,7 @@ public class Shooter
             RobotLog.ee(TAG, "ERROR get hardware map initShooter\n" + e.toString());
         }
 
-        shtPid = RobotConstants.SH_PID;
+        shtPid = new PIDFCoefficients(80.0, 0.0, 0.0,14.9);
         setPIDF(shtPid);
 
         RobotLog.dd(TAG, "RUN_USING_ENC shooter PID. %s", shtPid);
