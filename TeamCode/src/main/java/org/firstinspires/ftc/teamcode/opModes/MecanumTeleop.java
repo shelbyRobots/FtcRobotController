@@ -166,7 +166,7 @@ public class MecanumTeleop extends InitLinearOpMode
 
         if(robot.intake != null)
         {
-            robot.intake.suck(intake);
+            if(!shoot || Math.abs(intake) >0.05) robot.intake.suck(intake);
             if(drop) robot.intake.toggleDropPos();
         }
         if(robot.loader != null)
@@ -178,11 +178,11 @@ public class MecanumTeleop extends InitLinearOpMode
                     RobotLog.dd(TAG, "Starting shoot");
                     robot.loader.setGatePos(Loader.gatePos.OPEN);
                     robot.loader.whlFwd();
-                    robot.loader.load(1.0);
+                    robot.loader.load(RobotConstants.LD_TELE_PWR);
                     if(RobotConstants.bot == RobotConstants.Chassis.MEC3 &&
                         Math.abs(intake) < 0.05)
                     {
-                        robot.intake.suck(0.5);
+                        robot.intake.suck(RobotConstants.IN_TELE_PWR);
                     }
                 }
             }
@@ -202,8 +202,16 @@ public class MecanumTeleop extends InitLinearOpMode
                 }
             }
             lastShoot = shoot;
-            if(bkWhl) robot.loader.whlBak();
-            if(bkFwd) robot.loader.whlFwd();
+            if(bkWhl)
+            {
+                robot.loader.whlBak();
+                robot.loader.load(-1.0);
+            }
+            if(bkFwd)
+            {
+                robot.loader.whlFwd();
+                robot.loader.load(1.0);
+            }
         }
     }
 
