@@ -108,19 +108,16 @@ public class Loader
     public void whlFwd()
     {
         whlLoad(1.0);
-        load(1.0);
     }
 
     public void whlBak()
     {
         whlLoad(-1.0);
-        load(-1.0);
     }
 
     public void whlStp()
     {
         whlLoad(0.0);
-        load(0.0);
     }
 
     @NonNull
