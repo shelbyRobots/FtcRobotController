@@ -81,7 +81,7 @@ public class AutoSetupMenu extends InitLinearOpMode implements FtcMenu.MenuButto
     private final String[] botNames = {"GTO1", "MEC1", "MEC2", "MEC3"};
     private final String[] alliances = {"RED", "BLUE"};
     private final String[] startPositions = {"START_1", "START_2"};
-    private final String[] parkPositions = {"CENTER_PARK", "DEFEND_PARK"};
+    private final String[] parkPositions = {"CENTER_PARK", "CORNER_PARK", "DEFEND_PARK"};
 
     //
     // Implements FtcMenu.MenuButtons interface.

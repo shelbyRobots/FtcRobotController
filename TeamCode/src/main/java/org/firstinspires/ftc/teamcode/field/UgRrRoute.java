@@ -10,6 +10,7 @@ import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationCon
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.robot.Robot;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.robot.Lifter;
@@ -32,7 +33,7 @@ public class UgRrRoute
   TilerunnerMecanumBot robot;
   MecanumDriveLRR drive;
   PositionOption startPos;
-  //PositionOption parkChoice;
+  PositionOption parkPos;
   Field.Alliance alliance;
 
   public static TrajectoryVelocityConstraint defVelLim = RobotConstants.defVelConstraint;
@@ -147,31 +148,35 @@ public class UgRrRoute
   public Trajectory WD2;
   public Trajectory PRK;
 
+  private final boolean doPS;
   //private double DEF_SHT_DST; //= shtPose.vec().distTo(goalVec);
 
   private static final String TAG = "SJH_URR";
 
   public UgRrRoute(TilerunnerMecanumBot robot,
                    PositionOption startPos,
+                   PositionOption parkPos,
                    Field.Alliance alliance)
   {
     this.robot        = robot;
     this.drive        = (MecanumDriveLRR) robot.drive;
     this.startPos     = startPos;
+    this.parkPos      = parkPos;
     this.alliance     = alliance;
 
     initPoses();
     initTrajectories();
 
     vlt = robot.getBatteryVoltage();
+    doPS = parkPos != Route.ParkPos.CENTER_PARK;
 
     shtCps = RobotConstants.SH_FAV_CPS;
-    if(RobotConstants.SH_PS) shtCps = 1740;
+    if(doPS) shtCps = RobotConstants.SH_PS_CPS;
 
     stateTrajMap.put(State.DROP1,  WD1);
     stateTrajMap.put(State.SHOOT,  SHT);
 
-    if(RobotConstants.SH_PS)
+    if(doPS)
     {
       stateTrajMap.put(State.SHT1,  tSO1);
       stateTrajMap.put(State.SHT2,  tSO2);
@@ -456,17 +461,17 @@ public class UgRrRoute
     //if(robot.burr != null) robot.burr.shotSpeed(shotdist);
     if(robot.burr != null) robot.burr.shootCps(shtCps);
 
-    if(RobotConstants.SH_PS && state == State.SHOOT) return;
+    if(doPS && state == State.SHOOT) return;
 
     if(robot.loader != null)
     {
-      robot.loader.load(1.0);
       robot.loader.setGatePos(Loader.gatePos.OPEN);
+      robot.loader.load(RobotConstants.LD_AUTO_PWR);
       robot.loader.whlFwd();
     }
 
-    double iPwr = 0.7;
-    if(state != State.SHOOT) iPwr = 1.0;
+    double iPwr = RobotConstants.IN_AUTO_PWR;
+    if(state != State.SHOOT) iPwr = RobotConstants.IN_AUTO_PS_PWR;
 
     if(robot.intake != null)
     {
@@ -480,10 +485,10 @@ public class UgRrRoute
     if(!firstShoot) return;
     firstShoot = false;
 
-    PIDFCoefficients pidf = RobotConstants.SH_PID;
-    PIDFCoefficients vcmpPID = new PIDFCoefficients(pidf.p, pidf.i, pidf.d,
-        pidf.f *12.0/vlt);
-    robot.burr.setPIDF(vcmpPID);
+//    PIDFCoefficients pidf = RobotConstants.SH_PID;
+//    PIDFCoefficients vcmpPID = new PIDFCoefficients(pidf.p, pidf.i, pidf.d,
+//        pidf.f *12.0/vlt);
+//    robot.burr.setPIDF(vcmpPID);
     RobotLog.dd(TAG, "Starting shooter");
     //if(robot.burr != null) robot.burr.shotSpeed(DEF_SHT_DST);
     if(robot.burr != null) robot.burr.shootCps(shtCps);

@@ -41,13 +41,20 @@ public class RobotConstants
   public static double LD_DROP_CLOSE = 0.7; //1780
   public static double LD_DROP_MID   = 0.6; //1550
 
-  public static double SH_FAV_CPS = 1840;
-  public static double SH_72_CPS = 1820;
-  public static double SH_96_CPS = 2060;
-  public static double SH_PS_CPS = 1750;
-  public static PIDFCoefficients SH_PID = new PIDFCoefficients(80.0, 0.0, 0.0,14.9);
+  public static double LD_AUTO_PWR = 1.0;
+  public static double LD_TELE_PWR = 1.0;
+  public static double IN_AUTO_PWR = 1.0;
+  public static double IN_TELE_PWR = 1.0;
+  public static double LD_AUTO_PS_PWR = 1.0;
+  public static double LD_TELE_PS_PWR = 1.0;
+  public static double IN_AUTO_PS_PWR = 1.0;
+  public static double IN_TELE_PS_PWR = 1.0;
 
-  public static boolean SH_PS = false;
+  public static double SH_FAV_CPS = 1840;
+  public static double SH_PS_CPS = 1750;
+  public static double SH_SHT_DLY = 2.5;
+  public static double SH_PS_DLY = 1.5;
+  public static PIDFCoefficients SH_PID = new PIDFCoefficients(80.0, 0.0, 0.0,14.9);
 
   public static DcMotorSimple.Direction LD_PUSH_DIR = DcMotorSimple.Direction.REVERSE;
   public static DcMotorSimple.Direction IN_PUSH_DIR = DcMotorSimple.Direction.REVERSE;
@@ -159,11 +166,23 @@ public class RobotConstants
         WA_DIR = DcMotorSimple.Direction.REVERSE;
         WA_GEAR = 2.0;
 
-        SH_PID = new PIDFCoefficients(80.0, 0.0, 0.0,14.9);
-        SH_FAV_CPS = 1830;
-
         LD_GATE_OPEN   = 0.40;
         LD_GATE_CLOSED = 0.32;
+
+        LD_AUTO_PWR = 1.0;
+        LD_TELE_PWR = 1.0;
+        IN_AUTO_PWR = 1.0;
+        IN_TELE_PWR = 1.0;
+        LD_AUTO_PS_PWR = 1.0;
+        LD_TELE_PS_PWR = 1.0;
+        IN_AUTO_PS_PWR = 1.0;
+        IN_TELE_PS_PWR = 1.0;
+
+        SH_PID = new PIDFCoefficients(80.0, 0.0, 0.0,14.9);
+        SH_FAV_CPS = 1830;
+        SH_PS_CPS = 1750;
+        SH_SHT_DLY = 2.5;
+        SH_PS_DLY = 1.5;
 
         IN_PUSH_DIR = DcMotorSimple.Direction.FORWARD;
 
@@ -196,10 +215,22 @@ public class RobotConstants
         LD_GATE_CLOSED = 0.56;
         LD_PUSH_DIR = DcMotorSimple.Direction.REVERSE;
 
+        LD_AUTO_PWR = 1.0;
+        LD_TELE_PWR = 1.0;
+        IN_AUTO_PWR = 0.7;
+        IN_TELE_PWR = 0.7;
+        LD_AUTO_PS_PWR = 1.0;
+        LD_TELE_PS_PWR = 1.0;
+        IN_AUTO_PS_PWR = 1.0;
+        IN_TELE_PS_PWR = 1.0;
+
         IN_PUSH_DIR = DcMotorSimple.Direction.REVERSE;
 
         SH_PID = new PIDFCoefficients(80.0, 0.0, 0.0,14.9);
         SH_FAV_CPS = 1830;
+        SH_PS_CPS = 1750;
+        SH_SHT_DLY = 2.5;
+        SH_PS_DLY = 1.0;
 
         MAX_VEL = 50;
         LATERAL_MULTIPLIER = 1.21; //1.18;
@@ -238,10 +269,22 @@ public class RobotConstants
         LD_GATE_CLOSED = 0.66;
         LD_PUSH_DIR = DcMotorSimple.Direction.REVERSE;
 
+        LD_AUTO_PWR = 1.0;
+        LD_TELE_PWR = 1.0;
+        IN_AUTO_PWR = 0.5;
+        IN_TELE_PWR = 0.5;
+        LD_AUTO_PS_PWR = 1.0;
+        LD_TELE_PS_PWR = 1.0;
+        IN_AUTO_PS_PWR = 0.5;
+        IN_TELE_PS_PWR = 0.5;
+
         IN_PUSH_DIR = DcMotorSimple.Direction.REVERSE;
 
         SH_PID = new PIDFCoefficients(80.0, 0.0, 0.0,14.9);
-        SH_FAV_CPS = 1830;
+        SH_FAV_CPS = 1800;
+        SH_PS_CPS = 1750;
+        SH_SHT_DLY = 2.5;
+        SH_PS_DLY = 0.5;
 
         MAX_VEL = 50;
         LATERAL_MULTIPLIER = 1.2;

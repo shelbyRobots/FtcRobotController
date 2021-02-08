@@ -255,7 +255,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
             robot.loader.setGatePos(Loader.gatePos.CLOSE);
         }
 
-        ugrr = new UgRrRoute(robot, startPos, alliance);
+        ugrr = new UgRrRoute(robot, startPos, parkPos, alliance);
         ShelbyBot.DriveDir startDdir = ShelbyBot.DriveDir.PUSHER;
         robot.setDriveDir(startDdir);
         initHdg = UgRrRoute.startPose.getHeading();
@@ -342,8 +342,8 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
         RobotLog.ii(TAG, "START CHDG %6.3f", robot.getGyroHdg());
 
-        double shootWait = 2.5;
-        if(RobotConstants.SH_PS) shootWait = 1.5;
+        double shootWait = RobotConstants.SH_SHT_DLY;
+        if(parkPos != Route.ParkPos.CENTER_PARK) shootWait = RobotConstants.SH_PS_DLY;
         ElapsedTime shootTimer = new ElapsedTime();
 
         RobotLog.ii(TAG, "Action SCAN_IMAGE");
@@ -380,17 +380,17 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
                 ePose = robot.drive.getPoseEstimate();
                 robot.setAutonEndPos(new Point2d(ePose.getX(), ePose.getY()));
                 robot.setAutonEndHdg(ePose.getHeading());
-//                RobotLog.dd(TAG, "Drive %s from %s at %.2f",
-//                    state, ePose, startTimer.seconds());
+//                RobotLog.dd(TAG, "CurPose %s at %.2f",
+//                    ePose, startTimer.seconds());
             }
 
             RobotLog.ii(TAG, "Finished %s at %s at %.2f in %.2f",
                 state, ePose, startTimer.seconds(), timer.seconds());
 
-            if((state == UgRrRoute.State.SHOOT && !RobotConstants.SH_PS) ||
+            if((state == UgRrRoute.State.SHOOT && parkPos == Route.ParkPos.CENTER_PARK) ||
                ((state == UgRrRoute.State.SHT1 ||
                  state == UgRrRoute.State.SHT2 ||
-                 state == UgRrRoute.State.SHT3)   &&  RobotConstants.SH_PS))
+                 state == UgRrRoute.State.SHT3)   &&  parkPos != Route.ParkPos.CENTER_PARK))
             {
                 shootTimer.reset();
 
@@ -674,9 +674,9 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
         parkMenu.addChoice("CENTER_PARK", Route.ParkPos.CENTER_PARK, true, robotNameMenu);
         parkMenu.addChoice("DEFEND_PARK", Route.ParkPos.DEFEND_PARK, false, robotNameMenu);
+        parkMenu.addChoice("CORNER_PARK", Route.ParkPos.CORNER_PARK, false, robotNameMenu);
 
-        robotNameMenu.addChoice("GTO1", "GTO1", true, delayMenu);
-        robotNameMenu.addChoice("MEC1", "MEC1", false, delayMenu);
+        robotNameMenu.addChoice("MEC1", "MEC1", true, delayMenu);
         robotNameMenu.addChoice("MEC2", "MEC2", false, delayMenu);
         robotNameMenu.addChoice("MEC3", "MEC3", false, delayMenu);
 
