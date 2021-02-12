@@ -11,6 +11,7 @@ import java.util.Locale;
 import androidx.annotation.NonNull;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
+import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_WITHOUT_ENCODER;
 
 public class Shooter
 {
@@ -30,6 +31,7 @@ public class Shooter
             shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             shooter.setMode(RUN_USING_ENCODER);
+            shtmode = RUN_USING_ENCODER;
             success = true;
         }
         catch (Exception e)
@@ -87,6 +89,18 @@ public class Shooter
         if(shooter != null) shooter.setVelocity(cps);
     }
 
+    public void setShootMode(DcMotor.RunMode mode)
+    {
+        if(shtmode != mode && shooter != null) shooter.setMode(mode);
+        shtmode = mode;
+    }
+
+    public void shootPower(double pwr)
+    {
+        setShootMode(RUN_WITHOUT_ENCODER);
+        if(shooter != null) shooter.setPower(pwr);
+    }
+
     public void shootCps(double cps)
     {
         this.cps = cps;
@@ -118,6 +132,8 @@ public class Shooter
     private double dist = 0;
     private double cps = 0;
     private double v0 = 0.0;
+
+    private DcMotor.RunMode shtmode = RUN_USING_ENCODER;
 
     private PIDFCoefficients shtPid = RobotConstants.SH_PID;
 

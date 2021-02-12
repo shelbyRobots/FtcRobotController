@@ -62,7 +62,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         dashboard.clearDisplay();
         double strtV = robot.getBatteryVoltage();
         pidf = RobotConstants.SH_PID;
-        vcmpPID = new PIDFCoefficients(pidf.p, pidf.i, pidf.d,
+        PIDFCoefficients vcmpPID = new PIDFCoefficients(pidf.p, pidf.i, pidf.d,
             pidf.f *12.0/strtV);
         robot.burr.setPIDF(vcmpPID);
         RobotLog.dd(TAG, "SHTPID: %s", vcmpPID);
@@ -142,7 +142,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         alliance = Field.Alliance.valueOf(pmgr.getAllianceColor());
         delay    = pmgr.getDelay();
         cps      = pmgr.getCps();
-        RobotConstants.SH_FAV_CPS = cps;
+        //RobotConstants.SH_FAV_CPS = cps;
         startPos = Route.StartPos.valueOf(pmgr.getStartPosition());
         try
         {
@@ -240,6 +240,8 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         }
 
         robot.init(this, chas, true);
+
+        RobotConstants.info();
 
         robot.setBcm(LynxModule.BulkCachingMode.MANUAL);
         mechDrv = (MecanumDriveLRR)(robot.drive);
@@ -731,7 +733,6 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
     private double delay = 0.0;
 
     public static PIDFCoefficients pidf = RobotConstants.SH_PID;
-    private PIDFCoefficients vcmpPID;
 
     private int cps = 1820;
 

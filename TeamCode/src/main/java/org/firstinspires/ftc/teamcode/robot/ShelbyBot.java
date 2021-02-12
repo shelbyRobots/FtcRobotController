@@ -47,7 +47,7 @@ import java.util.Map;
 public class ShelbyBot
 {
     protected LinearOpMode op = null;
-    public static RobotConstants rbc = new RobotConstants();
+    public static RobotConstants rbc; // = new RobotConstants();
     protected CommonUtil cmu = CommonUtil.getInstance();
     protected HardwareMap hwMap = null;
 

@@ -215,6 +215,10 @@ public class MecanumTeleop extends InitLinearOpMode
         }
     }
 
+    private boolean usePwr = false;
+    private final ElapsedTime hldTimer = new ElapsedTime();
+    private double shtPwr = 0.0;
+
     private void controlShooter()
     {
         if(robot.burr == null) return;
@@ -222,30 +226,47 @@ public class MecanumTeleop extends InitLinearOpMode
         boolean step_down  = gpad2.just_pressed(ManagedGamepad.Button.D_DOWN);
         boolean zeroize    = gpad2.just_pressed(ManagedGamepad.Button.D_LEFT);
         boolean normal     = gpad2.just_pressed(ManagedGamepad.Button.D_RIGHT);
+        boolean holdZero   = gpad2.pressed(ManagedGamepad.Button.D_LEFT);
+
+        if(holdZero)
+        {
+            if(hldTimer.seconds() > 2.0)
+            {
+                usePwr = !usePwr;
+                hldTimer.reset();
+            }
+        }
+        else
+        {
+            hldTimer.reset();
+        }
 
         if(useDist)
         {
-            if (step_up && distance < MAX_DIST)
-            {
-                distance += INCREMENT;
-                robot.burr.shotSpeed(distance);
-            }
-            if (step_down && distance > MIN_DIST)
-            {
-                distance -= INCREMENT;
-                robot.burr.shotSpeed(distance);
-            }
+            if (step_up   && distance < MAX_DIST) { distance += INCREMENT;  }
+            if (step_down && distance > MIN_DIST) { distance -= INCREMENT;  }
+            if (normal)                           { distance = FAV_DIST; }
+        }
+
+        if(usePwr)
+        {
+            if (step_up   && shtPwr   < 1.0) { shtPwr += 0.1;  }
+            if (step_down && shtPwr   > 0.0) { shtPwr -= 0.1;  }
+            if (normal)                      { shtPwr  = 0.5; }
+        }
+
+        if      (step_up)   {cps += CPS_INC; cps = Math.min(cps, MAX_CPS);}
+        else if (step_down) {cps -=  CPS_INC; cps = Math.max(cps, MIN_CPS);}
+        else if (normal)    {cps  = RobotConstants.SH_FAV_CPS; }
+
+        if(step_up || step_down || normal)
+        {
+            if(useDist) robot.burr.shotSpeed(distance);
+            else if(usePwr) robot.burr.shootPower(shtPwr);
+            else        robot.burr.shootCps(cps);
+
             cps = robot.burr.getCmdSpd();
         }
-        if (step_up) {cps += CPS_INC; cps = Math.min(cps, MAX_CPS);}
-        else if (step_down) {cps -=  CPS_INC; cps = Math.max(cps, MIN_CPS);}
-        else if (normal)
-        {
-            //distance = FAV_DIST;
-            //robot.burr.shotSpeed(distance);
-            cps = RobotConstants.SH_FAV_CPS;
-        }
-        if(step_up || step_down || normal) robot.burr.shootCps(cps);
         if (zeroize)
         {
             robot.burr.stop();

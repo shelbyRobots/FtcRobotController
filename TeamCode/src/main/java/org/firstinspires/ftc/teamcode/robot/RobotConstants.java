@@ -32,7 +32,7 @@ public class RobotConstants
   public static double WA_ARM_HOLD =  60.0;
   public static DcMotorSimple.Direction WA_DIR = DcMotorSimple.Direction.FORWARD;
 
-  public static double WA_GEAR = 1.0;
+  public static double WA_GEAR = 2.0;
 
   public static double LD_GATE_OPEN   = 0.36;
   public static double LD_GATE_CLOSED = 0.56;
@@ -53,7 +53,7 @@ public class RobotConstants
   public static double SH_FAV_CPS = 1840;
   public static double SH_PS_CPS = 1750;
   public static double SH_SHT_DLY = 2.5;
-  public static double SH_PS_DLY = 1.5;
+  public static double SH_PS_DLY = 0.5;
   public static PIDFCoefficients SH_PID = new PIDFCoefficients(80.0, 0.0, 0.0,14.9);
 
   public static DcMotorSimple.Direction LD_PUSH_DIR = DcMotorSimple.Direction.REVERSE;
@@ -168,6 +168,7 @@ public class RobotConstants
 
         LD_GATE_OPEN   = 0.40;
         LD_GATE_CLOSED = 0.32;
+        LD_PUSH_DIR = DcMotorSimple.Direction.REVERSE;
 
         LD_AUTO_PWR = 1.0;
         LD_TELE_PWR = 1.0;
@@ -194,7 +195,6 @@ public class RobotConstants
         break;
 
       case MEC2:
-        RobotLog.dd(TAG, "Running as MEC2");
         WA_CLAMP_OPEN = 0.66;
         WA_CLAMP_MID  = 0.56;
         WA_CLAMP_GRAB = 0.48;
@@ -282,12 +282,12 @@ public class RobotConstants
 
         SH_PID = new PIDFCoefficients(80.0, 0.0, 0.0,14.9);
         SH_FAV_CPS = 1800;
-        SH_PS_CPS = 1750;
+        SH_PS_CPS = 1720;
         SH_SHT_DLY = 2.5;
         SH_PS_DLY = 0.5;
 
         MAX_VEL = 50;
-        LATERAL_MULTIPLIER = 1.2;
+        LATERAL_MULTIPLIER = 1.15; //1.2
         DT_MOTOR = Motors.MotorModel.GOBILDA_5202_19_2;
         DT_EXT_GEAR_RATIO = 1.025; //tuned by RR tuning
         DT_WHEEL_DIAM = 96.0/MMPERIN;
@@ -358,5 +358,15 @@ public class RobotConstants
   {
     // see https://docs.google.com/document/d/1tyWrXDfMidwYyP_5H4mZyVgaEswhOC35gvdmP-V-5hA/edit#heading=h.61g9ixenznbx
     return 32767 / ticksPerSecond;
+  }
+
+  public static String info()
+  {
+    StringBuilder sbld = new StringBuilder("RobotConstants: ");
+    sbld.append("Chassis:").append(bot);
+    sbld.append(" WA_ARM_STOW:").append(WA_ARM_STOW);
+    sbld.append( "SH_PID:").append(SH_PID);
+    RobotLog.dd(TAG, sbld.toString());
+    return sbld.toString();
   }
 }
