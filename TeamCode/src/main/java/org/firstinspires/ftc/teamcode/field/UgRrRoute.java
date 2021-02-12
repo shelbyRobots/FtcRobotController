@@ -9,8 +9,6 @@ import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
-import com.qualcomm.robotcore.robot.Robot;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.robot.Lifter;
@@ -72,7 +70,7 @@ public class UgRrRoute
   public static Pose2d startPose;
   public static Pose2d shtPose;
 
-  private final double vlt;
+  //private final double vlt;
   public static double shtCps;
 
   //char1: p=Pose2d, t=Trajectory
@@ -167,7 +165,7 @@ public class UgRrRoute
     initPoses();
     initTrajectories();
 
-    vlt = robot.getBatteryVoltage();
+    //vlt = robot.getBatteryVoltage();
     doPS = parkPos != Route.ParkPos.CENTER_PARK;
 
     shtCps = RobotConstants.SH_FAV_CPS;
@@ -219,7 +217,7 @@ public class UgRrRoute
         .addDisplacementMarker(grabDistI, this::doGrab)
         .splineTo(pMID.vec(), pMID.getHeading())
         .splineTo(pDIA.vec(), pDIA.getHeading())
-        .addDisplacementMarker(this::doDrop)
+        .addDisplacementMarker(1.0,-5.0,this::doDrop)
         .addDisplacementMarker(this::doStartShoot).build();
     tDIB = new TrajectoryBuilder(pBIN, defVelLim, defAccelLim)
         .addDisplacementMarker(grabDistI, this::doGrab)
@@ -281,8 +279,7 @@ public class UgRrRoute
         .lineToConstantHeading(pSO3.vec(), wobVelLim, wobAccelLim)
         .addDisplacementMarker(this::doShoot).build();
     tSOR = new TrajectoryBuilder(tSO3.end(), Math.toRadians(0), wobVelLim, wobAccelLim)
-        .lineToLinearHeading(pSON, wobVelLim, wobAccelLim)
-        .addDisplacementMarker(this::doShoot).build();
+        .lineToLinearHeading(pSON, wobVelLim, wobAccelLim).build();
 
     tRIN = new TrajectoryBuilder(tSIA.end(), Math.toRadians(180), defVelLim, defAccelLim)
         .splineTo(pMIR.vec(), pMIR.getHeading(), defVelLim, defAccelLim)
@@ -369,13 +366,15 @@ public class UgRrRoute
       sh = -1;
     }
 
-    double shtHdgO = sh*12.0;
+    double shtAng = 12.0;
+    if(RobotConstants.bot == RobotConstants.Chassis.MEC3) shtAng = 15.0;
+    double shtHdgO = sh*shtAng;
     double shtHdgI = -shtHdgO;
 
     pBIN = new Pose2d(sx*-61.5,sy*-24.0, sh*Math.toRadians(0));  poses.add(pBIN);
     pBON = new Pose2d(sx*-61.5,sy*-48.0, sh*Math.toRadians(0));  poses.add(pBON);
 
-    pWIN = new Pose2d(sx*-61.40,sy*-24.0, sh*Math.toRadians(0));  poses.add(pWIN);
+    pWIN = new Pose2d(sx*-61.40,sy*-25.0, sh*Math.toRadians(0));  poses.add(pWIN);
     pWON = new Pose2d(sx*-61.40,sy*-48.0, sh*Math.toRadians(0));  poses.add(pWON);
 
     pMID = new Pose2d(sx*-24.0,sy*-21.0, sh*Math.toRadians(0));  poses.add(pMID);
@@ -391,9 +390,9 @@ public class UgRrRoute
     pSIN = new Pose2d(sx* -16.0,sy*-18.0, sh*Math.toRadians(shtHdgI));  poses.add(pSIN);
     pSON = new Pose2d(sx* -16.0,sy*-54.0, sh*Math.toRadians(shtHdgO));  poses.add(pSON);
 
-    pSO1 = new Pose2d(sx* -6.0,sy*-20.0, sh*Math.toRadians(0));  poses.add(pSO1);
-    pSO2 = new Pose2d(sx* -6.0,sy*-12.0, sh*Math.toRadians(0));  poses.add(pSO2);
-    pSO3 = new Pose2d(sx* -6.0,sy*-4.0,  sh*Math.toRadians(0));  poses.add(pSO3);
+    pSO1 = new Pose2d(sx* -6.0,sy*-18.0, sh*Math.toRadians(0));  poses.add(pSO1);
+    pSO2 = new Pose2d(sx* -6.0,sy* -8.0, sh*Math.toRadians(0));  poses.add(pSO2);
+    pSO3 = new Pose2d(sx* -6.0,sy*  2.0, sh*Math.toRadians(0));  poses.add(pSO3);
 
     pMIR = new Pose2d(sx*-30.0,sy*-18.0, sh*Math.toRadians(180.0-shtHdgI));  poses.add(pMIR);
     pMOR = new Pose2d(sx*-30.0,sy*-54.0, sh*Math.toRadians(180.0-shtHdgO));  poses.add(pMOR);
