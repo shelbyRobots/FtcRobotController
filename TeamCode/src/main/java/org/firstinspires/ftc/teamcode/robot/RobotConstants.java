@@ -85,6 +85,11 @@ public class RobotConstants
   public static DcMotorSimple.Direction DT_LDIR = DcMotorSimple.Direction.REVERSE;
   public static DcMotorSimple.Direction DT_RDIR = DcMotorSimple.Direction.FORWARD;
 
+  //CamServo info
+  public static double CamRot = 0.50;
+
+
+
   //Following variables are related to RoadRunner and should be tuned for each bot
   public static double LATERAL_MULTIPLIER = 1.2; //1.12;
 
@@ -150,13 +155,13 @@ public class RobotConstants
     switch (bot)
     {
       case MEC1:
-        LD_DROP_OPEN   = 0.536; //1550
-        LD_DROP_CLOSE = 0.7; //1780
-        LD_DROP_MID   = 0.6; //1550
+        LD_DROP_OPEN   = 0.66; //1733
+        LD_DROP_CLOSE = 0.35; //1287
+        LD_DROP_MID   = 0.56;
 
-        WA_CLAMP_OPEN = 0.143;
-        WA_CLAMP_MID  = 0.3;
-        WA_CLAMP_GRAB = 0.446;
+        WA_CLAMP_OPEN = 0.46;
+        WA_CLAMP_MID  = 0.57;
+        WA_CLAMP_GRAB = 0.68;
 
         WA_ARM_STOW = 34.0;
         WA_ARM_GRAB = 180.0;
@@ -246,6 +251,7 @@ public class RobotConstants
         kStatic = 0.07448;
         kVsetManual = true;
         RUN_USING_ENCODER = false;
+        CamRot = 0.20;
         break;
 
       case MEC3:
