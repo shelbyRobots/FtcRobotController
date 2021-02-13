@@ -117,8 +117,10 @@ public class MecanumTeleop extends InitLinearOpMode
         dashboard.displayText(l++, String.format(Locale.US,"R_IN %4.2f R %4.2f", raw_fb, fb));
         dashboard.displayText(l++, String.format(Locale.US,"T_IN %4.2f T %4.2f", raw_turn, turn));
         if(VERBOSE) RobotLog.dd(TAG, sStr);
-        if(VERBOSE) RobotLog.dd(TAG, "TEL SHT:%.2f ARM:%.2f INT:%.2f DRV%.2f",
+        if(VERBOSE) RobotLog.dd(TAG, "TEL SHT:%.1f ARM:%.1f INT:%.1f DRV:%.1f",
             shtTime, armTime, intTime, drvTime);
+        if(VERBOSE) RobotLog.dd(TAG, "TEL U:%.1f C:%.1f D:%.1f P:%.1f L:%.1f F:%.1f W:%.1f",
+            u, c, d, p, L, f, w);
     }
 
     private void doLogging()
@@ -397,11 +399,12 @@ public class MecanumTeleop extends InitLinearOpMode
         mechDrv.setWeightedDrivePower(velPose);
     }
 
-    double strTime;
     double shtTime;
     double armTime;
     double intTime;
     double drvTime;
+    double u, c, d, p, L, f, w;
+    private final ElapsedTime oTimer = new ElapsedTime();
     private final ElapsedTime opTimer = new ElapsedTime();
     private void processControllerInputs()
     {
@@ -422,7 +425,7 @@ public class MecanumTeleop extends InitLinearOpMode
     {
         gpad1.update();
         controlDrive();
-        drvTime = opTimer.milliseconds() - intTime;
+        drvTime = opTimer.milliseconds();
     }
 
     @SuppressWarnings("RedundantThrows")
@@ -457,17 +460,28 @@ public class MecanumTeleop extends InitLinearOpMode
         opTimer.reset();
         while (opModeIsActive())
         {
-            strTime = opTimer.milliseconds();
+            oTimer.reset();
             update();
+            u=opTimer.milliseconds();
+            oTimer.reset();
             processControllerInputs();
+            c=opTimer.milliseconds();
+            oTimer.reset();
             processDriverInputs();
-
+            d=opTimer.milliseconds();
+            oTimer.reset();
             printTelem();
+            p=opTimer.milliseconds();
+            oTimer.reset();
             doLogging();
-            String shtStr = robot.burr.toString();
-            RobotLog.dd(TAG, shtStr);
+            L=opTimer.milliseconds();
+            oTimer.reset();
             robot.finishFrame();
+            f=opTimer.milliseconds();
+            oTimer.reset();
             robot.waitForTick(20);
+            w=opTimer.milliseconds();
+            oTimer.reset();
         }
     }
 
