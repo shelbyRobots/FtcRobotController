@@ -10,6 +10,7 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
@@ -25,6 +26,7 @@ import org.firstinspires.ftc.teamcode.field.UgRrRoute;
 import org.firstinspires.ftc.teamcode.image.Detector;
 import org.firstinspires.ftc.teamcode.image.ImageTracker;
 import org.firstinspires.ftc.teamcode.image.RingDetector;
+import org.firstinspires.ftc.teamcode.robot.CamMount;
 import org.firstinspires.ftc.teamcode.robot.Lifter;
 import org.firstinspires.ftc.teamcode.robot.Loader;
 import org.firstinspires.ftc.teamcode.robot.MecanumDriveLRR;
@@ -53,6 +55,7 @@ import static org.firstinspires.ftc.teamcode.field.Route.StartPos.START_1;
 //@Disabled
 public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButtons
 {
+
     public UgAutoShelby()
     {
     }
@@ -255,6 +258,10 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         if(robot.loader != null)
         {
             robot.loader.setGatePos(Loader.gatePos.CLOSE);
+        }
+        if(robot.camMount != null)
+        {
+            robot.camMount.setCamPos(RobotConstants.CamRot);
         }
 
         ugrr = new UgRrRoute(robot, startPos, parkPos, alliance);
