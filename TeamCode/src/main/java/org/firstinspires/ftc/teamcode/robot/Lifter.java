@@ -21,6 +21,8 @@ public class Lifter
         this.hwMap = map;
     }
 
+
+
     public boolean init()
     {
         boolean success = true;
