@@ -202,18 +202,23 @@ public class MecanumTeleop extends InitLinearOpMode
                         robot.intake.suck(0.0);
                     }
                 }
+
+                if(bkWhl)
+                {
+                    robot.loader.whlBak();
+                    robot.loader.load(-1.0);
+                }
+                else if(bkFwd)
+                {
+                    robot.loader.whlFwd();
+                    robot.loader.load(1.0);
+                }
+                else{
+                    robot.loader.whlStp();
+                    robot.loader.load(0.0);
+                }
             }
             lastShoot = shoot;
-            if(bkWhl)
-            {
-                robot.loader.whlBak();
-                robot.loader.load(-1.0);
-            }
-            if(bkFwd)
-            {
-                robot.loader.whlFwd();
-                robot.loader.load(1.0);
-            }
         }
     }
 

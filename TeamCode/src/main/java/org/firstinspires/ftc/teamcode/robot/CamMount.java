@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.robot.Robot;
 import com.qualcomm.robotcore.util.RobotLog;
 
 public class CamMount
@@ -16,7 +15,7 @@ public class CamMount
     try{
       camServo = hwMap.get(Servo.class, "CamServo");
       success = true;
-      setCamPos(RobotConstants.CamRot);
+      setCamPos(RobotConstants.CamStow);
     }catch (Exception e)
     {
       RobotLog.ee(TAG, "ERROR: Cam Servo missing");

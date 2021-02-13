@@ -86,7 +86,8 @@ public class RobotConstants
   public static DcMotorSimple.Direction DT_RDIR = DcMotorSimple.Direction.FORWARD;
 
   //CamServo info
-  public static double CamRot = 0.50;
+  public static double CamStow = 0.50;
+  public static double CamRing = 0.50;
 
 
 
@@ -251,7 +252,8 @@ public class RobotConstants
         kStatic = 0.07448;
         kVsetManual = true;
         RUN_USING_ENCODER = false;
-        CamRot = 0.20;
+        CamStow = 0.20;
+        CamRing = 0.20;
         break;
 
       case MEC3:
