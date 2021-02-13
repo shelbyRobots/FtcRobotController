@@ -21,6 +21,7 @@ public class TilerunnerMecanumBot extends ShelbyBot
     public Shooter burr = null;
     public Intake intake = null;
     public Loader loader = null;
+    public CamMount camMount = null;
 
     private static final String TAG = "SJH_MEC";
     public TilerunnerMecanumBot()
@@ -53,9 +54,11 @@ public class TilerunnerMecanumBot extends ShelbyBot
         initCollectorLifter();
         initPushers();
         initShooters();
-
+        initCamMount();
         initCapabilities();
     }
+
+
 
     @Override
     protected void initDriveMotors()
@@ -142,6 +145,12 @@ public class TilerunnerMecanumBot extends ShelbyBot
 
         loader = new Loader(hwMap);
         loader.init();
+    }
+
+    protected void initCamMount()
+    {
+        camMount = new CamMount(hwMap);
+        camMount.init();
     }
 
     double botTime;
