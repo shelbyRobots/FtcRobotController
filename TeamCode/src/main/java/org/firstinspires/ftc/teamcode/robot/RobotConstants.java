@@ -257,9 +257,9 @@ public class RobotConstants
         break;
 
       case MEC3:
-        WA_CLAMP_OPEN = 0.50;
-        WA_CLAMP_MID  = 0.65;
-        WA_CLAMP_GRAB = 0.85;
+        WA_CLAMP_OPEN = 0.48;
+        WA_CLAMP_MID = 0.63;
+        WA_CLAMP_GRAB = 0.78;
 
         WG_CLAMP_OPEN = 0.51;
         WG_CLAMP_MID  = 0.75;
