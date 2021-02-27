@@ -146,7 +146,7 @@ public class UgRrRoute
   public Trajectory WD2;
   public Trajectory PRK;
 
-  private final boolean doPS;
+  private boolean doPS;
   //private double DEF_SHT_DST; //= shtPose.vec().distTo(goalVec);
 
   private static final String TAG = "SJH_URR";
@@ -490,6 +490,8 @@ public class UgRrRoute
 //    robot.burr.setPIDF(vcmpPID);
     RobotLog.dd(TAG, "Starting shooter");
     //if(robot.burr != null) robot.burr.shotSpeed(DEF_SHT_DST);
+    shtCps = RobotConstants.SH_FAV_CPS;
+    doPS = parkPos != Route.ParkPos.CENTER_PARK;
     if(robot.burr != null) robot.burr.shootCps(shtCps);
   }
 
