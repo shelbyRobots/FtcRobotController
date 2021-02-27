@@ -37,9 +37,9 @@ public class RobotConstants
   public static double LD_GATE_OPEN   = 0.36;
   public static double LD_GATE_CLOSED = 0.56;
 
-  public static double LD_DROP_OPEN   = 0.536; //1550
-  public static double LD_DROP_CLOSE = 0.7; //1780
-  public static double LD_DROP_MID   = 0.6; //1550
+  public static double LD_DROP_OPEN  = 0.46;
+  public static double LD_DROP_CLOSE = 0.26;
+  public static double LD_DROP_MID   = 0.36;
 
   public static double LD_AUTO_PWR = 1.0;
   public static double LD_TELE_PWR = 1.0;
@@ -156,9 +156,9 @@ public class RobotConstants
     switch (bot)
     {
       case MEC1:
-        LD_DROP_OPEN   = 0.66; //1733
-        LD_DROP_CLOSE = 0.35; //1287
-        LD_DROP_MID   = 0.56;
+        LD_DROP_OPEN  = 0.46; //1550
+        LD_DROP_CLOSE = 0.26; //1010
+        LD_DROP_MID   = 0.3;
 
         WA_CLAMP_OPEN = 0.46;
         WA_CLAMP_MID  = 0.57;
@@ -186,10 +186,13 @@ public class RobotConstants
         IN_TELE_PS_PWR = 1.0;
 
         SH_PID = new PIDFCoefficients(80.0, 0.0, 0.0,14.9);
-        SH_FAV_CPS = 1830;
-        SH_PS_CPS = 1750;
+        SH_FAV_CPS = 1570;
+        SH_PS_CPS  = 1450;
         SH_SHT_DLY = 2.5;
         SH_PS_DLY = 1.5;
+
+        CamStow = 0.11;
+        CamRing = 0.61;
 
         IN_PUSH_DIR = DcMotorSimple.Direction.FORWARD;
 

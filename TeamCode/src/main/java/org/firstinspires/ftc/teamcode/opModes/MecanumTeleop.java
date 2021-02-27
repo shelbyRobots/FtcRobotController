@@ -164,7 +164,7 @@ public class MecanumTeleop extends InitLinearOpMode
         boolean shoot = gpad2.pressed(ManagedGamepad.Button.R_TRIGGER);
         boolean bkWhl = gpad2.pressed(ManagedGamepad.Button.L_BUMP);
         boolean bkFwd = gpad2.pressed(ManagedGamepad.Button.R_BUMP);
-        boolean drop  = gpad2.pressed(ManagedGamepad.Button.L_STICK_BUTTON);
+        boolean drop  = gpad2.just_pressed(ManagedGamepad.Button.L_STICK_BUTTON);
 
         if(robot.intake != null)
         {
@@ -263,14 +263,14 @@ public class MecanumTeleop extends InitLinearOpMode
         }
 
         if      (step_up)   {cps += CPS_INC; cps = Math.min(cps, MAX_CPS);}
-        else if (step_down) {cps -=  CPS_INC; cps = Math.max(cps, MIN_CPS);}
+        else if (step_down) {cps -= CPS_INC; cps = Math.max(cps, MIN_CPS);}
         else if (normal)    {cps  = RobotConstants.SH_FAV_CPS; }
 
         if(step_up || step_down || normal)
         {
-            if(useDist) robot.burr.shotSpeed(distance);
+            if(useDist)     robot.burr.shotSpeed(distance);
             else if(usePwr) robot.burr.shootPower(shtPwr);
-            else        robot.burr.shootCps(cps);
+            else            robot.burr.shootCps(cps);
 
             cps = robot.burr.getCmdSpd();
         }
