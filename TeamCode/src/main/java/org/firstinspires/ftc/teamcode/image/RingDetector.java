@@ -111,7 +111,7 @@ public class RingDetector extends Detector {
 
         int numGtTwoThird = 0;
         int StackHeight;
-        int ThreshHeight = 40;
+        int ThreshHeight = 50;
 
 
         if (goldcntrs.size() == 0)

@@ -138,7 +138,7 @@ public class RingPipeline
 		double filterContoursMinPerimeter = 100.0;
 		double filterContoursMinWidth = 40.0;
 		double filterContoursMaxWidth = 1000.0;
-		double filterContoursMinHeight = 10.0;
+		double filterContoursMinHeight = 20.0;
 		double filterContoursMaxHeight = 1000.0;
 		double[] filterContoursSolidity = {0, 100};
 		double filterContoursMaxVertices = 20000.0;
