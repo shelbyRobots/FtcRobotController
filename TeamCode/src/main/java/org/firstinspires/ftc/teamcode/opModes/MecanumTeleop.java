@@ -166,11 +166,14 @@ public class MecanumTeleop extends InitLinearOpMode
         boolean bkFwd = gpad2.pressed(ManagedGamepad.Button.R_BUMP);
         boolean drop  = gpad2.just_pressed(ManagedGamepad.Button.L_STICK_BUTTON);
 
+        double intakePwr = 0.0;
+
         if(robot.intake != null)
         {
-            if(!shoot || Math.abs(intake) >0.05) robot.intake.suck(intake);
+            intakePwr = intake;
             if(drop) robot.intake.toggleDropPos();
         }
+
         if(robot.loader != null)
         {
             if(shoot)
@@ -182,9 +185,9 @@ public class MecanumTeleop extends InitLinearOpMode
                     robot.loader.whlFwd();
                     robot.loader.load(RobotConstants.LD_TELE_PWR);
                     if(RobotConstants.bot == RobotConstants.Chassis.MEC3 &&
-                        Math.abs(intake) < 0.05)
+                        Math.abs(intake) <= 0.05)
                     {
-                        robot.intake.suck(RobotConstants.IN_TELE_PWR);
+                        intakePwr = RobotConstants.IN_TELE_PWR;
                     }
                 }
             }
@@ -197,9 +200,9 @@ public class MecanumTeleop extends InitLinearOpMode
                     robot.loader.whlStp();
                     robot.loader.load(0.0);
                     if(RobotConstants.bot == RobotConstants.Chassis.MEC3 &&
-                        Math.abs(intake) < 0.05)
+                        Math.abs(intake) <= 0.05)
                     {
-                        robot.intake.suck(0.0);
+                        intakePwr = 0.0;
                     }
                 }
 
@@ -213,11 +216,14 @@ public class MecanumTeleop extends InitLinearOpMode
                     robot.loader.whlFwd();
                     robot.loader.load(1.0);
                 }
-                else{
+                else
+                {
                     robot.loader.whlStp();
                     robot.loader.load(0.0);
                 }
             }
+
+            robot.intake.suck(intakePwr);
             lastShoot = shoot;
         }
     }
