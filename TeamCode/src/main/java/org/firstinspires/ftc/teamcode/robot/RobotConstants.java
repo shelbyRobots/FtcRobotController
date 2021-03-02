@@ -292,8 +292,8 @@ public class RobotConstants
         IN_PUSH_DIR = DcMotorSimple.Direction.REVERSE;
 
         SH_PID = new PIDFCoefficients(80.0, 0.0, 0.0,14.9);
-        SH_FAV_CPS = 1800;
-        SH_PS_CPS = 1720;
+        SH_FAV_CPS = 1940;
+        SH_PS_CPS = 1800;
         SH_SHT_DLY = 2.5;
         SH_PS_DLY = 0.5;
 
