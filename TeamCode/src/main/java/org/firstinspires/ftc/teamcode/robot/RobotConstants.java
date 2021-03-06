@@ -156,7 +156,7 @@ public class RobotConstants
     switch (bot)
     {
       case MEC1:
-        LD_DROP_OPEN  = 0.36;
+        LD_DROP_OPEN  = 0.32;
         LD_DROP_CLOSE = 0.5;
         LD_DROP_MID   = 0.4;
 
@@ -196,11 +196,20 @@ public class RobotConstants
 
         IN_PUSH_DIR = DcMotorSimple.Direction.FORWARD;
 
+        MAX_VEL = 50;
+        LATERAL_MULTIPLIER = 1.2;//1.21; //1.18;
         DT_MOTOR = Motors.MotorModel.AM_NEVEREST_ORBITAL_20;
         DT_EXT_GEAR_RATIO = 1.0; //need RR tuning
         DT_WHEEL_DIAM = 4.0;
         DT_TRACK_WIDTH = 14.9; //need RR tuning
         MOTOR_VELO_PID = new PIDFCoefficients(14, 0, 0.3, 12.8); //need RR tuning
+        TRANSLATIONAL_PID = new PIDCoefficients(15, 0, 0.01582);
+        HEADING_PID = new PIDCoefficients(3.5, 0, 0);
+        kV = 0.01582;
+        kA = 0.002;
+        kStatic = 0.07448;
+        kVsetManual = true;
+        RUN_USING_ENCODER = false;
         break;
 
       case MEC2:
