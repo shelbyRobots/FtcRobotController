@@ -186,8 +186,8 @@ public class RobotConstants
         IN_TELE_PS_PWR = 1.0;
 
         SH_PID = new PIDFCoefficients(80.0, 0.0, 0.0,14.9);
-        SH_FAV_CPS = 1550;
-        SH_PS_CPS  = 1450;
+        SH_FAV_CPS = 1400;
+        SH_PS_CPS  = 1350;
         SH_SHT_DLY = 2.5;
         SH_PS_DLY = 1.5;
 

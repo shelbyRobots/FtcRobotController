@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.path.Path;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -164,7 +165,9 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         for(Map.Entry<UgRrRoute.State, Trajectory> entry : ugrr.stateTrajMap.entrySet())
         {
             fieldOverlay.setStroke(ugrr.stateColMap.get(entry.getKey()));
-            //DashboardUtil.drawSampledPath(fieldOverlay, entry.getValue().getPath());
+            Trajectory traj = entry.getValue();
+            if(traj == null) continue;
+            DashboardUtil.drawSampledPath(fieldOverlay, traj.getPath());
         }
         ftcdbrd.sendTelemetryPacket(packet);
     }
@@ -396,10 +399,11 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
             RobotLog.ii(TAG, "Finished %s at %s at %.2f in %.2f",
                 state, ePose, startTimer.seconds(), timer.seconds());
 
-            if((state == UgRrRoute.State.SHOOT && parkPos == Route.ParkPos.CENTER_PARK) ||
-               ((state == UgRrRoute.State.SHT1 ||
-                 state == UgRrRoute.State.SHT2 ||
-                 state == UgRrRoute.State.SHT3)   &&  parkPos != Route.ParkPos.CENTER_PARK) ||
+            if(RobotConstants.bot != RobotConstants.Chassis.MEC1 &&
+                ((state == UgRrRoute.State.SHOOT && parkPos == Route.ParkPos.CENTER_PARK) ||
+                ((state == UgRrRoute.State.SHT1 ||
+                  state == UgRrRoute.State.SHT2 ||
+                  state == UgRrRoute.State.SHT3) &&  parkPos != Route.ParkPos.CENTER_PARK)) ||
                state == UgRrRoute.State.SHTE)
             {
                 shootTimer.reset();
@@ -414,8 +418,9 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
                 if(robot.burr != null  &&
                     (state == UgRrRoute.State.SHOOT ||
-                        state == UgRrRoute.State.SHT3 ||
-                        state == UgRrRoute.State.SHTE)) robot.burr.stop();
+                     state == UgRrRoute.State.SHT3  ||
+                     state == UgRrRoute.State.SHTE)) robot.burr.stop();
+
                 if(robot.loader != null)
                 {
                     robot.loader.load(0.0);
