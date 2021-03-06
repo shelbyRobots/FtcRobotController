@@ -367,7 +367,7 @@ public class UgRrRoute
     }
 
     double shtAng = 12.0;
-    if(RobotConstants.bot == RobotConstants.Chassis.MEC3) shtAng = 10.0;
+    if(RobotConstants.bot == RobotConstants.Chassis.MEC3) shtAng = 12.0;
     else if (RobotConstants.bot == RobotConstants.Chassis.MEC2) shtAng = 2.0;
     double shtHdgO = sh*shtAng;
     double shtHdgI = -shtHdgO;
@@ -384,7 +384,7 @@ public class UgRrRoute
     pDIA = new Pose2d(sx*  3.0,sy*-47.0, sh*Math.toRadians(-35));  poses.add(pDIA);
     pDIB = new Pose2d(sx* 20.0,sy*-28.0, sh*Math.toRadians(-20));  poses.add(pDIB);
     pDIC = new Pose2d(sx* 46.0,sy*-48.0, sh*Math.toRadians(-45));  poses.add(pDIC);
-    pDOA = new Pose2d(sx*  5.0,sy*-56.0, sh*Math.toRadians(-30));  poses.add(pDOA);
+    pDOA = new Pose2d(sx*  3.0,sy*-57.0, sh*Math.toRadians(-30));  poses.add(pDOA);
     pDOB = new Pose2d(sx* 28.0,sy*-46.0, sh*Math.toRadians( 35));  poses.add(pDOB);
     pDOC = new Pose2d(sx* 52.0,sy*-59.0, sh*Math.toRadians(  0));  poses.add(pDOC);
 
