@@ -236,13 +236,13 @@ public class RobotConstants
         IN_PUSH_DIR = DcMotorSimple.Direction.REVERSE;
 
         SH_PID = new PIDFCoefficients(80.0, 0.0, 0.0,14.9);
-        SH_FAV_CPS = 1830;
-        SH_PS_CPS = 1750;
+        SH_FAV_CPS = 1810;
+        SH_PS_CPS = 1680;
         SH_SHT_DLY = 3.5;
         SH_PS_DLY = 1.0;
 
         MAX_VEL = 50;
-        LATERAL_MULTIPLIER = 1.18;//1.21; //1.18;
+        LATERAL_MULTIPLIER = 1.16;//1.21; //1.18;
         DT_MOTOR = Motors.MotorModel.GOBILDA_5202_19_2;
         DT_EXT_GEAR_RATIO = 1.025; //tuned by RR tuning
         DT_WHEEL_DIAM = 96.0/MMPERIN;
