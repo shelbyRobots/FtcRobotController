@@ -399,11 +399,11 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
             RobotLog.ii(TAG, "Finished %s at %s at %.2f in %.2f",
                 state, ePose, startTimer.seconds(), timer.seconds());
 
-            if(RobotConstants.bot != RobotConstants.Chassis.MEC1 &&
+            if((RobotConstants.bot != RobotConstants.Chassis.MEC1 &&
                 ((state == UgRrRoute.State.SHOOT && parkPos == Route.ParkPos.CENTER_PARK) ||
                 ((state == UgRrRoute.State.SHT1 ||
                   state == UgRrRoute.State.SHT2 ||
-                  state == UgRrRoute.State.SHT3) &&  parkPos != Route.ParkPos.CENTER_PARK)) ||
+                  state == UgRrRoute.State.SHT3) &&  parkPos != Route.ParkPos.CENTER_PARK))) ||
                state == UgRrRoute.State.SHTE)
             {
                 shootTimer.reset();
