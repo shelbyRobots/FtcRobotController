@@ -190,6 +190,12 @@ public class MecanumTeleop extends InitLinearOpMode
                         intakePwr = RobotConstants.IN_TELE_PWR;
                     }
                 }
+
+                if(RobotConstants.bot == RobotConstants.Chassis.MEC3 &&
+                    Math.abs(intake) <= 0.05)
+                {
+                    intakePwr = RobotConstants.IN_TELE_PWR;
+                }
             }
             else
             {

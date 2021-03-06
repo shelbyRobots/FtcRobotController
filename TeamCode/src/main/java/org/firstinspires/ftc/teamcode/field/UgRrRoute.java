@@ -401,7 +401,8 @@ public class UgRrRoute
     }
 
     double shtAng = 12.0;
-    if(RobotConstants.bot == RobotConstants.Chassis.MEC3) shtAng = 15.0;
+    if(RobotConstants.bot == RobotConstants.Chassis.MEC3) shtAng = 10.0;
+    else if (RobotConstants.bot == RobotConstants.Chassis.MEC2) shtAng = 2.0;
     double shtHdgO = sh*shtAng;
     double shtHdgI = -shtHdgO;
 
