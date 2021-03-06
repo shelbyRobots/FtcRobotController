@@ -399,7 +399,8 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
             if((state == UgRrRoute.State.SHOOT && parkPos == Route.ParkPos.CENTER_PARK) ||
                ((state == UgRrRoute.State.SHT1 ||
                  state == UgRrRoute.State.SHT2 ||
-                 state == UgRrRoute.State.SHT3)   &&  parkPos != Route.ParkPos.CENTER_PARK))
+                 state == UgRrRoute.State.SHT3)   &&  parkPos != Route.ParkPos.CENTER_PARK) ||
+               state == UgRrRoute.State.SHTE)
             {
                 shootTimer.reset();
 
@@ -413,7 +414,8 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
 
                 if(robot.burr != null  &&
                     (state == UgRrRoute.State.SHOOT ||
-                        state == UgRrRoute.State.SHT3)) robot.burr.stop();
+                        state == UgRrRoute.State.SHT3 ||
+                        state == UgRrRoute.State.SHTE)) robot.burr.stop();
                 if(robot.loader != null)
                 {
                     robot.loader.load(0.0);

@@ -57,6 +57,8 @@ public class UgRrRoute
     WOB2,
     DROP2,
     PARK,
+    SHTE,
+    PRKE,
     IDLE
   }
 
@@ -145,6 +147,8 @@ public class UgRrRoute
   public Trajectory WPU;
   public Trajectory WD2;
   public Trajectory PRK;
+  public Trajectory SHE;
+  public Trajectory PKE;
 
   private boolean doPS;
   //private double DEF_SHT_DST; //= shtPose.vec().distTo(goalVec);
@@ -189,13 +193,23 @@ public class UgRrRoute
       stateTrajMap.put(State.DROP2,   WD2);
     }
     stateTrajMap.put(State.PARK,    PRK);
+    if(RobotConstants.bot == RobotConstants.Chassis.MEC1)
+    {
+      stateTrajMap.put(State.SHTE, SHE);
+      stateTrajMap.put(State.PRKE, PKE);
+    }
 
     stateColMap.put(State.DROP1,   "#F50505");
     stateColMap.put(State.SHOOT,   "#F55505");
+    stateColMap.put(State.SHT1,    "#F55505");
+    stateColMap.put(State.SHT2,    "#F55505");
+    stateColMap.put(State.SHT3,    "#F55505");
     stateColMap.put(State.REVERSE, "#F5D505");
     stateColMap.put(State.WOB2,    "#15F505");
     stateColMap.put(State.DROP2,   "#05F5F5");
     stateColMap.put(State.PARK,    "#0505F5");
+    stateColMap.put(State.SHTE,    "#0505F5");
+    stateColMap.put(State.PRKE,    "#0505F5");
   }
 
   public void initTrajectories()
@@ -319,6 +333,15 @@ public class UgRrRoute
             .lineToLinearHeading(pPIN)
             .addDisplacementMarker(this::doPark).build();
         PRK = tPIS;
+      }
+
+      if(RobotConstants.bot == RobotConstants.Chassis.MEC1)
+      {
+        SHE = new TrajectoryBuilder(tPIS.end(), Math.toRadians(180), defVelLim, defAccelLim)
+            .back(12.0)
+            .addDisplacementMarker(this::doShoot).build();
+        PKE = new TrajectoryBuilder(SHE.end(), Math.toRadians(0), defVelLim, defAccelLim)
+            .forward(12.0).build();
       }
     }
     else
@@ -453,11 +476,22 @@ public class UgRrRoute
     }
   }
 
+  int shootCnt = 0;
   private void doShoot()
   {
     //double shotdist = DEF_SHT_DST;
     RobotLog.dd(TAG, "Shooting");
     //if(robot.burr != null) robot.burr.shotSpeed(shotdist);
+
+    if(RobotConstants.bot == RobotConstants.Chassis.MEC1)
+    {
+      if(shootCnt == 0) return;
+      else
+      {
+        robot.intake.toggleDropPos();
+      }
+    }
+
     if(robot.burr != null) robot.burr.shootCps(shtCps);
 
     if(doPS && state == State.SHOOT) return;
@@ -476,6 +510,8 @@ public class UgRrRoute
     {
       robot.intake.suck(iPwr);
     }
+
+    shootCnt++;
   }
 
   private boolean firstShoot = true;
