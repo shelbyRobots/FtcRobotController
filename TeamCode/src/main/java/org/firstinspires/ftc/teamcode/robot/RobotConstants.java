@@ -297,6 +297,9 @@ public class RobotConstants
         SH_SHT_DLY = 2.5;
         SH_PS_DLY = 0.5;
 
+        CamStow = 0.42;
+        CamRing = 0.42;
+
         MAX_VEL = 50;
         LATERAL_MULTIPLIER = 1.15; //1.2
         DT_MOTOR = Motors.MotorModel.GOBILDA_5202_19_2;
