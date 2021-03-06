@@ -156,9 +156,9 @@ public class RobotConstants
     switch (bot)
     {
       case MEC1:
-        LD_DROP_OPEN  = 0.64; //1550
-        LD_DROP_CLOSE = 0.38; //1010
-        LD_DROP_MID   = 0.3;
+        LD_DROP_OPEN  = 0.36;
+        LD_DROP_CLOSE = 0.5;
+        LD_DROP_MID   = 0.4;
 
         WA_CLAMP_OPEN = 0.46;
         WA_CLAMP_MID  = 0.57;
@@ -186,7 +186,7 @@ public class RobotConstants
         IN_TELE_PS_PWR = 1.0;
 
         SH_PID = new PIDFCoefficients(80.0, 0.0, 0.0,14.9);
-        SH_FAV_CPS = 1570;
+        SH_FAV_CPS = 1550;
         SH_PS_CPS  = 1450;
         SH_SHT_DLY = 2.5;
         SH_PS_DLY = 1.5;

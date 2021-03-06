@@ -164,7 +164,7 @@ public class UgAutoShelby extends InitLinearOpMode implements FtcMenu.MenuButton
         for(Map.Entry<UgRrRoute.State, Trajectory> entry : ugrr.stateTrajMap.entrySet())
         {
             fieldOverlay.setStroke(ugrr.stateColMap.get(entry.getKey()));
-            DashboardUtil.drawSampledPath(fieldOverlay, entry.getValue().getPath());
+            //DashboardUtil.drawSampledPath(fieldOverlay, entry.getValue().getPath());
         }
         ftcdbrd.sendTelemetryPacket(packet);
     }

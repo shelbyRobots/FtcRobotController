@@ -193,7 +193,7 @@ public class UgRrRoute
       stateTrajMap.put(State.DROP2,   WD2);
     }
     stateTrajMap.put(State.PARK,    PRK);
-    if(RobotConstants.bot == RobotConstants.Chassis.MEC1)
+    if(RobotConstants.bot == RobotConstants.Chassis.MEC1 && GO_FOR_TWO)
     {
       stateTrajMap.put(State.SHTE, SHE);
       stateTrajMap.put(State.PRKE, PKE);
@@ -335,13 +335,14 @@ public class UgRrRoute
         PRK = tPIS;
       }
 
-      if(RobotConstants.bot == RobotConstants.Chassis.MEC1)
+      if(RobotConstants.bot == RobotConstants.Chassis.MEC1 && GO_FOR_TWO)
       {
-        SHE = new TrajectoryBuilder(tPIS.end(), Math.toRadians(180), defVelLim, defAccelLim)
+        SHE = new TrajectoryBuilder(PRK.end(), Math.toRadians(180), defVelLim, defAccelLim)
             .back(12.0)
             .addDisplacementMarker(this::doShoot).build();
         PKE = new TrajectoryBuilder(SHE.end(), Math.toRadians(0), defVelLim, defAccelLim)
-            .forward(12.0).build();
+            .forward(12.0)
+            .addDisplacementMarker(this::doPark).build();
       }
     }
     else
