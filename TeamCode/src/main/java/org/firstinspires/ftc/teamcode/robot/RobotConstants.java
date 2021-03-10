@@ -229,8 +229,8 @@ public class RobotConstants
         WA_ARM_DROP = 120.0;
         WA_ARM_HOLD =  60.0;
 
-        LD_GATE_OPEN   = 0.36;
-        LD_GATE_CLOSED = 0.56;
+        LD_GATE_OPEN   = 0.24;
+        LD_GATE_CLOSED = 0.42;
         LD_PUSH_DIR = DcMotorSimple.Direction.REVERSE;
 
         LD_AUTO_PWR = 1.0;
