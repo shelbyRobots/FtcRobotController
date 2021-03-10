@@ -334,16 +334,6 @@ public class UgRrRoute
             .addDisplacementMarker(this::doPark).build();
         PRK = tPIS;
       }
-
-      if(RobotConstants.bot == RobotConstants.Chassis.MEC1 && GO_FOR_TWO)
-      {
-        SHE = new TrajectoryBuilder(PRK.end(), Math.toRadians(180), defVelLim, defAccelLim)
-            .back(12.0)
-            .addDisplacementMarker(this::doShoot).build();
-        PKE = new TrajectoryBuilder(SHE.end(), Math.toRadians(0), defVelLim, defAccelLim)
-            .forward(12.0)
-            .addDisplacementMarker(this::doPark).build();
-      }
     }
     else
     {
@@ -372,16 +362,16 @@ public class UgRrRoute
             .addDisplacementMarker(this::doPark).build();
         PRK = tPOS;
       }
+    }
 
-      if(RobotConstants.bot == RobotConstants.Chassis.MEC1 && GO_FOR_TWO)
-      {
-        SHE = new TrajectoryBuilder(PRK.end(), Math.toRadians(180), defVelLim, defAccelLim)
-            .back(12.0)
-            .addDisplacementMarker(this::doShoot).build();
-        PKE = new TrajectoryBuilder(SHE.end(), Math.toRadians(0), defVelLim, defAccelLim)
-            .forward(12.0)
-            .addDisplacementMarker(this::doPark).build();
-      }
+    if(RobotConstants.bot == RobotConstants.Chassis.MEC1 && GO_FOR_TWO)
+    {
+      SHE = new TrajectoryBuilder(PRK.end(), Math.toRadians(180), defVelLim, defAccelLim)
+          .back(12.0)
+          .addDisplacementMarker(this::doShoot).build();
+      PKE = new TrajectoryBuilder(SHE.end(), Math.toRadians(0), defVelLim, defAccelLim)
+          .forward(12.0)
+          .addDisplacementMarker(this::doPark).build();
     }
 
     RobotLog.dd(TAG, "Done Building trajectories");
@@ -533,7 +523,7 @@ public class UgRrRoute
   private boolean firstShoot = true;
   private void doStartShoot()
   {
-    if(RobotConstants.bot != RobotConstants.Chassis.MEC1) return;
+    if(RobotConstants.bot == RobotConstants.Chassis.MEC1) return;
 
     if(!firstShoot) return;
     firstShoot = false;
