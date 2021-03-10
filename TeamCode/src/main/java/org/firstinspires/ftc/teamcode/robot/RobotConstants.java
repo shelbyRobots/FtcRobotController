@@ -188,7 +188,7 @@ public class RobotConstants
         SH_PID = new PIDFCoefficients(80.0, 0.0, 0.0,14.9);
         SH_FAV_CPS = 1400;
         SH_PS_CPS  = 1350;
-        SH_SHT_DLY = 5.0;
+        SH_SHT_DLY = 6.5;
         SH_PS_DLY = 1.5;
 
         CamStow = 0.11;
@@ -196,20 +196,20 @@ public class RobotConstants
 
         IN_PUSH_DIR = DcMotorSimple.Direction.FORWARD;
 
-        MAX_VEL = 50;
+//        MAX_VEL = 50;
         LATERAL_MULTIPLIER = 1.2;//1.21; //1.18;
         DT_MOTOR = Motors.MotorModel.AM_NEVEREST_ORBITAL_20;
         DT_EXT_GEAR_RATIO = 1.0; //need RR tuning
         DT_WHEEL_DIAM = 4.0;
         DT_TRACK_WIDTH = 14.9; //need RR tuning
         MOTOR_VELO_PID = new PIDFCoefficients(14, 0, 0.3, 12.8); //need RR tuning
-        TRANSLATIONAL_PID = new PIDCoefficients(15, 0, 0.01582);
-        HEADING_PID = new PIDCoefficients(3.5, 0, 0);
-        kV = 0.01582;
-        kA = 0.002;
-        kStatic = 0.07448;
-        kVsetManual = true;
-        RUN_USING_ENCODER = false;
+        TRANSLATIONAL_PID = new PIDCoefficients(7.5, 0, 0);
+        HEADING_PID = new PIDCoefficients(8, 0, 0);
+        //kV = 0.01582;
+        //kA = 0.002;
+        //kStatic = 0.07448;
+        //kVsetManual = true;
+        RUN_USING_ENCODER = true;
         break;
 
       case MEC2:
