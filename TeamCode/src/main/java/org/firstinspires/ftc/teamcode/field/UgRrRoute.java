@@ -381,7 +381,7 @@ public class UgRrRoute
     pMID = new Pose2d(sx*-24.0,sy*-21.0, sh*Math.toRadians(0));  poses.add(pMID);
     pMOD = new Pose2d(sx*-18.0,sy*-53.0, sh*Math.toRadians(0));  poses.add(pMOD);
 
-    pDIA = new Pose2d(sx*  3.0,sy*-47.0, sh*Math.toRadians(-35));  poses.add(pDIA);
+    pDIA = new Pose2d(sx*  3.0,sy*-49.0, sh*Math.toRadians(-35));  poses.add(pDIA);
     pDIB = new Pose2d(sx* 20.0,sy*-28.0, sh*Math.toRadians(-20));  poses.add(pDIB);
     pDIC = new Pose2d(sx* 46.0,sy*-48.0, sh*Math.toRadians(-45));  poses.add(pDIC);
     pDOA = new Pose2d(sx*  3.0,sy*-57.0, sh*Math.toRadians(-30));  poses.add(pDOA);
@@ -389,7 +389,7 @@ public class UgRrRoute
     pDOC = new Pose2d(sx* 52.0,sy*-59.0, sh*Math.toRadians(  0));  poses.add(pDOC);
 
     pSIN = new Pose2d(sx* -16.0,sy*-18.0, sh*Math.toRadians(shtHdgI));  poses.add(pSIN);
-    pSON = new Pose2d(sx* -16.0,sy*-54.0, sh*Math.toRadians(shtHdgO));  poses.add(pSON);
+    pSON = new Pose2d(sx* -10.0,sy*-54.0, sh*Math.toRadians(shtHdgO));  poses.add(pSON);
 
     pSO1 = new Pose2d(sx* -6.0,sy*-18.0, sh*Math.toRadians(0));  poses.add(pSO1);
     pSO2 = new Pose2d(sx* -6.0,sy* -8.0, sh*Math.toRadians(0));  poses.add(pSO2);
@@ -401,7 +401,7 @@ public class UgRrRoute
     pRIN = new Pose2d(sx*-61.0,sy*-28.0, sh*Math.toRadians(180.0-shtHdgI));  poses.add(pRIN);
     pRON = new Pose2d(sx*-61.0,sy*-44.0, sh*Math.toRadians(180.0-shtHdgO));  poses.add(pRON);
 
-    pPIN = new Pose2d(sx*  4.0,sy*-36.0, sh*Math.toRadians(0));  poses.add(pPIN);
+    pPIN = new Pose2d(sx*  4.0,sy*-36.0, sh*Math.toRadians(-35));  poses.add(pPIN);
     pPON = new Pose2d(sx*  4.0,sy*-36.0, sh*Math.toRadians(0));  poses.add(pPON);
 
     startPose = pBON;
@@ -498,6 +498,30 @@ public class UgRrRoute
 
   private State state = State.IDLE;
   public void setState(State state) { this.state = state; }
+
+  private void doStartEndShoot()
+  {
+    firstShoot = true;
+    doStartShoot();
+  }
+
+  private void doLoad()
+  {
+    if(robot.loader != null)
+    {
+      robot.loader.setGatePos(Loader.gatePos.OPEN);
+      robot.loader.load(RobotConstants.LD_AUTO_PWR);
+      robot.loader.whlFwd();
+    }
+
+    double iPwr = RobotConstants.IN_AUTO_PWR;
+    if(state != State.SHOOT) iPwr = RobotConstants.IN_AUTO_PS_PWR;
+
+    if(robot.intake != null)
+    {
+      robot.intake.suck(iPwr);
+    }
+  }
 
 //  public static void main(String[] args)
 //  {

@@ -208,7 +208,7 @@ public class RobotConstants
         WA_CLAMP_MID  = 0.56;
         WA_CLAMP_GRAB = 0.48;
 
-        WG_CLAMP_OPEN = 0.66;
+        WG_CLAMP_OPEN = 0.64;
         WG_CLAMP_MID  = 0.75;
         WG_CLAMP_GRAB = 0.92;
 
@@ -236,10 +236,10 @@ public class RobotConstants
         IN_PUSH_DIR = DcMotorSimple.Direction.REVERSE;
 
         SH_PID = new PIDFCoefficients(80.0, 0.0, 0.0,14.9);
-        SH_FAV_CPS = 1810;
-        SH_PS_CPS = 1680;
-        SH_SHT_DLY = 3.5;
-        SH_PS_DLY = 1.0;
+        SH_FAV_CPS = 1560;
+        SH_PS_CPS = 1400;
+        SH_SHT_DLY = 4.5;
+        SH_PS_DLY = 0.7;
 
         MAX_VEL = 50;
         LATERAL_MULTIPLIER = 1.16;//1.21; //1.18;
