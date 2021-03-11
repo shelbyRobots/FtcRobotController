@@ -57,6 +57,9 @@ public class UgRrRoute
     WOB2,
     DROP2,
     PARK,
+    GRAB,
+    SHTS,
+    PARK2,
     IDLE
   }
 
@@ -66,6 +69,8 @@ public class UgRrRoute
   final static int    MAX_SEGMENTS = 32;
 
   public final static boolean GO_FOR_TWO = true;
+  public static boolean DO_STACK = false;
+  private boolean doPS;
 
   public static Pose2d startPose;
   public static Pose2d shtPose;
@@ -74,8 +79,8 @@ public class UgRrRoute
   public static double shtCps;
 
   //char1: p=Pose2d, t=Trajectory
-  //char2: W=Wobble, M=Mid, D=Drop, S=Shoot, R=Return, P=Park, B=Begin
-  //char3: O=Outside, I=Inside
+  //char2: W=Wobble, M=Mid, D=Drop, S=Shoot, R=Return, P=Park, B=Begin, G=Grab
+  //char3: O=Outside, I=Inside, C=Center
   //char4: A-C=dest box, D=Drop, R=Return, N=aNy (non specific)
   Pose2d pBIN;
   Pose2d pBON;
@@ -102,6 +107,9 @@ public class UgRrRoute
   Pose2d pMIR;
   Pose2d pRIN;
   Pose2d pPON;
+
+  Pose2d pGCN;
+  Pose2d pSCN;
 
   public Trajectory tDIA;
   public Trajectory tDIB;
@@ -138,6 +146,9 @@ public class UgRrRoute
   public Trajectory tPIS;
   public Trajectory tPOS;
 
+  public Trajectory tGCN;
+  public Trajectory tSCN;
+  public Trajectory tPCN;
 
   public Trajectory WD1;
   public Trajectory SHT;
@@ -146,7 +157,6 @@ public class UgRrRoute
   public Trajectory WD2;
   public Trajectory PRK;
 
-  private boolean doPS;
   //private double DEF_SHT_DST; //= shtPose.vec().distTo(goalVec);
 
   private static final String TAG = "SJH_URR";
@@ -189,6 +199,13 @@ public class UgRrRoute
       stateTrajMap.put(State.DROP2,   WD2);
     }
     stateTrajMap.put(State.PARK,    PRK);
+
+    if(DO_STACK)
+    {
+      stateTrajMap.put(State.GRAB,  tGCN);
+      stateTrajMap.put(State.SHTS,  tSCN);
+      stateTrajMap.put(State.PARK2, tPCN);
+    }
 
     stateColMap.put(State.DROP1,   "#F50505");
     stateColMap.put(State.SHOOT,   "#F55505");
@@ -350,6 +367,20 @@ public class UgRrRoute
       }
     }
 
+    if(DO_STACK)
+    {
+      tGCN = new TrajectoryBuilder(PRK.end(), Math.toRadians(180), wobVelLim, wobAccelLim)
+          .addDisplacementMarker(this::doIntake)
+          .lineToLinearHeading(pGCN).build();
+      tSCN = new TrajectoryBuilder(tGCN.end(), Math.toRadians(0), wobVelLim, wobAccelLim)
+          .addDisplacementMarker(this::doStartEndShoot)
+          .lineToLinearHeading(pSCN)
+          .addDisplacementMarker(this::doEndShoot).build();
+      tPCN = new TrajectoryBuilder(tSCN.end(), Math.toRadians(0), wobVelLim, wobAccelLim)
+          .lineToLinearHeading(pSIN)
+          .addDisplacementMarker(this::doPark).build();
+    }
+
     RobotLog.dd(TAG, "Done Building trajectories");
   }
 
@@ -366,7 +397,7 @@ public class UgRrRoute
       sh = -1;
     }
 
-    double shtAng = 12.0;
+    double shtAng = 12.1;
     if(RobotConstants.bot == RobotConstants.Chassis.MEC3) shtAng = 12.0;
     else if (RobotConstants.bot == RobotConstants.Chassis.MEC2) shtAng = 2.0;
     double shtHdgO = sh*shtAng;
@@ -388,12 +419,17 @@ public class UgRrRoute
     pDOB = new Pose2d(sx* 28.0,sy*-46.0, sh*Math.toRadians( 35));  poses.add(pDOB);
     pDOC = new Pose2d(sx* 52.0,sy*-59.0, sh*Math.toRadians(  0));  poses.add(pDOC);
 
-    pSIN = new Pose2d(sx* -16.0,sy*-18.0, sh*Math.toRadians(shtHdgI));  poses.add(pSIN);
+    pSIN = new Pose2d(sx* -10.0,sy*-18.0, sh*Math.toRadians(shtHdgI));  poses.add(pSIN);
     pSON = new Pose2d(sx* -10.0,sy*-54.0, sh*Math.toRadians(shtHdgO));  poses.add(pSON);
 
-    pSO1 = new Pose2d(sx* -6.0,sy*-18.0, sh*Math.toRadians(0));  poses.add(pSO1);
-    pSO2 = new Pose2d(sx* -6.0,sy* -8.0, sh*Math.toRadians(0));  poses.add(pSO2);
-    pSO3 = new Pose2d(sx* -6.0,sy*  2.0, sh*Math.toRadians(0));  poses.add(pSO3);
+    double dps = 8.0;
+    double ys1 = -18.0;
+    if(RobotConstants.bot == RobotConstants.Chassis.MEC2) ys1 = -36.0;
+    double ys2 = ys1 + dps;
+    double ys3 = ys2 + dps;
+    pSO1 = new Pose2d(sx* -10.0,sy*  ys1, sh*Math.toRadians(0));  poses.add(pSO1);
+    pSO2 = new Pose2d(sx* -10.0,sy*  ys2, sh*Math.toRadians(0));  poses.add(pSO2);
+    pSO3 = new Pose2d(sx* -10.0,sy*  ys3, sh*Math.toRadians(0));  poses.add(pSO3);
 
     pMIR = new Pose2d(sx*-30.0,sy*-18.0, sh*Math.toRadians(180.0-shtHdgI));  poses.add(pMIR);
     pMOR = new Pose2d(sx*-30.0,sy*-54.0, sh*Math.toRadians(180.0-shtHdgO));  poses.add(pMOR);
@@ -401,8 +437,11 @@ public class UgRrRoute
     pRIN = new Pose2d(sx*-61.0,sy*-28.0, sh*Math.toRadians(180.0-shtHdgI));  poses.add(pRIN);
     pRON = new Pose2d(sx*-61.0,sy*-44.0, sh*Math.toRadians(180.0-shtHdgO));  poses.add(pRON);
 
-    pPIN = new Pose2d(sx*  4.0,sy*-36.0, sh*Math.toRadians(-35));  poses.add(pPIN);
+    pPIN = new Pose2d(sx*  4.0,sy*-36.0, sh*Math.toRadians(-20));  poses.add(pPIN);
     pPON = new Pose2d(sx*  4.0,sy*-36.0, sh*Math.toRadians(0));  poses.add(pPON);
+
+    pGCN = new Pose2d(sx*-14.0, sy*-36.0,sh*Math.toRadians(0)); poses.add(pGCN);
+    pSCN = new Pose2d(sx* -8.0, sy*-36.0,sh*Math.toRadians(0)); poses.add(pSCN);
 
     startPose = pBON;
     if(startPos == START_2) startPose = pBIN;
@@ -505,16 +544,21 @@ public class UgRrRoute
     doStartShoot();
   }
 
-  private void doLoad()
+  private void doEndShoot()
   {
+    if(robot.burr != null) robot.burr.shootCps(shtCps);
+
     if(robot.loader != null)
     {
       robot.loader.setGatePos(Loader.gatePos.OPEN);
       robot.loader.load(RobotConstants.LD_AUTO_PWR);
       robot.loader.whlFwd();
     }
+  }
 
-    double iPwr = RobotConstants.IN_AUTO_PWR;
+  private void doIntake()
+  {
+     double iPwr = RobotConstants.IN_AUTO_PWR;
     if(state != State.SHOOT) iPwr = RobotConstants.IN_AUTO_PS_PWR;
 
     if(robot.intake != null)
