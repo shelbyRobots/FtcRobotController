@@ -69,7 +69,7 @@ public class UgRrRoute
   final static int    MAX_SEGMENTS = 32;
 
   public final static boolean GO_FOR_TWO = true;
-  public static boolean DO_STACK = false;
+  public static boolean DO_STACK = true;
   private boolean doPS;
 
   public static Pose2d startPose;
@@ -377,7 +377,7 @@ public class UgRrRoute
           .lineToLinearHeading(pSCN)
           .addDisplacementMarker(this::doEndShoot).build();
       tPCN = new TrajectoryBuilder(tSCN.end(), Math.toRadians(0), wobVelLim, wobAccelLim)
-          .lineToLinearHeading(pSIN)
+          .lineToLinearHeading(pPON)
           .addDisplacementMarker(this::doPark).build();
     }
 
@@ -440,8 +440,10 @@ public class UgRrRoute
     pPIN = new Pose2d(sx*  4.0,sy*-36.0, sh*Math.toRadians(-20));  poses.add(pPIN);
     pPON = new Pose2d(sx*  4.0,sy*-36.0, sh*Math.toRadians(0));  poses.add(pPON);
 
+    double esAng = 0.0;
+    if(RobotConstants.bot == RobotConstants.Chassis.MEC2) esAng = -10.0;
     pGCN = new Pose2d(sx*-14.0, sy*-36.0,sh*Math.toRadians(0)); poses.add(pGCN);
-    pSCN = new Pose2d(sx* -8.0, sy*-36.0,sh*Math.toRadians(0)); poses.add(pSCN);
+    pSCN = new Pose2d(sx* -8.0, sy*-36.0,sh*Math.toRadians(esAng)); poses.add(pSCN);
 
     startPose = pBON;
     if(startPos == START_2) startPose = pBIN;
