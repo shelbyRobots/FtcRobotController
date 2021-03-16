@@ -348,7 +348,7 @@ public class UgRrRoute
       if(GO_FOR_TWO)
       {
         tPIA = new TrajectoryBuilder(tDIA.end(), Math.toRadians(180), defVelLim, defAccelLim)
-            .lineToLinearHeading(pPIN)
+            .splineToLinearHeading(pPIN, pPIN.getHeading())
             .addDisplacementMarker(this::doPark).build();
         tPIB = new TrajectoryBuilder(tDIB.end(), Math.toRadians(180), defVelLim, defAccelLim)
             .lineToLinearHeading(pPIN)
@@ -398,7 +398,7 @@ public class UgRrRoute
     }
 
     double shtAng = 12.1;
-    if(RobotConstants.bot == RobotConstants.Chassis.MEC3) shtAng = 12.0;
+    if(RobotConstants.bot == RobotConstants.Chassis.MEC3) shtAng = 11.0;
     else if (RobotConstants.bot == RobotConstants.Chassis.MEC2) shtAng = 2.0;
     double shtHdgO = sh*shtAng;
     double shtHdgI = -shtHdgO;
@@ -412,7 +412,7 @@ public class UgRrRoute
     pMID = new Pose2d(sx*-24.0,sy*-21.0, sh*Math.toRadians(0));  poses.add(pMID);
     pMOD = new Pose2d(sx*-18.0,sy*-53.0, sh*Math.toRadians(0));  poses.add(pMOD);
 
-    pDIA = new Pose2d(sx*  3.0,sy*-49.0, sh*Math.toRadians(-35));  poses.add(pDIA);
+    pDIA = new Pose2d(sx*  5.0,sy*-49.0, sh*Math.toRadians(-50));  poses.add(pDIA);
     pDIB = new Pose2d(sx* 20.0,sy*-28.0, sh*Math.toRadians(-20));  poses.add(pDIB);
     pDIC = new Pose2d(sx* 46.0,sy*-48.0, sh*Math.toRadians(-45));  poses.add(pDIC);
     pDOA = new Pose2d(sx*  3.0,sy*-57.0, sh*Math.toRadians(-30));  poses.add(pDOA);
@@ -437,12 +437,17 @@ public class UgRrRoute
     pRIN = new Pose2d(sx*-61.0,sy*-28.0, sh*Math.toRadians(180.0-shtHdgI));  poses.add(pRIN);
     pRON = new Pose2d(sx*-61.0,sy*-44.0, sh*Math.toRadians(180.0-shtHdgO));  poses.add(pRON);
 
-    pPIN = new Pose2d(sx*  4.0,sy*-36.0, sh*Math.toRadians(-20));  poses.add(pPIN);
+    pPIN = new Pose2d(sx*  4.0,sy*-36.0, sh*Math.toRadians(0));  poses.add(pPIN);
     pPON = new Pose2d(sx*  4.0,sy*-36.0, sh*Math.toRadians(0));  poses.add(pPON);
 
     double esAng = 0.0;
-    if(RobotConstants.bot == RobotConstants.Chassis.MEC2) esAng = -10.0;
-    pGCN = new Pose2d(sx*-14.0, sy*-36.0,sh*Math.toRadians(0)); poses.add(pGCN);
+    double esX = -16.0;
+    if(RobotConstants.bot == RobotConstants.Chassis.MEC2)
+    {
+      esAng = -10.0;
+      esX = -14.0;
+    }
+    pGCN = new Pose2d(sx*  esX, sy*-36.0,sh*Math.toRadians(0)); poses.add(pGCN);
     pSCN = new Pose2d(sx* -8.0, sy*-36.0,sh*Math.toRadians(esAng)); poses.add(pSCN);
 
     startPose = pBON;
@@ -560,8 +565,7 @@ public class UgRrRoute
 
   private void doIntake()
   {
-     double iPwr = RobotConstants.IN_AUTO_PWR;
-    if(state != State.SHOOT) iPwr = RobotConstants.IN_AUTO_PS_PWR;
+    double iPwr = 1.0;
 
     if(robot.intake != null)
     {

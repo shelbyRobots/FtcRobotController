@@ -236,6 +236,7 @@ public class MecanumTeleop extends InitLinearOpMode
 
     private boolean usePwr = false;
     private final ElapsedTime hldTimer = new ElapsedTime();
+    private final ElapsedTime psTimer = new ElapsedTime();
     private double shtPwr = 0.0;
 
     private void controlShooter()
@@ -245,7 +246,13 @@ public class MecanumTeleop extends InitLinearOpMode
         boolean step_down  = gpad2.just_pressed(ManagedGamepad.Button.D_DOWN);
         boolean zeroize    = gpad2.just_pressed(ManagedGamepad.Button.D_LEFT);
         boolean normal     = gpad2.just_pressed(ManagedGamepad.Button.D_RIGHT);
+        boolean nrmHld     = gpad2.pressed(ManagedGamepad.Button.D_RIGHT);
         boolean holdZero   = gpad2.pressed(ManagedGamepad.Button.D_LEFT);
+
+        if(normal) psTimer.reset();
+
+        boolean ps_norm = false;
+        if(nrmHld && psTimer.seconds() > 0.5) ps_norm = true;
 
         if(holdZero)
         {
@@ -277,8 +284,9 @@ public class MecanumTeleop extends InitLinearOpMode
         if      (step_up)   {cps += CPS_INC; cps = Math.min(cps, MAX_CPS);}
         else if (step_down) {cps -= CPS_INC; cps = Math.max(cps, MIN_CPS);}
         else if (normal)    {cps  = RobotConstants.SH_FAV_CPS; }
+        else if (ps_norm)   {cps  = RobotConstants.SH_PS_CPS; }
 
-        if(step_up || step_down || normal)
+        if(step_up || step_down || normal || ps_norm)
         {
             if(useDist)     robot.burr.shotSpeed(distance);
             else if(usePwr) robot.burr.shootPower(shtPwr);

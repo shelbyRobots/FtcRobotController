@@ -293,7 +293,7 @@ public class RobotConstants
 
         SH_PID = new PIDFCoefficients(80.0, 0.0, 0.0,14.9);
         SH_FAV_CPS = 1940;
-        SH_PS_CPS = 1720;
+        SH_PS_CPS = 1780;
         SH_SHT_DLY = 3.5;
         SH_PS_DLY = 0.75;
 
